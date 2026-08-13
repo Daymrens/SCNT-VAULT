@@ -394,6 +394,8 @@ body {
 .btn-sm-view:hover   { background: rgba(139,115,85,0.15); }
 .btn-sm-status { background: #dbeafe; color: #1e40af; }
 .btn-sm-status:hover { background: #bfdbfe; }
+.btn-sm-pos { background: linear-gradient(135deg,#6366f1,#8b5cf6); color: white; }
+.btn-sm-pos:hover { background: linear-gradient(135deg,#4f46e5,#7c3aed); }
 
 /* ── Toolbar ── */
 .toolbar {
@@ -1085,7 +1087,9 @@ body {
             '<td style="font-weight:700;color:var(--color-success)">' + fmt(o.total||o.grandTotal||0) + '</td>' +
             '<td><span class="badge ' + orderStatusBadge(o.status) + '">' + (o.status||'pending') + '</span></td>' +
             '<td><button class="btn-sm btn-sm-view" onclick="window._viewOrder(\'' + o.id + '\')">View</button> ' +
-                '<button class="btn-sm btn-sm-status" onclick="window._updateStatus(\'' + o.id + '\',\'' + (o.status||'pending') + '\')">Status</button></td>' +
+                '<button class="btn-sm btn-sm-status" onclick="window._updateStatus(\'' + o.id + '\',\'' + (o.status||'pending') + '\')">Status</button>' +
+                ((o.status||'pending') === 'processing' ? ' <a class="btn-sm btn-sm-pos" href="/inventory?posOrder=' + o.id + '" target="_blank" rel="noopener">Open in POS</a>' : '') +
+            '</td>' +
           '</tr>';
         }).join('');
       }
@@ -1275,7 +1279,9 @@ body {
               '<td style="font-weight:700;color:var(--color-success)">' + fmt(o.total||o.grandTotal||0) + '</td>' +
               '<td><span class="badge ' + orderStatusBadge(o.status) + '">' + (o.status||'pending') + '</span></td>' +
               '<td style="white-space:nowrap"><button class="btn-sm btn-sm-view" onclick="window._viewOrder(\'' + o.id + '\')">View</button> ' +
-                '<button class="btn-sm btn-sm-status" onclick="window._updateStatus(\'' + o.id + '\',\'' + (o.status||'pending') + '\')">Status</button></td></tr>';
+                '<button class="btn-sm btn-sm-status" onclick="window._updateStatus(\'' + o.id + '\',\'' + (o.status||'pending') + '\')">Status</button>' +
+                ((o.status||'pending') === 'processing' ? ' <a class="btn-sm btn-sm-pos" href="/inventory?posOrder=' + o.id + '" target="_blank" rel="noopener">Open in POS</a>' : '') +
+              '</td></tr>';
           }).join('');
         };
         render();
@@ -1327,6 +1333,7 @@ body {
             '</tr></tfoot></table>';
         document.getElementById('orderModalFooter').innerHTML =
           '<button class="btn btn-secondary" onclick="document.getElementById(\'orderModal\').style.display=\'none\'">Close</button>' +
+          ((o.status||'pending') === 'processing' ? '<a class="btn btn-purple" href="/inventory?posOrder=' + o.id + '" target="_blank" rel="noopener" style="text-decoration:none">Open in POS</a>' : '') +
           '<button class="btn btn-primary" onclick="window._updateStatus(\'' + o.id + '\',\'' + (o.status||'pending') + '\')">Update Status</button>';
         document.getElementById('orderModal').style.display = 'flex';
       };
@@ -1334,8 +1341,13 @@ body {
       window._updateStatus = function(id, current) {
         showStatusPicker(current, async function(status) {
           try {
-            await db.collection('orders').doc(id).update({ status: status, updatedAt: new Date().toISOString() });
-            ordersCache = ordersCache.map(function(o) { return o.id===id ? Object.assign({}, o, {status:status}) : o; });
+            var updates = { status: status, updatedAt: new Date().toISOString() };
+            if (status === 'processing') {
+              updates.posReady = true;
+              updates.posReadyAt = new Date().toISOString();
+            }
+            await db.collection('orders').doc(id).update(updates);
+            ordersCache = ordersCache.map(function(o) { return o.id===id ? Object.assign({}, o, updates) : o; });
             loadOrders(document.getElementById('contentArea'));
             showToast('Status updated to ' + status, 'success');
           } catch(e) { showToast('Error: ' + e.message, 'error'); }
