@@ -31,7 +31,7 @@
     ],
     "headers": [
       {
-        "source": "**/*.@(js|css)",
+        "source": "/inventory/**/*.@(js|css)",
         "headers": [
           {
             "key": "Cache-Control",
