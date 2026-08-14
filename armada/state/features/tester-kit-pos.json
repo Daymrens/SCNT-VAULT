@@ -1,0 +1,18 @@
+{
+  "name": "tester-kit-pos",
+  "contract": "armada/REQUIREMENTS-TESTER-KIT.md",
+  "status": "delivered",
+  "phases": {
+    "tester-kit-entry": "passed",
+    "sales-invoice": "passed",
+    "verification": "passed"
+  },
+  "lastAction": "Delivered 2026-08-15: PR #6 merged + deployed; 28/28 live assertions pass; invoice PDF text-verified (Tester Kit — 200 pcs, ₱500, no pcs×price math); temp auth user + test sale cleaned up.",
+  "evidence": [
+    "Tester Kit card pinned top of POS grid, search-proof (verified with zzzzqqq)",
+    "Configure dialog Pcs (default 100) + fixed Price ₱; single cart line 'Tester Kit — 150 pcs' ₱450 (not 67500)",
+    "Re-open updates existing kit line (150/450 → 200/500), still one line",
+    "Sale doc Items[0]: {ProductId:tester-kit, ProductName:'Tester Kit', Quantity:1, UnitPrice:500, Subtotal:500, Pcs:200}",
+    "PDF invoice extracted text: 'Tester Kit — 200 pcs', ₱500; no stock decrement; 0 console errors"
+  ]
+}

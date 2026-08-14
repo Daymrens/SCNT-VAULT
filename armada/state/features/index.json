@@ -1,0 +1,3 @@
+{
+  "features": ["firestore-sync", "shipping-fee", "ui-redesign", "order-pos-invoice", "stock-99-po", "tester-kit-pos"]
+}
