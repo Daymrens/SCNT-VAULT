@@ -50,6 +50,21 @@ service cloud.firestore {
       allow read, write: if true;
     }
     
+    // Analytics Collection (page/product view tracking)
+    match /analytics/{docId} {
+      allow read, write: if true;
+    }
+    
+    // Newsletter Collection
+    match /newsletter/{docId} {
+      allow read, write: if true;
+    }
+    
+    // Test Collection (connection checks)
+    match /test/{docId} {
+      allow read, write: if true;
+    }
+    
     // Orders Collection (legacy)
     match /orders/{orderId} {
       allow create: if true;
