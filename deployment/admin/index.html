@@ -707,14 +707,14 @@ body {
             <div class="login-card">
                 <h2>Welcome Back</h2>
                 <p>Sign in to your admin account</p>
-                <form id="loginForm">
+                <form id="loginForm" autocomplete="off">
                     <div class="login-input-wrap">
                         <span class="input-icon">&#9993;</span>
-                        <input type="email" id="email" placeholder="Email address" value="admin1@scntvault.com" required>
+                        <input type="email" id="email" placeholder="Email address" autocomplete="off" required>
                     </div>
                     <div class="login-input-wrap">
                         <span class="input-icon">&#128274;</span>
-                        <input type="password" id="password" placeholder="Password" value="scntvaultadmin" required>
+                        <input type="password" id="password" placeholder="Password" autocomplete="new-password" required>
                     </div>
                     <button type="submit" class="btn-login" id="loginBtn">Sign In</button>
                 </form>
