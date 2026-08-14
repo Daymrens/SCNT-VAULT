@@ -1,0 +1,18 @@
+{
+  "name": "invoice-order-numbers",
+  "contract": "armada/REQUIREMENTS-INVOICE-ORDER-NUMBERS.md",
+  "status": "delivered",
+  "phases": {
+    "numbering-engine": "passed",
+    "wire-flows": "passed",
+    "verification": "passed"
+  },
+  "lastAction": "Delivered 2026-08-15: PR #7 merged + deployed; counters per type+year, transaction-based; backfilled all sales/orders; live verified consecutive invoices (SCNT-INV-2026-0051/0052), PDF text, storefront order (SCNT-ORDER-2026-0007), admin column; test data cleaned up.",
+  "evidence": [
+    "counters/invoice-<year>, counters/order-<year> {seq}; nextInvoiceNumber/nextOrderNumber via runTransaction (inventory-app/src/utils/numbers.js)",
+    "Backfill scripts/backfill-numbers.cjs: all sales (275) + orders (5) numbered, no duplicates; counters invoice-2025=229, invoice-2026=52, order-2026=7",
+    "POS sale docs carry InvoiceNumber; success modal + PDF header/filename use formal number; consecutive 0051->0052 live",
+    "Storefront checkout writes OrderNumber SCNT-ORDER-2026-0007; admin orders column shows it; POS banner/toast prefer OrderNumber",
+    "Pre-existing console noise (Firebase rule permission errors) unrelated to numbering"
+  ]
+}
