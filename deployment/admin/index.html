@@ -1002,7 +1002,7 @@ body {
             '<div class="data-table-header"><h2>Recent Orders</h2>' +
               '<button class="btn btn-secondary btn-sm" onclick="document.querySelector(\'[data-page=orders]\').click()">View All</button>' +
             '</div>' +
-            '<table><thead><tr><th>Date</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead>' +
+            '<table><thead><tr><th>Order No.</th><th>Date</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead>' +
             '<tbody id="recentOrdersBody">' + skeletonRows(5) + '</tbody></table>' +
           '</div>';
 
@@ -1077,10 +1077,11 @@ body {
 
       function renderRecentOrders(orders) {
         var tbody = document.getElementById('recentOrdersBody');
-        if (!orders.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No orders yet</td></tr>'; return; }
+        if (!orders.length) { tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No orders yet</td></tr>'; return; }
         tbody.innerHTML = orders.map(function(o) {
           var items = o.items || o.cartItems || [];
           return '<tr>' +
+            '<td style="font-weight:600;white-space:nowrap">' + (o.OrderNumber || o.id.slice(0, 8)) + '</td>' +
             '<td style="white-space:nowrap">' + fmtD(o.createdAt) + '</td>' +
             '<td style="font-weight:600;color:var(--color-text)">' + (o.fullName||o.name||'\u2014') + '</td>' +
             '<td>' + items.length + ' item(s)</td>' +
@@ -1245,7 +1246,7 @@ body {
           '</div>' +
           '<div class="data-table"><div class="data-table-header"><h2>Website Orders</h2>' +
             '<span id="ordCount" style="font-size:12px;color:var(--color-text-tertiary)"></span></div>' +
-            '<table><thead><tr><th>Date</th><th>Customer</th><th>Contact</th><th>Items</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead>' +
+            '<table><thead><tr><th>Order No.</th><th>Date</th><th>Customer</th><th>Contact</th><th>Items</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead>' +
             '<tbody id="ordTbody">' + skeletonRows(6) + '</tbody></table></div>' +
           '<div class="modal-overlay" id="orderModal" style="display:none"><div class="modal-content" style="max-width:680px">' +
             '<div class="modal-header"><h2 id="orderModalTitle">Order Detail</h2>' +
@@ -1268,10 +1269,11 @@ body {
           });
           document.getElementById('ordCount').textContent = list.length + ' order(s)';
           var tbody = document.getElementById('ordTbody');
-          if (!list.length) { tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No orders found</td></tr>'; return; }
+          if (!list.length) { tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No orders found</td></tr>'; return; }
           tbody.innerHTML = list.map(function(o) {
             var items = o.items || o.cartItems || [];
             return '<tr>' +
+              '<td style="font-weight:600;white-space:nowrap">' + (o.OrderNumber || o.id.slice(0, 8)) + '</td>' +
               '<td style="white-space:nowrap">' + fmtDT(o.createdAt) + '</td>' +
               '<td style="font-weight:600;color:var(--color-text)">' + (o.fullName||o.name||'\u2014') + '</td>' +
               '<td style="font-size:12px;color:var(--color-text-tertiary)">' + (o.email||'') + '<br>' + (o.phone||'') + '</td>' +
@@ -1306,6 +1308,7 @@ body {
         document.getElementById('orderModalTitle').textContent = 'Order \u2014 ' + (o.fullName||o.name||'Customer');
         document.getElementById('orderModalBody').innerHTML =
           '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">' +
+            '<div><div class="info-label">Order No.</div><div style="font-weight:600">' + (o.OrderNumber || o.id.slice(0, 8)) + '</div></div>' +
             '<div><div class="info-label">Customer</div><div style="font-weight:600">' + (o.fullName||o.name||'\u2014') + '</div></div>' +
             '<div><div class="info-label">Date</div><div>' + fmtDT(o.createdAt) + '</div></div>' +
             '<div><div class="info-label">Email</div><div>' + (o.email||'\u2014') + '</div></div>' +

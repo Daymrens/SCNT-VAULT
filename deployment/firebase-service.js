@@ -10,7 +10,8 @@ import {
     where,
     orderBy,
     limit,
-    serverTimestamp
+    serverTimestamp,
+    runTransaction
 } from './firebase-config.js';
 
 // ==================== ORDERS ====================
@@ -23,9 +24,19 @@ import {
 export async function createOrder(orderData) {
     try {
         const ordersRef = collection(db, 'orders');
-        
+        const year = new Date().getFullYear();
+        const counterRef = doc(db, 'counters', 'order-' + year);
+        const orderNumber = await runTransaction(db, async (tx) => {
+            const snap = await tx.get(counterRef);
+            const current = snap.exists() ? Number(snap.data().seq || 0) : 0;
+            const next = current + 1;
+            await tx.set(counterRef, { seq: next });
+            return 'SCNT-ORDER-' + year + '-' + String(next).padStart(4, '0');
+        });
+
         const order = {
             ...orderData,
+            OrderNumber: orderNumber,
             status: 'pending',
             createdAt: serverTimestamp(),
             updatedAt: serverTimestamp()
