@@ -135,9 +135,9 @@
           '<a href="#orders" class="btn btn-secondary" style="font-size:12px;padding:6px 14px" onclick="document.querySelector(\'[data-page=orders]\').click();return false;">View All</a>' +
         '</div>' +
         '<table><thead><tr>' +
-          '<th>Date</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Actions</th>' +
+          '<th>Order No.</th><th>Date</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Actions</th>' +
         '</tr></thead>' +
-        '<tbody id="recentOrdersBody"><tr><td colspan="6" class="empty-state">Loading...</td></tr></tbody></table>' +
+        '<tbody id="recentOrdersBody"><tr><td colspan="7" class="empty-state">Loading...</td></tr></tbody></table>' +
       '</div>';
 
     try {
@@ -208,10 +208,11 @@
 
   function renderRecentOrders(orders) {
     var tbody = document.getElementById('recentOrdersBody');
-    if (!orders.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No orders yet</td></tr>'; return; }
+    if (!orders.length) { tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No orders yet</td></tr>'; return; }
     tbody.innerHTML = orders.map(function(o) {
       var items = o.items || o.cartItems || [];
       return '<tr>' +
+        '<td style="font-weight:600;white-space:nowrap">' + (o.OrderNumber || o.id.slice(0, 8)) + '</td>' +
         '<td style="white-space:nowrap">' + fmtD(o.createdAt) + '</td>' +
         '<td style="font-weight:600">' + (o.fullName||o.name||'—') + '</td>' +
         '<td>' + items.length + ' item(s)</td>' +
@@ -386,10 +387,10 @@
           '<span id="ordCount" style="font-size:12px;color:#9ca3af"></span>' +
         '</div>' +
         '<table><thead><tr>' +
-          '<th>Date</th><th>Customer</th><th>Contact</th>' +
+          '<th>Order No.</th><th>Date</th><th>Customer</th><th>Contact</th>' +
           '<th>Items</th><th>Total</th><th>Status</th><th>Actions</th>' +
         '</tr></thead>' +
-        '<tbody id="ordTbody"><tr><td colspan="7" class="empty-state">Loading...</td></tr></tbody></table>' +
+        '<tbody id="ordTbody"><tr><td colspan="8" class="empty-state">Loading...</td></tr></tbody></table>' +
       '</div>' +
       '<div class="modal" id="orderModal" style="display:none">' +
         '<div class="modal-content" style="max-width:680px">' +
@@ -417,10 +418,11 @@
       });
       document.getElementById('ordCount').textContent = list.length + ' order(s)';
       var tbody = document.getElementById('ordTbody');
-      if (!list.length) { tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No orders found</td></tr>'; return; }
+      if (!list.length) { tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No orders found</td></tr>'; return; }
       tbody.innerHTML = list.map(function(o) {
         var items = o.items || o.cartItems || [];
         return '<tr>' +
+          '<td style="font-weight:600;white-space:nowrap">' + (o.OrderNumber || o.id.slice(0, 8)) + '</td>' +
           '<td style="white-space:nowrap">' + fmtDT(o.createdAt) + '</td>' +
           '<td style="font-weight:600">' + (o.fullName||o.name||'—') + '</td>' +
           '<td style="font-size:12px;color:#6b7280">' + (o.email||'') + '<br>' + (o.phone||'') + '</td>' +
@@ -447,6 +449,7 @@
     document.getElementById('orderModalTitle').textContent = 'Order — ' + (o.fullName||o.name||'Customer');
     document.getElementById('orderModalBody').innerHTML =
       '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px">' +
+        '<div><div class="info-label">Order No.</div><div style="font-weight:600">' + (o.OrderNumber || o.id.slice(0, 8)) + '</div></div>' +
         '<div><div class="info-label">Customer</div><div style="font-weight:600">' + (o.fullName||o.name||'—') + '</div></div>' +
         '<div><div class="info-label">Date</div><div>' + fmtDT(o.createdAt) + '</div></div>' +
         '<div><div class="info-label">Email</div><div>' + (o.email||'—') + '</div></div>' +
