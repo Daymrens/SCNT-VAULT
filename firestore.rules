@@ -45,6 +45,11 @@ service cloud.firestore {
       allow write: if true; // Temporary for migration
     }
     
+    // Counters Collection (invoice/order numbering)
+    match /counters/{counterId} {
+      allow read, write: if true;
+    }
+    
     // Orders Collection (legacy)
     match /orders/{orderId} {
       allow create: if true;
