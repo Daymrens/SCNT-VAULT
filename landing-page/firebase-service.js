@@ -50,18 +50,38 @@ export function flushPendingWrites() {
  * @param {Object} orderData - Order information
  * @returns {Promise<string>} Order ID
  */
+async function mintOrderNumber() {
+    const year = new Date().getFullYear();
+    const counterRef = doc(db, 'counters', 'order-' + year);
+    return runTransaction(db, async (tx) => {
+        const snap = await tx.get(counterRef);
+        const current = snap.exists() ? Number(snap.data().seq || 0) : 0;
+        const next = current + 1;
+        await tx.set(counterRef, { seq: next });
+        return 'SCNT-ORDER-' + year + '-' + String(next).padStart(4, '0');
+    });
+}
+
+export async function getLocalOrderNumber() {
+    try {
+        const d = new Date();
+        const p = n => String(n).padStart(2, '0');
+        const stamp = `${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}`;
+        return 'SCNT-LOCAL-' + stamp + '-' + Math.floor(Math.random()*9000+1000);
+    } catch (_) {
+        return 'SCNT-LOCAL-' + Date.now();
+    }
+}
+
+/**
+ * Create a new order in Firestore
+ * @param {Object} orderData - Order information
+ * @returns {Promise<string>} Order ID
+ */
 export async function createOrder(orderData) {
     try {
         const ordersRef = collection(db, 'orders');
-        const year = new Date().getFullYear();
-        const counterRef = doc(db, 'counters', 'order-' + year);
-        const orderNumber = await runTransaction(db, async (tx) => {
-            const snap = await tx.get(counterRef);
-            const current = snap.exists() ? Number(snap.data().seq || 0) : 0;
-            const next = current + 1;
-            await tx.set(counterRef, { seq: next });
-            return 'SCNT-ORDER-' + year + '-' + String(next).padStart(4, '0');
-        });
+        const orderNumber = await mintOrderNumber();
 
         const order = {
             ...orderData,
@@ -76,8 +96,9 @@ export async function createOrder(orderData) {
         return docRef.id;
     } catch (error) {
         if (isQuotaError(error)) {
+            const localNum = getLocalOrderNumber();
             enqueue('order', orderData);
-            return 'QUEUED-' + Date.now();
+            return localNum;
         }
         console.error('❌ Error creating order:', error);
         throw error;
