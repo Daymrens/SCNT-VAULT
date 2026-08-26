@@ -1663,7 +1663,7 @@ function initializeCartButtons() {
                     </div>
                     <h3>Order Pending</h3>
                     <p class="invoice-popup-total">Total: <strong>${totalText}</strong></p>
-                    <p class="invoice-popup-message">Thank you for your order! The seller will send you an official invoice receipt via <strong>Email</strong> or <strong>Messenger</strong>.</p>
+                    <p class="invoice-popup-message">Thank you for your order! The seller will send you an official invoice receipt via <strong>Email</strong> or <a href="https://m.me/scnt.vaultcebu" target="_blank" rel="noopener noreferrer"><strong>Messenger</strong></a>.</p>
                     <p class="invoice-popup-sub">Please wait while we prepare your invoice. You will receive it shortly.</p>
                     <p class="invoice-popup-delivery">Delivery fee varies depending on your location — this will be included in your invoice.</p>
                     <div class="invoice-popup-items">${itemList}</div>
