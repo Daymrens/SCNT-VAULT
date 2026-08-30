@@ -1768,12 +1768,15 @@ function initializeCheckoutHandlers() {
         notes: formData.get('notes') || ''
     };
     
+    const totalQty = cart.reduce((sum, item) => sum + item.quantity, 0);
+    
     const templateParams = {
         customer_name: formData.get('fullName'),
         customer_email: formData.get('email'),
         customer_phone: formData.get('phone'),
         shipping_address: `${formData.get('address')}, ${formData.get('city')}, ${formData.get('province')} ${formData.get('zipCode')}`,
         order_items: orderItems,
+        total_qty: totalQty,
         subtotal: `₱${totals.subtotal.toFixed(2)}`,
         total: `₱${totals.total.toFixed(2)}`,
         notes: formData.get('notes') || 'None',
@@ -1787,6 +1790,7 @@ function initializeCheckoutHandlers() {
     
     saveOrder(orderData)
         .then((orderId) => {// Then send email using EmailJS
+            templateParams.order_number = orderId;
             return emailjs.send(EMAILJS_CONFIG.serviceID, 'template_6g4lf87', templateParams);
         })
         .then(function(response) {
