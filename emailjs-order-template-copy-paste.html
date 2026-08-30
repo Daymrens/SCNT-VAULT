@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation - SCNT Vault</title>
+    <style>
+        /* Reset */
+        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+
+        /* Responsive */
+        @media only screen and (max-width: 600px) {
+            .email-container {
+                width: 100% !important;
+                margin: auto !important;
+            }
+            .fluid {
+                width: 100% !important;
+                max-width: 100% !important;
+                height: auto !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+            }
+            .stack-column,
+            .stack-column-center {
+                display: block !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                direction: ltr !important;
+            }
+            .center-on-narrow {
+                text-align: center !important;
+                display: block !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+                float: none !important;
+            }
+            table.center-on-narrow {
+                display: inline-block !important;
+            }
+            .mobile-padding {
+                padding: 28px 24px !important;
+            }
+            .mobile-font-size {
+                font-size: 16px !important;
+            }
+            .hide-on-narrow {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body style="margin: 0; padding: 0; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; background-color: #f1efe7; width: 100% !important; min-width: 100%; -webkit-font-smoothing: antialiased;">
+
+    <!-- Preheader text (hidden but shows in email preview) -->
+    <div style="display: none; font-size: 1px; line-height: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden; mso-hide: all; font-family: sans-serif;">
+        Order #{{order_number}} — {{total_qty}} item(s) from {{customer_name}} via SCNT Vault
+    </div>
+
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="background-color: #f1efe7; padding: 28px 0;">
+        <tr>
+            <td align="center" style="padding: 12px 10px;">
+
+                <!-- Main Container -->
+                <table class="email-container" width="560" cellpadding="0" cellspacing="0" border="0" role="presentation" style="background-color: #fdfcf9; border: 1px solid #e4e0d4; max-width: 560px; margin: auto;">
+
+                    <!-- Header -->
+                    <tr>
+                        <td class="mobile-padding" style="padding: 44px 48px 0 48px; text-align: center;">
+                            <p style="margin: 0 0 12px 0; font-size: 11px; color: #9b9588; letter-spacing: 3px; text-transform: uppercase;">
+                                Atelier Order Confirmation
+                            </p>
+                            <h1 style="margin: 0; color: #000000; font-family: Georgia, 'Times New Roman', serif; font-size: 26px; letter-spacing: 7px; font-weight: 400;">
+                                SCNT&nbsp;VAULT
+                            </h1>
+                            <!-- hairline rule -->
+                            <table width="72" cellpadding="0" cellspacing="0" border="0" role="presentation" align="center" style="margin: 20px auto 0 auto;">
+                                <tr>
+                                    <td style="height: 1px; background-color: #d8d3c6;">&nbsp;</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Order Reference -->
+                    <tr>
+                        <td class="mobile-padding" style="padding: 24px 48px 0 48px;">
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="border: 1px solid #e4e0d4; background-color: #f6f3ea;">
+                                <tr>
+                                    <td style="padding: 22px 24px; text-align: center;">
+                                        <p style="margin: 0 0 6px 0; font-size: 11px; color: #9b9588; letter-spacing: 2px; text-transform: uppercase;">
+                                            Order Number
+                                        </p>
+                                        <p style="margin: 0; font-size: 24px; color: #000000; font-family: Georgia, 'Times New Roman', serif; font-weight: 700; letter-spacing: 1px;">
+                                            #{{order_number}}
+                                        </p>
+                                        <p style="margin: 10px 0 0 0; font-size: 12px; color: #7a7568; line-height: 1.6;">
+                                            Placed on {{order_date}}
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Content -->
+                    <tr>
+                        <td class="mobile-padding" style="padding: 36px 48px 44px 48px;">
+
+                            <!-- Customer Information -->
+                            <p style="margin: 0 0 4px 0; font-size: 11px; color: #9b9588; letter-spacing: 2px; text-transform: uppercase;">
+                                Customer
+                            </p>
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+                                <tr>
+                                    <td style="padding: 14px 0; border-bottom: 1px solid #ece8dd;">
+                                        <p style="margin: 0 0 4px 0; font-size: 11px; color: #9b9588; letter-spacing: 1px; text-transform: uppercase;">
+                                            Name
+                                        </p>
+                                        <p style="margin: 0; font-size: 15px; color: #1a1a1a; font-weight: 600;">
+                                            {{customer_name}}
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 14px 0; border-bottom: 1px solid #ece8dd;">
+                                        <p style="margin: 0 0 4px 0; font-size: 11px; color: #9b9588; letter-spacing: 1px; text-transform: uppercase;">
+                                            Email
+                                        </p>
+                                        <p style="margin: 0; font-size: 15px; color: #1a1a1a;">
+                                            <a href="mailto:{{customer_email}}" style="color: #1a1a1a; text-decoration: underline; text-underline-offset: 3px;">
+                                                {{customer_email}}
+                                            </a>
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 14px 0; border-bottom: 1px solid #ece8dd;">
+                                        <p style="margin: 0 0 4px 0; font-size: 11px; color: #9b9588; letter-spacing: 1px; text-transform: uppercase;">
+                                            Phone
+                                        </p>
+                                        <p style="margin: 0; font-size: 15px; color: #1a1a1a; font-weight: 600;">
+                                            {{customer_phone}}
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 14px 0;">
+                                        <p style="margin: 0 0 4px 0; font-size: 11px; color: #9b9588; letter-spacing: 1px; text-transform: uppercase;">
+                                            Shipping Address
+                                        </p>
+                                        <p style="margin: 0; font-size: 14px; color: #1a1a1a; line-height: 1.7; white-space: pre-wrap;">
+                                            {{shipping_address}}
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Items section: visible total qty + item lines -->
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-top: 34px;">
+                                <tr>
+                                    <td style="padding-bottom: 12px; border-bottom: 1px solid #d8d3c6;">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+                                            <tr>
+                                                <td style="font-size: 11px; color: #9b9588; letter-spacing: 2px; text-transform: uppercase;">
+                                                    Items
+                                                </td>
+                                                <td align="right" style="font-size: 12px; color: #6b6659; letter-spacing: 1px; text-transform: uppercase;">
+                                                    Total items: <span style="color: #000000; font-weight: 700;">{{total_qty}}</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 16px 0; border-bottom: 1px solid #ece8dd;">
+                                        <p style="margin: 0; font-size: 14px; color: #2a2824; line-height: 1.9; white-space: pre-wrap;">{{order_items}}</p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Totals -->
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-top: 28px;">
+                                <tr>
+                                    <td style="padding: 10px 0; font-size: 14px; color: #6b6659;">
+                                        Subtotal
+                                    </td>
+                                    <td align="right" style="padding: 10px 0; font-size: 14px; color: #1a1a1a; font-weight: 600;">
+                                        {{subtotal}}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 16px 0 0 0; font-size: 13px; color: #000000; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; border-top: 1px solid #d8d3c6;">
+                                        Total
+                                    </td>
+                                    <td align="right" style="padding: 16px 0 0 0; font-size: 20px; color: #000000; font-weight: 700; border-top: 1px solid #d8d3c6;">
+                                        {{total}}
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Notes -->
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-top: 32px;">
+                                <tr>
+                                    <td style="padding: 14px 0 0 0; border-top: 1px solid #ece8dd;">
+                                        <p style="margin: 0 0 6px 0; font-size: 11px; color: #9b9588; letter-spacing: 2px; text-transform: uppercase;">
+                                            Notes
+                                        </p>
+                                        <p style="margin: 0; font-size: 14px; color: #2a2824; line-height: 1.7; white-space: pre-wrap;">
+                                            {{notes}}
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td class="mobile-padding" style="background-color: #e8e4dc; padding: 32px 24px 28px 24px; text-align: center; border-top: 1px solid #d8d3c6;">
+                            <p style="margin: 0 0 4px 0; font-size: 14px; color: #000000; font-family: Georgia, 'Times New Roman', serif; letter-spacing: 3px;">
+                                SCNT VAULT
+                            </p>
+                            <p style="margin: 0 0 18px 0; font-size: 12px; color: #6b6659;">
+                                Proper, Damolog, Sogod, Cebu
+                            </p>
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+                                <tr>
+                                    <td align="center">
+                                        <table cellpadding="0" cellspacing="0" border="0" role="presentation">
+                                            <tr>
+                                                <td style="padding: 2px 0; font-size: 13px; color: #6b6659;">
+                                                    <a href="mailto:scnt.vaultsup@gmail.com" style="color: #6b6659; text-decoration: none; border-bottom: 1px solid #c9c3b2;">scnt.vaultsup@gmail.com</a>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 2px 0; font-size: 13px; color: #6b6659;">
+                                                    +63 9917185681
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Bottom Bar -->
+                    <tr>
+                        <td style="background-color: #000000; padding: 14px 10px; text-align: center;">
+                            <p style="margin: 0; font-size: 11px; color: #e8e4dc; letter-spacing: 1px;">
+                                &copy; 2026 SCNT Vault. All rights reserved.
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>
