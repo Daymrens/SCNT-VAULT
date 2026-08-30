@@ -1790,6 +1790,7 @@ function initializeCheckoutHandlers() {
     
     saveOrder(orderData)
         .then((orderId) => {// Then send email using EmailJS
+            templateParams.order_number = orderId;
             return emailjs.send(EMAILJS_CONFIG.serviceID, 'template_6g4lf87', templateParams);
         })
         .then(function(response) {
