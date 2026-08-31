@@ -17,11 +17,6 @@
         
         console.log('✅ Firebase services loaded and ready');
         
-        // Track initial page view
-        if (window.trackPageView) {
-            window.trackPageView('home');
-        }
-        
         // Dispatch event to notify that Firebase is ready
         window.dispatchEvent(new Event('firebaseReady'));
         

@@ -5,3 +5,6 @@
 - [x] Stock baseline 99 + purchase orders stop adding stock (#3 WINFORM-SCNT) (2026-08-15)
 - [x] Tester kit on POS (#6) (2026-08-15)
 - [x] Formal SCNT invoice & order numbers (#7) (2026-08-15)
+- [x] Redesign order confirmation email + add total qty & order number (#9) (2026-08-31)
+- [x] Redesign contact form email (#10) (2026-08-31)
+- [x] Email shows formal incrementing order number (#11) (2026-08-31)

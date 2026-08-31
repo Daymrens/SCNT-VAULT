@@ -342,7 +342,7 @@ if (contactForm) {
             from_email: form.querySelector('input[type="email"]').value,
             subject: form.querySelector('input[placeholder="Subject"]').value || 'Contact Form Submission',
             message: form.querySelector('textarea').value,
-            to_email: 'scntvault@support.com' // Your email
+            to_email: 'scnt.vaultsup@gmail.com' // Your email
         };
         
         // Save to Firebase first
@@ -1663,7 +1663,7 @@ function initializeCartButtons() {
                     </div>
                     <h3>Order Pending</h3>
                     <p class="invoice-popup-total">Total: <strong>${totalText}</strong></p>
-                    <p class="invoice-popup-message">Thank you for your order! The seller will send you an official invoice receipt via <strong>Email</strong> or <strong>Messenger</strong>.</p>
+                    <p class="invoice-popup-message">Thank you for your order! The seller will send you an official invoice receipt via <strong>Email</strong> or <a href="https://m.me/scnt.vaultcebu" target="_blank" rel="noopener noreferrer"><strong>Messenger</strong></a>.</p>
                     <p class="invoice-popup-sub">Please wait while we prepare your invoice. You will receive it shortly.</p>
                     <p class="invoice-popup-delivery">Delivery fee varies depending on your location — this will be included in your invoice.</p>
                     <div class="invoice-popup-items">${itemList}</div>
@@ -1778,15 +1778,19 @@ function initializeCheckoutHandlers() {
         total: `₱${totals.total.toFixed(2)}`,
         notes: formData.get('notes') || 'None',
         order_date: new Date().toLocaleString(),
-        to_email: 'scntvault@support.com'
+        to_email: 'scnt.vaultsup@gmail.com'
     };
     
     // Save order to Firebase first (if available)
     const saveOrder = window.createOrder || (async () => {return 'local-' + Date.now();
     });
     
+    let savedOrderId = null;
+    
     saveOrder(orderData)
         .then((orderId) => {// Then send email using EmailJS
+            savedOrderId = orderId;
+            templateParams.order_number = orderId;
             return emailjs.send(EMAILJS_CONFIG.serviceID, 'template_6g4lf87', templateParams);
         })
         .then(function(response) {
@@ -1808,7 +1812,21 @@ function initializeCheckoutHandlers() {
             submitBtn.disabled = false;
             submitBtn.textContent = originalBtnText;
             
-            showNotification('❌ Failed to place order. Please try again or contact us directly.');});
+            if (savedOrderId) {
+                console.error('❌ Invoice email failed:', error && (error.text || error.message || error));
+                
+                showNotification('✅ Order request sent! We\'ll contact you soon to confirm availability and finalize your order.');
+                
+                // Clear cart
+                cart = [];
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartUI();
+                
+                form.reset();
+                document.getElementById('checkoutModal').style.display = 'none';
+            } else {
+                showNotification('❌ Failed to place order. Please try again or contact us directly.');
+            }});
     });
     }}// ===== MOBILE OPTIMIZATIONS =====
 
