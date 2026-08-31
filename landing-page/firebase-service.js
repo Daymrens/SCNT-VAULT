@@ -93,7 +93,7 @@ export async function createOrder(orderData) {
         
         const docRef = await addDoc(ordersRef, order);
         console.log('✅ Order created:', docRef.id);
-        return docRef.id;
+        return orderNumber;
     } catch (error) {
         if (isQuotaError(error)) {
             const localNum = getLocalOrderNumber();
