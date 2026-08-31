@@ -10,10 +10,68 @@ import {
     where,
     orderBy,
     limit,
-    serverTimestamp
+    serverTimestamp,
+    runTransaction
 } from './firebase-config.js';
 
+// ==================== QUOTA RESILIENCE ====================
+
+function isQuotaError(e) {
+    if (!e) return false;
+    const m = (e.message || '').toLowerCase();
+    const c = e.code || '';
+    return c === 'resource-exhausted' ||
+        m.includes('resource_exhausted') ||
+        m.includes('quota exceeded') ||
+        m.includes('too many requests') ||
+        (e.status === 429);
+}
+
+const PENDING_KEY = 'scnt_pending_writes';
+function _getPending() { try { return JSON.parse(localStorage.getItem(PENDING_KEY)) || []; } catch (_) { return []; } }
+function _setPending(l) { try { localStorage.setItem(PENDING_KEY, JSON.stringify(l)); } catch (_) {} }
+function enqueue(kind, payload) { const l = _getPending(); l.push({ kind, payload, ts: Date.now() }); _setPending(l); }
+
+export function flushPendingWrites() {
+    const l = _getPending();
+    if (!l.length) return Promise.resolve();
+    const remaining = [];
+    return Promise.all(l.map(item => {
+        if (Date.now() - (item.ts || 0) > 7*24*3600*1000) return Promise.resolve();
+        const fn = item.kind === 'order' ? createOrder : item.kind === 'contact' ? saveContactMessage : subscribeNewsletter;
+        return Promise.resolve().then(() => fn(item.payload)).then(() => {}).catch(() => { remaining.push(item); });
+    })).then(() => { _setPending(remaining); });
+}
+
 // ==================== ORDERS ====================
+
+/**
+ * Create a new order in Firestore
+ * @param {Object} orderData - Order information
+ * @returns {Promise<string>} Order ID
+ */
+async function mintOrderNumber() {
+    const year = new Date().getFullYear();
+    const counterRef = doc(db, 'counters', 'order-' + year);
+    return runTransaction(db, async (tx) => {
+        const snap = await tx.get(counterRef);
+        const current = snap.exists() ? Number(snap.data().seq || 0) : 0;
+        const next = current + 1;
+        await tx.set(counterRef, { seq: next });
+        return 'SCNT-ORDER-' + year + '-' + String(next).padStart(4, '0');
+    });
+}
+
+export async function getLocalOrderNumber() {
+    try {
+        const d = new Date();
+        const p = n => String(n).padStart(2, '0');
+        const stamp = `${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}`;
+        return 'SCNT-LOCAL-' + stamp + '-' + Math.floor(Math.random()*9000+1000);
+    } catch (_) {
+        return 'SCNT-LOCAL-' + Date.now();
+    }
+}
 
 /**
  * Create a new order in Firestore
@@ -23,9 +81,11 @@ import {
 export async function createOrder(orderData) {
     try {
         const ordersRef = collection(db, 'orders');
-        
+        const orderNumber = await mintOrderNumber();
+
         const order = {
             ...orderData,
+            OrderNumber: orderNumber,
             status: 'pending',
             createdAt: serverTimestamp(),
             updatedAt: serverTimestamp()
@@ -35,6 +95,11 @@ export async function createOrder(orderData) {
         console.log('✅ Order created:', docRef.id);
         return docRef.id;
     } catch (error) {
+        if (isQuotaError(error)) {
+            const localNum = getLocalOrderNumber();
+            enqueue('order', orderData);
+            return localNum;
+        }
         console.error('❌ Error creating order:', error);
         throw error;
     }
@@ -146,6 +211,10 @@ export async function saveContactMessage(contactData) {
         console.log('✅ Contact message saved:', docRef.id);
         return docRef.id;
     } catch (error) {
+        if (isQuotaError(error)) {
+            enqueue('contact', contactData);
+            return 'QUEUED-' + Date.now();
+        }
         console.error('❌ Error saving contact message:', error);
         throw error;
     }
@@ -314,6 +383,10 @@ export async function subscribeNewsletter(email) {
         console.log('✅ Newsletter subscription saved:', docRef.id);
         return docRef.id;
     } catch (error) {
+        if (isQuotaError(error)) {
+            enqueue('newsletter', email);
+            return 'QUEUED-' + Date.now();
+        }
         console.error('❌ Error saving newsletter subscription:', error);
         throw error;
     }
@@ -326,15 +399,7 @@ export async function subscribeNewsletter(email) {
  * @param {string} pageName - Name of the page
  */
 export async function trackPageView(pageName) {
-    try {
-        const pageViewsRef = collection(db, 'analytics', 'pageViews', pageName);
-        await addDoc(pageViewsRef, {
-            timestamp: serverTimestamp(),
-            page: pageName
-        });
-    } catch (error) {
-        console.error('❌ Error tracking page view:', error);
-    }
+    return Promise.resolve();
 }
 
 /**
@@ -342,15 +407,7 @@ export async function trackPageView(pageName) {
  * @param {string} productName - Name of the product
  */
 export async function trackProductView(productName) {
-    try {
-        const productViewsRef = collection(db, 'analytics', 'productViews', productName);
-        await addDoc(productViewsRef, {
-            timestamp: serverTimestamp(),
-            product: productName
-        });
-    } catch (error) {
-        console.error('❌ Error tracking product view:', error);
-    }
+    return Promise.resolve();
 }
 
 // ==================== UTILITY FUNCTIONS ====================
@@ -372,3 +429,8 @@ export async function checkFirestoreConnection() {
 }
 
 console.log('✅ Firebase Firestore service loaded');
+
+flushPendingWrites();
+if (typeof setInterval !== 'undefined') {
+    setInterval(flushPendingWrites, 60000);
+}
