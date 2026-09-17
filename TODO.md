@@ -10,3 +10,4 @@
 
 - [x] F1 foundation - settings, error feedback, write guards (#14) (2026-09-18)
 - [x] F2 dead UI — tabs, sort pills, forgot password (#15) (2026-09-18)
+- [x] F3 revenue logic — loyalty, reseller discount, testers, reorder (#16) (2026-09-18)
