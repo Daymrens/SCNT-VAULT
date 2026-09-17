@@ -4,7 +4,6 @@ import { useAuth } from '../contexts/AuthContext';
 import { useRole } from '../contexts/RoleContext';
 import { useToast } from './shared/Toast';
 import { useData } from '../contexts/DataContext';
-import { ToastProvider } from './shared/Toast';
 import {
   FaHome, FaBoxes, FaTruck, FaUsers, FaHandshake,
   FaShoppingCart, FaFileInvoice, FaFlask, FaChartBar,
@@ -80,7 +79,6 @@ export default function Layout() {
   const pageLabel = pageLabels[location.pathname] || location.pathname.replace('/', '').replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
   return (
-    <ToastProvider>
     <div style={{ display: 'flex', minHeight: '100vh' }}>
 
       {readyOrders.length > 0 && (
@@ -296,6 +294,5 @@ export default function Layout() {
         )}
       </div>
     </div>
-    </ToastProvider>
   );
 }

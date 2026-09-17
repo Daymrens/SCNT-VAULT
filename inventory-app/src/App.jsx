@@ -4,6 +4,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { DataProvider } from './contexts/DataContext';
 import { SettingsProvider } from './contexts/SettingsContext';
 import { RoleProvider } from './contexts/RoleContext';
+import { ToastProvider } from './components/shared/Toast';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Inventory from './pages/Inventory';
@@ -21,11 +22,12 @@ import PrivateRoute from './components/PrivateRoute';
 function App() {
   return (
     <Router>
-      <AuthProvider>
-        <SettingsProvider>
-          <RoleProvider>
-          <DataProvider>
-            <Routes>
+      <ToastProvider>
+        <AuthProvider>
+          <SettingsProvider>
+            <RoleProvider>
+            <DataProvider>
+              <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/" element={<PrivateRoute><Layout /></PrivateRoute>}>
                 <Route index element={<Dashboard />} />
@@ -41,10 +43,11 @@ function App() {
               </Route>
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
-          </DataProvider>
-          </RoleProvider>
-        </SettingsProvider>
-      </AuthProvider>
+            </DataProvider>
+            </RoleProvider>
+          </SettingsProvider>
+        </AuthProvider>
+      </ToastProvider>
     </Router>
   );
 }
