@@ -1,5 +1,6 @@
-﻿import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useData } from '../contexts/DataContext';
+import { useSettings } from '../contexts/SettingsContext';
 import {
   FaPlus, FaEdit, FaTrash, FaUser, FaSort,
   FaPhone, FaEnvelope, FaMapMarkerAlt, FaStar,
@@ -18,10 +19,13 @@ function toDate(v) {
   return v?.toDate ? v.toDate() : new Date(v);
 }
 
-function loyaltyTier(pts) {
-  if (pts >= 200) return { label:'VIP',    color:'#2dd4bf', bg:'rgba(45,212,191,0.12)', icon:<FaCrown /> };
-  if (pts >= 100) return { label:'Gold',   color:'#f59e0b', bg:'rgba(245,158,11,0.12)', icon:<FaMedal /> };
-  if (pts >= 50)  return { label:'Silver', color:'#94a3b8', bg:'rgba(255,255,255,0.06)', icon:<FaAward /> };
+function loyaltyTier(pts, tiers = {}) {
+  const vip = tiers.VIP ?? 200;
+  const gold = tiers.Gold ?? 100;
+  const silver = tiers.Silver ?? 50;
+  if (pts >= vip)    return { label:'VIP',    color:'#2dd4bf', bg:'rgba(45,212,191,0.12)', icon:<FaCrown /> };
+  if (pts >= gold)   return { label:'Gold',   color:'#f59e0b', bg:'rgba(245,158,11,0.12)', icon:<FaMedal /> };
+  if (pts >= silver) return { label:'Silver', color:'#94a3b8', bg:'rgba(255,255,255,0.06)', icon:<FaAward /> };
   return { label:'Member', color:'#3b82f6', bg:'rgba(59,130,246,0.12)', icon:<FaStar /> };
 }
 
@@ -37,6 +41,7 @@ const AVATAR_COLORS = ['#6366f1','#10b981','#f59e0b','#ec4899','#3b82f6','#8b5cf
 
 export default function Customers() {
   const { customers, sales, loading, addCustomer, updateCustomer, deleteCustomer, loadSales } = useData();
+  const { settings } = useSettings();
   const { showToast } = useToast();
   const [search, setSearch]             = useState('');
   const [sortBy, setSortBy]             = useState('name');
@@ -292,7 +297,7 @@ export default function Customers() {
           {filtered.map(c => {
             const color  = avatarColor(c.Name);
             const stats  = customerStats[c.id] || { count:0, totalSpent:0, lastOrder:null, topProducts:[] };
-            const tier   = loyaltyTier(c.LoyaltyPoints || 0);
+            const tier   = loyaltyTier(c.LoyaltyPoints, settings.loyaltyTiers || 0);
             const isTop  = topCustomer?.id === c.id && stats.totalSpent > 0;
             return (
               <div key={c.id} style={{ background:'#1f232b', borderRadius:12, overflow:'hidden',
@@ -457,7 +462,7 @@ export default function Customers() {
                 {filtered.map(c => {
                   const color = avatarColor(c.Name);
                   const stats = customerStats[c.id] || { count:0, totalSpent:0, lastOrder:null };
-                  const tier  = loyaltyTier(c.LoyaltyPoints || 0);
+                  const tier  = loyaltyTier(c.LoyaltyPoints, settings.loyaltyTiers || 0);
                   const isTop = topCustomer?.id === c.id && stats.totalSpent > 0;
                   return (
                     <tr key={c.id}
@@ -653,10 +658,10 @@ export default function Customers() {
       <ConfirmDialog
         isOpen={!!confirmDelete}
         onClose={() => setConfirmDelete(null)}
-        onConfirm={() => { handleDelete(confirmDelete.id); setConfirmDelete(null); }}
+        onConfirm={() => handleDelete(confirmDelete.id)}
         title="Delete Customer?"
         message={<span>Are you sure you want to delete <strong style={{color:'#2dd4bf'}}>{confirmDelete?.Name}</strong>? This cannot be undone.</span>}
-        confirmLabel="Yes, Delete"
+        confirmLabel="Yes, Delete" loading={saving}
       />
     </div>
   );

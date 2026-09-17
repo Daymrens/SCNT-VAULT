@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useData } from '../contexts/DataContext';
 import {
   FaPlus, FaEdit, FaTrash, FaHandshake, FaSort,
@@ -631,10 +631,10 @@ export default function Resellers() {
       <ConfirmDialog
         isOpen={!!confirmDelete}
         onClose={() => setConfirmDelete(null)}
-        onConfirm={() => { handleDelete(confirmDelete.id); setConfirmDelete(null); }}
+        onConfirm={() => handleDelete(confirmDelete.id)}
         title="Delete Reseller?"
         message={<span>Are you sure you want to delete <strong style={{color:'#2dd4bf'}}>{confirmDelete?.Name}</strong>? This cannot be undone.</span>}
-        confirmLabel="Yes, Delete"
+        confirmLabel="Yes, Delete" loading={saving}
       />
     </div>
   );

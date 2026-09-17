@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { FaPlus, FaEdit, FaTrash, FaFlask, FaThLarge, FaList, FaSearch } from 'react-icons/fa';
 import ConfirmDialog from '../components/shared/ConfirmDialog';
@@ -426,10 +426,10 @@ export default function Testers() {
       <ConfirmDialog
         isOpen={!!confirmDelete}
         onClose={() => setConfirmDelete(null)}
-        onConfirm={() => { handleDelete(confirmDelete.id); setConfirmDelete(null); }}
+        onConfirm={() => handleDelete(confirmDelete.id)}
         title="Delete Tester?"
         message={<span>Remove <strong>{confirmDelete?.Name}</strong> from your tester collection?</span>}
-        confirmLabel="Yes, Delete"
+        confirmLabel="Yes, Delete" loading={saving}
       />
     </div>
   );

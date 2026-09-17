@@ -1,7 +1,21 @@
-import React, { useState, useCallback, useEffect, createContext, useContext } from 'react';
+import React, { useState, useCallback, useEffect, createContext, useContext, useRef } from 'react';
 import { FaCheck, FaExclamationTriangle, FaInfoCircle, FaTimes } from 'react-icons/fa';
 
 const ToastContext = createContext(null);
+
+/* ── Module-level toast bus for non-component callers (DataContext etc.) ── */
+let _busListeners = [];
+export const toastBus = {
+  /** Call from anywhere (non-React) to fire a toast */
+  fire(message, type = 'error') {
+    _busListeners.forEach(fn => fn(message, type));
+  },
+  /** Used by ToastProvider to subscribe */
+  subscribe(fn) {
+    _busListeners.push(fn);
+    return () => { _busListeners = _busListeners.filter(l => l !== fn); };
+  },
+};
 
 export function useToast() {
   const ctx = useContext(ToastContext);
@@ -20,6 +34,13 @@ export function ToastProvider({ children }) {
   const removeToast = useCallback((id) => {
     setToasts(prev => prev.filter(t => t.id !== id));
   }, []);
+
+  // Subscribe the module-level bus to our showToast
+  useEffect(() => {
+    return toastBus.subscribe((message, type) => {
+      showToast(message, type);
+    });
+  }, [showToast]);
 
   return (
     <ToastContext.Provider value={{ showToast }}>
