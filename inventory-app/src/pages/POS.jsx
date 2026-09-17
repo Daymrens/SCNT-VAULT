@@ -10,9 +10,10 @@ import { generateInvoice } from '../utils/invoice';
 import { nextInvoiceNumber } from '../utils/numbers';
 import { db } from '../firebase/firebase';
 
-const lbl = { fontSize:12, fontWeight:600, color:'#6b7280', textTransform:'uppercase', letterSpacing:'0.5px' };
-const inp = { padding:'9px 12px', border:'1.5px solid #e5e7eb', borderRadius:8, fontSize:13,
-  outline:'none', width:'100%', boxSizing:'border-box', fontFamily:'inherit', transition:'border-color 0.2s', background:'white' };
+const lbl = { fontSize:12, fontWeight:600, color:'var(--text-muted)', textTransform:'uppercase', letterSpacing:'0.5px' };
+const inp = { padding:'9px 12px', border:'1.5px solid var(--border)', borderRadius:8, fontSize:13,
+  outline:'none', width:'100%', boxSizing:'border-box', fontFamily:'inherit', transition:'border-color 0.2s',
+  background:'var(--bg-input)', color:'var(--text-primary)' };
 
 export default function POS() {
   const { products, customers, resellers, addSale, updateProduct, updateOrder, getOrder, loading } = useData();
@@ -275,7 +276,7 @@ export default function POS() {
       {/* Header */}
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:24 }}>
         <div>
-          <p style={{ color:'#666666', fontSize:13 }}>
+          <p style={{ color:'var(--text-muted)', fontSize:13 }}>
             {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''} available
           </p>
         </div>
@@ -285,18 +286,18 @@ export default function POS() {
       <div className="pos-layout" style={{ display:'grid', gridTemplateColumns:'1fr 400px', gap:20, alignItems:'start' }}>
 
         {/* Products Panel */}
-        <div style={{ background:'white', borderRadius:20, padding:20,
-          display:'flex', flexDirection:'column', boxShadow:'0 2px 16px rgba(0,0,0,0.06)', overflow:'hidden',
+        <div style={{ background:'var(--bg-card)', borderRadius:20, padding:20,
+          display:'flex', flexDirection:'column', boxShadow:'0 2px 16px rgba(0,0,0,0.2)', overflow:'hidden',
           height:'calc(100vh - 160px)' }}>
           {/* Search */}
-          <div style={{ background:'#f9fafb', borderRadius:12, padding:'10px 16px',
-            display:'flex', alignItems:'center', gap:10, marginBottom:16, border:'1.5px solid #f3f4f6' }}>
-            <FaSearch style={{ color:'#9ca3af', fontSize:14 }} />
+          <div style={{ background:'var(--bg-secondary)', borderRadius:12, padding:'10px 16px',
+            display:'flex', alignItems:'center', gap:10, marginBottom:16, border:'1.5px solid var(--border)' }}>
+            <FaSearch style={{ color:'var(--text-muted)', fontSize:14 }} />
             <input ref={searchRef} value={searchTerm} onChange={e => { setSearchTerm(e.target.value); setSelectedIdx(0); }}
               placeholder="Search products... ( / )"
-              style={{ flex:1, border:'none', outline:'none', fontSize:13, color:'#374151', background:'transparent' }} />
+              style={{ flex:1, border:'none', outline:'none', fontSize:13, color:'var(--text-primary)', background:'transparent' }} />
             {searchTerm && (
-              <button onClick={() => setSearchTerm('')} style={{ background:'none', border:'none', cursor:'pointer', color:'#9ca3af' }}>
+              <button onClick={() => setSearchTerm('')} style={{ background:'none', border:'none', cursor:'pointer', color:'var(--text-muted)' }}>
                 <FaTimes />
               </button>
             )}
@@ -309,25 +310,25 @@ export default function POS() {
             {/* Tester Kit card — always visible, pinned at top */}
             <div onClick={openTesterKitDialog}
               style={{ minHeight:260, borderRadius:16, cursor:'pointer', position:'relative',
-                background:'linear-gradient(135deg,#f0abfc,#6366f1)',
+                background:'linear-gradient(135deg,#2dd4bf,#06b6d4)',
                 display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
-                gap:10, padding:16, boxShadow:'0 2px 12px rgba(0,0,0,0.07)',
+                gap:10, padding:16, boxShadow:'0 2px 12px rgba(0,0,0,0.2)',
                 transition:'transform 0.15s, box-shadow 0.15s' }}
-              onMouseEnter={e => { e.currentTarget.style.transform='translateY(-3px)'; e.currentTarget.style.boxShadow='0 6px 20px rgba(99,102,241,0.25)'; }}
-              onMouseLeave={e => { e.currentTarget.style.transform='none'; e.currentTarget.style.boxShadow='0 2px 12px rgba(0,0,0,0.07)'; }}>
-              <FaFlask style={{ fontSize:30, color:'white' }} />
-              <div style={{ fontSize:15, fontWeight:800, color:'white' }}>Tester Kit</div>
-              <div style={{ fontSize:12, color:'rgba(255,255,255,0.85)' }}>Package — set pcs &amp; price</div>
+              onMouseEnter={e => { e.currentTarget.style.transform='translateY(-3px)'; e.currentTarget.style.boxShadow='0 6px 20px rgba(45,212,191,0.25)'; }}
+              onMouseLeave={e => { e.currentTarget.style.transform='none'; e.currentTarget.style.boxShadow='0 2px 12px rgba(0,0,0,0.2)'; }}>
+              <FaFlask style={{ fontSize:30, color:'#0f172a' }} />
+              <div style={{ fontSize:15, fontWeight:800, color:'#0f172a' }}>Tester Kit</div>
+              <div style={{ fontSize:12, color:'rgba(15,23,42,0.7)' }}>Package — set pcs &amp; price</div>
               {kitInCart && (
                 <div style={{ position:'absolute', top:8, right:8, padding:'3px 10px', borderRadius:20,
-                  background:'white', color:'#7c3aed', fontSize:11, fontWeight:800,
-                  boxShadow:'0 2px 8px rgba(0,0,0,0.15)' }}>
+                  background:'#0f172a', color:'#2dd4bf', fontSize:11, fontWeight:800,
+                  boxShadow:'0 2px 8px rgba(0,0,0,0.3)' }}>
                   {kitInCart.pcs} pcs
                 </div>
               )}
             </div>
             {filteredProducts.length === 0 ? (
-              <div style={{ textAlign:'center', padding:'40px 20px', color:'#9ca3af', gridColumn:'1/-1', fontSize:14 }}>
+              <div style={{ textAlign:'center', padding:'40px 20px', color:'var(--text-muted)', gridColumn:'1/-1', fontSize:14 }}>
                 {searchTerm ? 'No products match your search' : 'No products in stock'}
               </div>
             ) : filteredProducts.map((product, idx) => {
@@ -340,46 +341,46 @@ export default function POS() {
                 : 'https://scnt-vault.web.app/images/scnt_default.png';
               return (
                 <div key={product.id} onClick={() => addToCart(product)}
-                  style={{ background:'white', borderRadius:16, overflow:'hidden', cursor:'pointer',
-                    boxShadow: inCart ? '0 0 0 2.5px #6366f1, 0 4px 20px rgba(99,102,241,0.15)'
-                      : idx === selectedIdx ? '0 0 0 2px #94a3b8, 0 4px 16px rgba(0,0,0,0.08)'
-                      : '0 2px 12px rgba(0,0,0,0.07)',
-                    border: inCart ? '2px solid #6366f1'
-                      : idx === selectedIdx ? '2px solid #94a3b8'
-                      : '1px solid #f3f4f6',
+                  style={{ background:'var(--bg-card)', borderRadius:16, overflow:'hidden', cursor:'pointer',
+                    boxShadow: inCart ? '0 0 0 2.5px var(--accent), 0 4px 20px rgba(45,212,191,0.15)'
+                      : idx === selectedIdx ? '0 0 0 2px var(--text-muted), 0 4px 16px rgba(0,0,0,0.15)'
+                      : '0 2px 12px rgba(0,0,0,0.15)',
+                    border: inCart ? '2px solid var(--accent)'
+                      : idx === selectedIdx ? '2px solid var(--text-muted)'
+                      : '1px solid var(--border)',
                     transition:'transform 0.15s, box-shadow 0.15s', position:'relative' }}
                   onMouseEnter={e => { e.currentTarget.style.transform='translateY(-3px)'; }}
                   onMouseLeave={e => { e.currentTarget.style.transform='none'; }}
                 >
-                  <div style={{ background:'#f8f7ff', height:170, display:'flex', alignItems:'center', justifyContent:'center', padding:10 }}>
+                  <div style={{ background:'var(--bg-secondary)', height:170, display:'flex', alignItems:'center', justifyContent:'center', padding:10 }}>
                     <img src={imgSrc} alt={product.Name}
                       style={{ maxHeight:'100%', maxWidth:'100%', objectFit:'contain' }}
                       onError={e => { e.target.src='https://scnt-vault.web.app/images/scnt_default.png'; }} />
                   </div>
                   <div style={{ padding:'12px 14px 14px' }}>
-                    <div style={{ fontSize:14, fontWeight:700, color:'#1f2937', lineHeight:1.3, marginBottom:2,
+                    <div style={{ fontSize:14, fontWeight:700, color:'var(--text-primary)', lineHeight:1.3, marginBottom:2,
                       overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
                       {product.Name}
                     </div>
-                    <div style={{ fontSize:12, color:'#9ca3af', marginBottom:6,
+                    <div style={{ fontSize:12, color:'var(--text-muted)', marginBottom:6,
                       overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
                       {product.Brand}
                     </div>
                     <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-                      <span style={{ fontSize:15, fontWeight:800, color:'#6366f1' }}>
+                      <span style={{ fontSize:15, fontWeight:800, color:'var(--accent)' }}>
                         ₱{price.toLocaleString()}
                       </span>
                       <span style={{ fontSize:11, fontWeight:600, padding:'2px 7px', borderRadius:10,
-                        background:'#f3f4f6', color: (product.Stock || 0) > 10 ? '#6b7280' : '#ef4444' }}>
+                        background:'rgba(255,255,255,0.06)', color: (product.Stock || 0) > 10 ? 'var(--text-muted)' : 'var(--danger)' }}>
                         {product.Stock || 0} left
                       </span>
                     </div>
                   </div>
                   {inCart && (
                     <div style={{ position:'absolute', top:8, right:8, width:22, height:22,
-                      borderRadius:'50%', background:'#6366f1', color:'white',
+                      borderRadius:'50%', background:'var(--accent)', color:'#0f172a',
                       fontSize:11, fontWeight:800, display:'flex', alignItems:'center', justifyContent:'center',
-                      boxShadow:'0 2px 8px rgba(99,102,241,0.4)' }}>
+                      boxShadow:'0 2px 8px rgba(45,212,191,0.4)' }}>
                       {inCart.quantity}
                     </div>
                   )}
@@ -390,26 +391,26 @@ export default function POS() {
         </div>
 
         {/* Cart Panel */}
-        <div style={{ background:'white', borderRadius:20, padding:20,
-          display:'flex', flexDirection:'column', boxShadow:'0 2px 16px rgba(0,0,0,0.06)', overflow:'hidden',
+        <div style={{ background:'var(--bg-card)', borderRadius:20, padding:20,
+          display:'flex', flexDirection:'column', boxShadow:'0 2px 16px rgba(0,0,0,0.2)', overflow:'hidden',
           height:'calc(100vh - 160px)' }}>
 
           {/* Cart header */}
           <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16 }}>
-            <div style={{ display:'flex', alignItems:'center', gap:8, fontWeight:700, fontSize:16, color:'#1f2937' }}>
-              <FaShoppingCart style={{ color:'#6366f1', fontSize:15 }} /> Cart
+            <div style={{ display:'flex', alignItems:'center', gap:8, fontWeight:700, fontSize:16, color:'var(--text-primary)' }}>
+              <FaShoppingCart style={{ color:'var(--accent)', fontSize:15 }} /> Cart
               {cart.length > 0 && (
-                <span style={{ fontSize:11, padding:'2px 8px', borderRadius:20, background:'#ede9fe', color:'#6d28d9', fontWeight:700 }}>
+                <span style={{ fontSize:11, padding:'2px 8px', borderRadius:20, background:'var(--accent-dim)', color:'var(--accent)', fontWeight:700 }}>
                   {cart.reduce((s, i) => s + i.quantity, 0)} items
                 </span>
               )}
             </div>
             {cart.length > 0 && (
               <button onClick={() => setClearConfirm(true)}
-                style={{ padding:'6px 12px', background:'#f3f4f6', color:'#6b7280', border:'none',
+                style={{ padding:'6px 12px', background:'rgba(255,255,255,0.06)', color:'var(--text-muted)', border:'none',
                   borderRadius:8, fontSize:11, fontWeight:600, cursor:'pointer', transition:'background 0.15s' }}
-                onMouseEnter={e => e.currentTarget.style.background='#e5e7eb'}
-                onMouseLeave={e => e.currentTarget.style.background='#f3f4f6'}>
+                onMouseEnter={e => e.currentTarget.style.background='rgba(255,255,255,0.1)'}
+                onMouseLeave={e => e.currentTarget.style.background='rgba(255,255,255,0.06)'}>
                 Clear
               </button>
             )}
@@ -439,7 +440,7 @@ export default function POS() {
             </div>
           ) : (
             <div style={{ marginBottom:12 }}>
-              <label style={lbl}>Reseller <span style={{ color:'#ef4444' }}>*</span></label>
+              <label style={lbl}>Reseller <span style={{ color:'var(--danger)' }}>*</span></label>
               <select value={selectedReseller?.id || ''}
                 onChange={e => setSelectedReseller(resellers.find(r => r.id === e.target.value) || null)}
                 style={inp}>
@@ -450,12 +451,12 @@ export default function POS() {
           )}
 
           {activeOrder && (
-            <div style={{ background:'#f5f3ff', border:'1px solid #ddd6fe', borderRadius:10,
-              padding:'10px 12px', marginBottom:12, fontSize:12, color:'#6d28d9' }}>
+            <div style={{ background:'var(--accent-dim)', border:'1px solid var(--border)', borderRadius:10,
+              padding:'10px 12px', marginBottom:12, fontSize:12, color:'var(--accent)' }}>
               <div style={{ fontWeight:700, marginBottom:2 }}>
                 Order {activeOrder.OrderNumber || activeOrder.id.slice(0, 8)} loaded
               </div>
-              <div style={{ color:'#7c3aed', lineHeight:1.5, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+              <div style={{ color:'var(--text-secondary)', lineHeight:1.5, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
                 {activeOrder.customerName}{activeOrder.phone ? ` — ${activeOrder.phone}` : ''}
               </div>
             </div>
@@ -464,24 +465,24 @@ export default function POS() {
           {/* Cart items */}
           <div style={{ flex:1, overflowY:'auto', margin:'8px 0' }}>
             {cart.length === 0 ? (
-              <div style={{ textAlign:'center', padding:'40px 20px', color:'#d1d5db', fontSize:14 }}>
+              <div style={{ textAlign:'center', padding:'40px 20px', color:'var(--text-muted)', fontSize:14 }}>
                 Cart is empty
               </div>
             ) : cart.map(item => (
-              <div key={item.id} style={{ background:'#f9fafb', borderRadius:12, padding:'12px 14px', marginBottom:8,
-                border:'1px solid #f3f4f6' }}>
+              <div key={item.id} style={{ background:'var(--bg-secondary)', borderRadius:12, padding:'12px 14px', marginBottom:8,
+                border:'1px solid var(--border)' }}>
                 <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:8 }}>
                   <div style={{ minWidth:0, flex:1 }}>
-                    <div style={{ fontSize:13, fontWeight:700, color:'#1f2937', marginBottom:2,
+                    <div style={{ fontSize:13, fontWeight:700, color:'var(--text-primary)', marginBottom:2,
                       overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{item.name}</div>
                     {item.isTesterKit
-                      ? <div style={{ fontSize:11, fontWeight:700, color:'#a855f7' }}>Package</div>
-                      : <div style={{ fontSize:11, color:'#9ca3af' }}>{item.brand}</div>}
+                      ? <div style={{ fontSize:11, fontWeight:700, color:'var(--accent)' }}>Package</div>
+                      : <div style={{ fontSize:11, color:'var(--text-muted)' }}>{item.brand}</div>}
                   </div>
                   <button onClick={() => removeFromCart(item.id)}
-                    style={{ background:'none', border:'none', cursor:'pointer', color:'#d1d5db', padding:4, flexShrink:0 }}
-                    onMouseEnter={e => e.currentTarget.style.color='#ef4444'}
-                    onMouseLeave={e => e.currentTarget.style.color='#d1d5db'}>
+                    style={{ background:'none', border:'none', cursor:'pointer', color:'var(--text-muted)', padding:4, flexShrink:0 }}
+                    onMouseEnter={e => e.currentTarget.style.color='var(--danger)'}
+                    onMouseLeave={e => e.currentTarget.style.color='var(--text-muted)'}>
                     <FaTrash style={{ fontSize:11 }} />
                   </button>
                 </div>
@@ -489,27 +490,28 @@ export default function POS() {
                   {item.isTesterKit ? (
                     <div style={{ display:'flex', alignItems:'center', gap:6 }}>
                       <span style={{ fontSize:11, fontWeight:700, padding:'4px 12px', borderRadius:12,
-                        background:'#f0abfc', color:'#6d28d9' }}>
+                        background:'var(--accent-dim)', color:'var(--accent)' }}>
                         {item.pcs} pcs
                       </span>
                     </div>
                   ) : (
                   <div style={{ display:'flex', alignItems:'center', gap:6 }}>
                     <button onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                      style={{ width:28, height:28, border:'1.5px solid #e5e7eb', background:'white',
-                        borderRadius:6, cursor:'pointer', fontWeight:700, fontSize:13, color:'#374151',
+                      style={{ width:28, height:28, border:'1.5px solid var(--border)', background:'var(--bg-card)',
+                        borderRadius:6, cursor:'pointer', fontWeight:700, fontSize:13, color:'var(--text-primary)',
                         display:'flex', alignItems:'center', justifyContent:'center' }}>-</button>
                     <input type="number" value={item.quantity} min={1} max={item.maxStock}
                       onChange={e => updateQuantity(item.id, parseInt(e.target.value) || 1)}
-                      style={{ width:44, textAlign:'center', padding:4, border:'1.5px solid #e5e7eb',
-                        borderRadius:6, fontSize:13, fontWeight:700, outline:'none' }} />
+                      style={{ width:44, textAlign:'center', padding:4, border:'1.5px solid var(--border)',
+                        borderRadius:6, fontSize:13, fontWeight:700, outline:'none',
+                        background:'var(--bg-input)', color:'var(--text-primary)' }} />
                     <button onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                      style={{ width:28, height:28, border:'1.5px solid #e5e7eb', background:'white',
-                        borderRadius:6, cursor:'pointer', fontWeight:700, fontSize:13, color:'#374151',
+                      style={{ width:28, height:28, border:'1.5px solid var(--border)', background:'var(--bg-card)',
+                        borderRadius:6, cursor:'pointer', fontWeight:700, fontSize:13, color:'var(--text-primary)',
                         display:'flex', alignItems:'center', justifyContent:'center' }}>+</button>
                   </div>
                   )}
-                  <span style={{ fontSize:14, fontWeight:800, color:'#1f2937' }}>
+                  <span style={{ fontSize:14, fontWeight:800, color:'var(--text-primary)' }}>
                     ₱{(item.price * item.quantity).toLocaleString()}
                   </span>
                 </div>
@@ -519,7 +521,7 @@ export default function POS() {
 
           {/* Payment details */}
           {cart.length > 0 && (
-            <div style={{ borderTop:'1px solid #f3f4f6', paddingTop:14, display:'flex', flexDirection:'column', gap:12 }}>
+            <div style={{ borderTop:'1px solid var(--border)', paddingTop:14, display:'flex', flexDirection:'column', gap:12 }}>
               <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
                 <div>
                   <label style={lbl}>Discount (%)</label>
@@ -547,29 +549,29 @@ export default function POS() {
               </div>
 
               {/* Totals */}
-              <div style={{ borderTop:'2px solid #f3f4f6', paddingTop:12 }}>
-                <div style={{ display:'flex', justifyContent:'space-between', fontSize:13, color:'#6b7280', marginBottom:6 }}>
+              <div style={{ borderTop:'2px solid var(--border)', paddingTop:12 }}>
+                <div style={{ display:'flex', justifyContent:'space-between', fontSize:13, color:'var(--text-muted)', marginBottom:6 }}>
                   <span>Subtotal</span><span style={{ fontWeight:600 }}>₱{subtotal.toLocaleString()}</span>
                 </div>
-                <div style={{ display:'flex', justifyContent:'space-between', fontSize:13, color:'#ef4444', marginBottom:8 }}>
+                <div style={{ display:'flex', justifyContent:'space-between', fontSize:13, color:'var(--danger)', marginBottom:8 }}>
                   <span>Discount ({discount}%)</span><span style={{ fontWeight:600 }}>-₱{discountAmount.toLocaleString()}</span>
                 </div>
                 {shippingFeeAmount > 0 && (
-                  <div style={{ display:'flex', justifyContent:'space-between', fontSize:13, color:'#6b7280', marginBottom:8 }}>
+                  <div style={{ display:'flex', justifyContent:'space-between', fontSize:13, color:'var(--text-muted)', marginBottom:8 }}>
                     <span>Shipping Fee</span><span style={{ fontWeight:600 }}>₱{shippingFeeAmount.toLocaleString()}</span>
                   </div>
                 )}
-                <div style={{ display:'flex', justifyContent:'space-between', fontSize:20, fontWeight:800, color:'#1f2937',
-                  paddingTop:10, borderTop:'1px solid #f3f4f6' }}>
-                  <span>Total</span><span style={{ color:'#6366f1' }}>₱{total.toLocaleString()}</span>
+                <div style={{ display:'flex', justifyContent:'space-between', fontSize:20, fontWeight:800, color:'var(--text-primary)',
+                  paddingTop:10, borderTop:'1px solid var(--border)' }}>
+                  <span>Total</span><span style={{ color:'var(--accent)' }}>₱{total.toLocaleString()}</span>
                 </div>
               </div>
 
               {/* Checkout button */}
               <button ref={checkoutRef} onClick={handleCheckout} disabled={processing}
                 style={{ width:'100%', padding:'12px 0', marginTop:8,
-                  background: processing ? '#e5e7eb' : 'linear-gradient(135deg,#6366f1,#8b5cf6)',
-                  color: processing ? '#9ca3af' : 'white',
+                  background: processing ? 'rgba(255,255,255,0.08)' : 'var(--accent)',
+                  color: processing ? 'var(--text-muted)' : '#0f172a',
                   border:'none', borderRadius:10, fontSize:14, fontWeight:700,
                   cursor: processing ? 'not-allowed' : 'pointer',
                   display:'flex', alignItems:'center', justifyContent:'center', gap:8 }}>
@@ -588,7 +590,7 @@ export default function POS() {
         icon={<FaFlask style={{ fontSize: 16 }} />} maxWidth={400}
         gradient="linear-gradient(135deg,#f0abfc,#6366f1)">
         <Modal.Body>
-          <p style={{ fontSize:13, color:'#6b7280', margin:'0 0 16px', lineHeight:1.5 }}>
+          <p style={{ fontSize:13, color:'var(--text-muted)', margin:'0 0 16px', lineHeight:1.5 }}>
             Set the piece count and fixed price for the tester package. Price is the flat line total — pcs is display only.
           </p>
           <label style={lbl}>Pcs</label>
@@ -609,19 +611,19 @@ export default function POS() {
         icon={<FaCheckCircle style={{ fontSize: 16 }} />} maxWidth={420}
         gradient="linear-gradient(135deg,#10b981,#059669)">
         <div style={{ padding: 28, textAlign: 'center' }}>
-          <div style={{ width: 56, height: 56, borderRadius: '50%', background: '#d1fae5',
+          <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'var(--success-bg)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-            <FaCheck style={{ fontSize: 24, color: '#059669' }} />
+            <FaCheck style={{ fontSize: 24, color: 'var(--accent)' }} />
           </div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: '#1f2937', marginBottom: 6 }}>Sale Completed!</div>
-          <div style={{ fontSize: 13, color: '#6b7280', marginBottom: 24, lineHeight: 1.5 }}>
+          <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}>Sale Completed!</div>
+          <div style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 24, lineHeight: 1.5 }}>
             Invoice #{successSale?.InvoiceNumber || successSale?.id} is ready. Download the PDF invoice below.
           </div>
           <div style={{ display: 'flex', gap: 10, justifyContent: 'center', alignItems: 'center' }}>
             <CancelButton onClick={() => setSuccessSale(null)} label="Done" />
             <button onClick={downloadInvoice} disabled={downloading}
-              style={{ padding: '9px 20px', background: downloading ? '#e5e7eb' : 'linear-gradient(135deg,#10b981,#059669)',
-                color: downloading ? '#9ca3af' : 'white', border: 'none', borderRadius: 8,
+              style={{ padding: '9px 20px', background: downloading ? 'rgba(255,255,255,0.08)' : 'var(--accent)',
+                color: downloading ? 'var(--text-muted)' : '#0f172a', border: 'none', borderRadius: 8,
                 fontSize: 13, fontWeight: 700, cursor: downloading ? 'not-allowed' : 'pointer',
                 display: 'flex', alignItems: 'center', gap: 8 }}>
               <FaFilePdf style={{ fontSize: 13 }} />
