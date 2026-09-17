@@ -6,7 +6,7 @@ import {
   FaPlus, FaEdit, FaTrash, FaExclamationTriangle, FaBoxes,
   FaHashtag, FaTh, FaList, FaSort, FaHome, FaShoppingCart,
   FaCashRegister, FaChartBar, FaArrowUp, FaArrowDown, FaSearch, FaUser,
-  FaFlask
+  FaFlask, FaFileImport, FaUpload
 } from 'react-icons/fa';
 import StatCard from '../components/shared/StatCard';
 import SearchBar from '../components/shared/SearchBar';
@@ -15,6 +15,7 @@ import ConfirmDialog from '../components/shared/ConfirmDialog';
 import StatusBadge from '../components/shared/StatusBadge';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Link } from 'react-router-dom';
+import Papa from 'papaparse';
 
 const BASE_FORM = {
   Name:'', Brand:'', Category:'', Size:'85ml', Gender:'Unisex',
@@ -80,7 +81,7 @@ const ChartTooltip = ({ active, payload, label }) =>
   ) : null;
 
 export default function Inventory() {
-  const { products, suppliers, sales, loading, addProduct, updateProduct, deleteProduct, addTester, loadSales } = useData();
+  const { products, suppliers, sales, loading, addProduct, updateProduct, deleteProduct, addTester, loadSales, addBulkProducts, applyStockAdjustments } = useData();
   const { settings } = useSettings();
   const { showToast } = useToast();
   const [search, setSearch]           = useState('');
@@ -96,6 +97,12 @@ export default function Inventory() {
   const [viewBottles, setViewBottles]     = useState(null);
   const [searchFocused, setSearchFocused] = useState(false);
   const searchRef = useRef(null);
+  const [importType, setImportType] = useState(null); // 'products' or 'adjustments'
+  const [importData, setImportData] = useState([]);
+  const [importErrors, setImportErrors] = useState([]);
+  const [importing, setImporting] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
+  const fileInputRef = useRef(null);
 
   useEffect(() => { loadSales(); }, [loadSales]);
 
@@ -221,6 +228,93 @@ export default function Inventory() {
     finally { setConfirmDelete(null); }
   };
 
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: (results) => {
+        const { data, errors } = results;
+        if (errors.length > 0) {
+          showToast('CSV parsing errors: ' + errors.map(e => e.message).join(', '), 'error');
+          return;
+        }
+        
+        const validatedData = [];
+        const validationErrors = [];
+        
+        data.forEach((row, index) => {
+          if (importType === 'products') {
+            if (!row.Name || !row.SKU) {
+              validationErrors.push({ row: index + 1, error: 'Name and SKU are required' });
+              return;
+            }
+            validatedData.push({
+              Name: row.Name,
+              Brand: row.Brand || '',
+              Category: row.Category || '',
+              CostPrice: parseFloat(row.CostPrice) || 0,
+              SellingPrice: parseFloat(row.SellingPrice) || 0,
+              ResellerPrice: parseFloat(row.ResellerPrice) || 0,
+              Price60ml: parseFloat(row.Price60ml) || 0,
+              Cost60ml: parseFloat(row.Cost60ml) || 0,
+              Stock: parseInt(row.StockQty) || 0,
+              BatchNumber: row.BatchNumber || '',
+              ExpirationDate: row.ExpiryDate || '',
+            });
+          } else {
+            if (!row.SKU || !row.Adjustment) {
+              validationErrors.push({ row: index + 1, error: 'SKU and Adjustment are required' });
+              return;
+            }
+            validatedData.push({
+              SKU: row.SKU,
+              Adjustment: parseInt(row.Adjustment) || 0,
+              Notes: row.Notes || '',
+            });
+          }
+        });
+        
+        setImportData(validatedData);
+        setImportErrors(validationErrors);
+        setShowImportModal(true);
+      },
+      error: (error) => {
+        showToast('Error reading CSV file: ' + error.message, 'error');
+      }
+    });
+    
+    e.target.value = '';
+  };
+
+  const handleImportConfirm = async () => {
+    setImporting(true);
+    try {
+      let result;
+      if (importType === 'products') {
+        result = await addBulkProducts(importData);
+      } else {
+        result = await applyStockAdjustments(importData);
+      }
+      
+      if (result.errors.length > 0) {
+        showToast(`Imported ${result.success} items, ${result.errors.length} errors`, 'info');
+      } else {
+        showToast(`Successfully imported ${result.success} items`, 'success');
+      }
+      
+      setShowImportModal(false);
+      setImportData([]);
+      setImportErrors([]);
+    } catch (error) {
+      showToast('Import failed: ' + error.message, 'error');
+    } finally {
+      setImporting(false);
+    }
+  };
+
   const handleAutoCreateTester = async (product) => {
     try {
       await addTester({
@@ -301,6 +395,25 @@ export default function Inventory() {
             onMouseEnter={e => e.currentTarget.style.background='rgba(45,212,191,0.85)'}
             onMouseLeave={e => e.currentTarget.style.background='var(--accent)'}>
             <FaPlus /> Add Product
+          </button>
+          <input type="file" ref={fileInputRef} accept=".csv" onChange={handleFileSelect} style={{ display:'none' }} />
+          <button onClick={() => { setImportType('products'); fileInputRef.current?.click(); }}
+            style={{ display:'flex', alignItems:'center', gap:8, padding:'10px 18px', 
+              background:'rgba(255,255,255,0.06)', color:'var(--text-secondary)', 
+              border:'1px solid var(--border)', borderRadius:10, fontSize:13, fontWeight:700, 
+              cursor:'pointer', transition:'all 0.2s' }}
+            onMouseEnter={e => e.currentTarget.style.background='rgba(255,255,255,0.12)'}
+            onMouseLeave={e => e.currentTarget.style.background='rgba(255,255,255,0.06)'}>
+            <FaFileImport /> Import CSV
+          </button>
+          <button onClick={() => { setImportType('adjustments'); fileInputRef.current?.click(); }}
+            style={{ display:'flex', alignItems:'center', gap:8, padding:'10px 18px', 
+              background:'rgba(255,255,255,0.06)', color:'var(--text-secondary)', 
+              border:'1px solid var(--border)', borderRadius:10, fontSize:13, fontWeight:700, 
+              cursor:'pointer', transition:'all 0.2s' }}
+            onMouseEnter={e => e.currentTarget.style.background='rgba(255,255,255,0.12)'}
+            onMouseLeave={e => e.currentTarget.style.background='rgba(255,255,255,0.06)'}>
+            <FaUpload /> Import Adjustments
           </button>
         </div>
       </div>
@@ -762,6 +875,92 @@ export default function Inventory() {
         message={<span>Are you sure you want to delete <strong>{confirmDelete?.Name}</strong>? This cannot be undone.</span>}
         confirmLabel="Yes, Delete" loading={saving}
       />
+
+      {/* Import Modal */}
+      <Modal isOpen={showImportModal} onClose={() => setShowImportModal(false)}
+        title={importType === 'products' ? 'Import Products' : 'Import Stock Adjustments'}
+        icon={<FaFileImport />}
+        maxWidth={600}>
+        <Modal.Body>
+          <div style={{ marginBottom:16 }}>
+            <p style={{ fontSize:13, color:'var(--text-muted)', marginBottom:8 }}>
+              {importType === 'products' 
+                ? `Ready to import ${importData.length} products. ${importErrors.length} validation errors found.`
+                : `Ready to apply ${importData.length} stock adjustments. ${importErrors.length} validation errors found.`
+              }
+            </p>
+            {importErrors.length > 0 && (
+              <div style={{ background:'var(--danger-bg)', border:'1px solid var(--danger)', 
+                borderRadius:8, padding:12, marginBottom:16 }}>
+                <div style={{ fontSize:12, fontWeight:700, color:'var(--danger)', marginBottom:8 }}>
+                  Validation Errors:
+                </div>
+                {importErrors.map((err, i) => (
+                  <div key={i} style={{ fontSize:11, color:'var(--danger)', marginBottom:4 }}>
+                    Row {err.row}: {err.error}
+                  </div>
+                ))}
+              </div>
+            )}
+            <div style={{ maxHeight:300, overflowY:'auto' }}>
+              <table style={{ width:'100%', borderCollapse:'collapse', fontSize:12 }}>
+                <thead>
+                  <tr>
+                    {importType === 'products' ? (
+                      <>
+                        <th style={{ padding:'8px', textAlign:'left', borderBottom:'1px solid var(--border)' }}>Name</th>
+                        <th style={{ padding:'8px', textAlign:'left', borderBottom:'1px solid var(--border)' }}>SKU</th>
+                        <th style={{ padding:'8px', textAlign:'right', borderBottom:'1px solid var(--border)' }}>Price</th>
+                        <th style={{ padding:'8px', textAlign:'right', borderBottom:'1px solid var(--border)' }}>Stock</th>
+                      </>
+                    ) : (
+                      <>
+                        <th style={{ padding:'8px', textAlign:'left', borderBottom:'1px solid var(--border)' }}>SKU</th>
+                        <th style={{ padding:'8px', textAlign:'right', borderBottom:'1px solid var(--border)' }}>Adjustment</th>
+                        <th style={{ padding:'8px', textAlign:'left', borderBottom:'1px solid var(--border)' }}>Notes</th>
+                      </>
+                    )}
+                  </tr>
+                </thead>
+                <tbody>
+                  {importData.slice(0, 10).map((row, i) => (
+                    <tr key={i}>
+                      {importType === 'products' ? (
+                        <>
+                          <td style={{ padding:'8px', borderBottom:'1px solid var(--border)' }}>{row.Name}</td>
+                          <td style={{ padding:'8px', borderBottom:'1px solid var(--border)' }}>{row.BatchNumber}</td>
+                          <td style={{ padding:'8px', textAlign:'right', borderBottom:'1px solid var(--border)' }}>₱{row.SellingPrice}</td>
+                          <td style={{ padding:'8px', textAlign:'right', borderBottom:'1px solid var(--border)' }}>{row.Stock}</td>
+                        </>
+                      ) : (
+                        <>
+                          <td style={{ padding:'8px', borderBottom:'1px solid var(--border)' }}>{row.SKU}</td>
+                          <td style={{ padding:'8px', textAlign:'right', borderBottom:'1px solid var(--border)', 
+                            color: row.Adjustment > 0 ? 'var(--accent)' : 'var(--danger)' }}>
+                            {row.Adjustment > 0 ? '+' : ''}{row.Adjustment}
+                          </td>
+                          <td style={{ padding:'8px', borderBottom:'1px solid var(--border)' }}>{row.Notes}</td>
+                        </>
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {importData.length > 10 && (
+                <div style={{ textAlign:'center', padding:8, color:'var(--text-muted)', fontSize:12 }}>
+                  ...and {importData.length - 10} more rows
+                </div>
+              )}
+            </div>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <CancelButton onClick={() => setShowImportModal(false)} />
+          <PrimaryButton loading={importing} onClick={handleImportConfirm}>
+            {importType === 'products' ? 'Import Products' : 'Apply Adjustments'}
+          </PrimaryButton>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }
