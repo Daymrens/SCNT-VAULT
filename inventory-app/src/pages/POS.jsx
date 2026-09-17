@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useData } from '../contexts/DataContext';
 import { useSettings } from '../contexts/SettingsContext';
 import { FaTrash, FaShoppingCart, FaSearch, FaTimes, FaCheck, FaCheckCircle, FaFilePdf, FaFlask } from 'react-icons/fa';
-import { Timestamp } from 'firebase/firestore';
+import { Timestamp, doc, updateDoc, increment } from 'firebase/firestore';
 import ConfirmDialog from '../components/shared/ConfirmDialog';
 import Modal, { CancelButton, PrimaryButton } from '../components/shared/Modal';
 import { useToast } from '../components/shared/Toast';
@@ -143,12 +143,17 @@ export default function POS() {
         item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
       ));
     } else {
-      const price = customerType === 'reseller'
+      const basePrice = customerType === 'reseller'
         ? (product.ResellerPrice || product.SellingPrice || product.Price || 0)
         : (product.SellingPrice || product.Price || 0);
+      const discountRate = customerType === 'reseller' && selectedReseller
+        ? (Number(selectedReseller.DiscountRate) || 0) / 100
+        : 0;
+      const price = basePrice * (1 - discountRate);
       setCart([...cart, {
         id: product.id, name: product.Name, brand: product.Brand,
-        price, quantity: 1, maxStock: product.Stock || 0
+        price, quantity: 1, maxStock: product.Stock || 0,
+        basePrice, discountRate
       }]);
     }
   };
@@ -251,6 +256,33 @@ export default function POS() {
         }
         setActiveOrder(null);
       }
+
+      // F3.1: Loyalty points auto-earn
+      if (customerType === 'retail' && selectedCustomer) {
+        try {
+          const earnRate = Number(settings.loyaltyEarnRate) || 1;
+          const pointsEarned = Math.floor(total / earnRate);
+          if (pointsEarned > 0) {
+            const customerRef = doc(db, 'customers', selectedCustomer.id);
+            const newTotal = (Number(selectedCustomer.LoyaltyPoints) || 0) + pointsEarned;
+            await updateDoc(customerRef, { LoyaltyPoints: increment(pointsEarned) });
+            const tiers = settings.loyaltyTiers || {};
+            const vip = tiers.VIP ?? 200;
+            const gold = tiers.Gold ?? 100;
+            const silver = tiers.Silver ?? 50;
+            let tierLabel = 'Member';
+            if (newTotal >= vip) tierLabel = 'VIP';
+            else if (newTotal >= gold) tierLabel = 'Gold';
+            else if (newTotal >= silver) tierLabel = 'Silver';
+            // Update tier in Firestore
+            await updateDoc(customerRef, { LoyaltyTier: tierLabel });
+            showToast(`Customer earned ${pointsEarned} points (${newTotal} total — ${tierLabel})`, 'success');
+          }
+        } catch (error) {
+          console.error('Error updating loyalty points:', error);
+        }
+      }
+
       setSuccessSale(invoiceRecord);
       showToast('Sale completed!', 'success');
       setCart([]); setSelectedCustomer(null); setSelectedReseller(null);
@@ -449,7 +481,21 @@ export default function POS() {
             <div style={{ marginBottom:12 }}>
               <label style={lbl}>Reseller <span style={{ color:'var(--danger)' }}>*</span></label>
               <select value={selectedReseller?.id || ''}
-                onChange={e => setSelectedReseller(resellers.find(r => r.id === e.target.value) || null)}
+                onChange={e => {
+                  const newReseller = resellers.find(r => r.id === e.target.value) || null;
+                  setSelectedReseller(newReseller);
+                  if (cart.length > 0 && customerType === 'reseller') {
+                    setCart(cart.map(item => {
+                      if (item.isTesterKit) return item;
+                      const prod = products.find(p => p.id === item.id);
+                      if (!prod) return item;
+                      const newDiscountRate = newReseller ? (Number(newReseller.DiscountRate) || 0) / 100 : 0;
+                      const basePrice = prod.ResellerPrice || prod.SellingPrice || prod.Price || 0;
+                      const price = basePrice * (1 - newDiscountRate);
+                      return { ...item, price, basePrice, discountRate: newDiscountRate };
+                    }));
+                  }
+                }}
                 style={inp}>
                 <option value="">Select Reseller</option>
                 {resellers.filter(r => r.IsActive !== false).map(r => <option key={r.id} value={r.id}>{r.Name}</option>)}
@@ -559,6 +605,17 @@ export default function POS() {
                 <div style={{ display:'flex', justifyContent:'space-between', fontSize:13, color:'var(--text-muted)', marginBottom:6 }}>
                   <span>Subtotal</span><span style={{ fontWeight:600 }}>₱{subtotal.toLocaleString()}</span>
                 </div>
+                {customerType === 'reseller' && selectedReseller && Number(selectedReseller.DiscountRate) > 0 && (
+                  <div style={{ display:'flex', justifyContent:'space-between', fontSize:13, color:'var(--accent)', marginBottom:6 }}>
+                    <span>Reseller discount: -{selectedReseller.DiscountRate}%</span>
+                    <span style={{ fontWeight:600 }}>
+                      -₱{cart.reduce((s, item) => {
+                        if (item.isTesterKit || !item.discountRate) return s;
+                        return s + (item.basePrice * item.discountRate * item.quantity);
+                      }, 0).toLocaleString()}
+                    </span>
+                  </div>
+                )}
                 <div style={{ display:'flex', justifyContent:'space-between', fontSize:13, color:'var(--danger)', marginBottom:8 }}>
                   <span>Discount ({discount}%)</span><span style={{ fontWeight:600 }}>-₱{discountAmount.toLocaleString()}</span>
                 </div>
