@@ -55,7 +55,7 @@ export function SettingsProvider({ children }) {
         setLoaded(true);
       },
       (error) => {
-        console.error('Error loading settings:', error);
+        console.warn('Could not load settings from Firestore, using defaults:', error.message);
         setLoaded(true);
       }
     );
