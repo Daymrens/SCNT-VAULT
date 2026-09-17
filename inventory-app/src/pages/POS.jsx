@@ -1,6 +1,7 @@
-﻿import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useData } from '../contexts/DataContext';
+import { useSettings } from '../contexts/SettingsContext';
 import { FaTrash, FaShoppingCart, FaSearch, FaTimes, FaCheck, FaCheckCircle, FaFilePdf, FaFlask } from 'react-icons/fa';
 import { Timestamp } from 'firebase/firestore';
 import ConfirmDialog from '../components/shared/ConfirmDialog';
@@ -17,6 +18,7 @@ const inp = { padding:'9px 12px', border:'1.5px solid var(--border)', borderRadi
 
 export default function POS() {
   const { products, customers, resellers, addSale, adjustStock, updateOrder, getOrder, loading } = useData();
+  const { settings } = useSettings();
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState('');
   const [cart, setCart] = useState([]);
@@ -34,7 +36,7 @@ export default function POS() {
   const [downloading, setDownloading] = useState(false);
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [testerKitOpen, setTesterKitOpen] = useState(false);
-  const [testerKitPcs, setTesterKitPcs] = useState(100);
+  const [testerKitPcs, setTesterKitPcs] = useState(settings.testerKit.pcs);
   const [testerKitPrice, setTesterKitPrice] = useState('');
   const searchRef = useRef(null);
   const checkoutRef = useRef(null);
@@ -537,8 +539,7 @@ export default function POS() {
                 <div>
                   <label style={lbl}>Payment</label>
                   <select value={paymentMethod} onChange={e => setPaymentMethod(e.target.value)} style={inp}>
-                    <option>Cash</option><option>GCash</option><option>PayMaya</option>
-                    <option>Credit Card</option><option>Debit Card</option><option>Bank Transfer</option>
+                    {settings.paymentMethods.map(m => <option key={m}>{m}</option>)}
                   </select>
                 </div>
               </div>

@@ -1,5 +1,7 @@
-﻿import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useData } from '../contexts/DataContext';
+import { useSettings } from '../contexts/SettingsContext';
+import { useToast } from '../components/shared/Toast';
 import {
   FaPlus, FaEdit, FaTrash, FaExclamationTriangle, FaBoxes,
   FaHashtag, FaTh, FaList, FaSort, FaHome, FaShoppingCart,
@@ -13,12 +15,10 @@ import StatusBadge from '../components/shared/StatusBadge';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Link } from 'react-router-dom';
 
-const EMPTY_FORM = {
+const BASE_FORM = {
   Name:'', Brand:'', Category:'', Size:'85ml', Gender:'Unisex',
   BatchNumber:'', ExpirationDate:'', SupplierId:'',
-  CostPrice:145, SellingPrice:220, ResellerPrice:195,
-  Price60ml:175, Cost60ml:125,
-  Stock:0, LowStockThreshold:10, Image:''
+  Stock:0, Image:''
 };
 
 const SORT_OPTIONS = [
@@ -80,6 +80,8 @@ const ChartTooltip = ({ active, payload, label }) =>
 
 export default function Inventory() {
   const { products, suppliers, sales, loading, addProduct, updateProduct, deleteProduct, loadSales } = useData();
+  const { settings } = useSettings();
+  const { showToast } = useToast();
   const [search, setSearch]           = useState('');
   const [sortBy, setSortBy]           = useState('name-asc');
   const [categoryFilter, setCategoryFilter] = useState('All');
@@ -176,7 +178,16 @@ export default function Inventory() {
     return Object.entries(catMap).map(([name, value]) => ({ name, value }));
   }, [products]);
 
-  const openAdd  = () => { setEditing(null); setForm(EMPTY_FORM); setShowModal(true); };
+  const getEmptyForm = () => ({
+    ...BASE_FORM,
+    CostPrice: settings.defaultPrices.CostPrice,
+    SellingPrice: settings.defaultPrices.SellingPrice,
+    ResellerPrice: settings.defaultPrices.ResellerPrice,
+    Price60ml: settings.defaultPrices.Price60ml,
+    Cost60ml: settings.defaultPrices.Cost60ml,
+    LowStockThreshold: settings.lowStockThreshold,
+  });
+  const openAdd  = () => { setEditing(null); setForm(getEmptyForm()); setShowModal(true); };
   const openEdit = (p) => {
     setEditing(p);
     setForm({
@@ -199,7 +210,7 @@ export default function Inventory() {
       if (editing) await updateProduct(editing.id, form);
       else await addProduct(form);
       closeModal();
-    } catch (err) { console.error(err); }
+    } catch (err) { console.error(err); showToast('Failed to save product', 'error'); }
     finally { setSaving(false); }
   };
 
@@ -715,10 +726,10 @@ export default function Inventory() {
       <ConfirmDialog
         isOpen={!!confirmDelete}
         onClose={() => setConfirmDelete(null)}
-        onConfirm={() => { handleDelete(confirmDelete.id); setConfirmDelete(null); }}
+        onConfirm={() => handleDelete(confirmDelete.id)}
         title="Delete Product?"
         message={<span>Are you sure you want to delete <strong>{confirmDelete?.Name}</strong>? This cannot be undone.</span>}
-        confirmLabel="Yes, Delete"
+        confirmLabel="Yes, Delete" loading={saving}
       />
     </div>
   );

@@ -7,3 +7,5 @@
 - [x] Formal SCNT invoice & order numbers (#7) (2026-08-15)
 - [x] SCNT Vault web app dark redesign — Option A (#12) (2026-09-17)
 - [x] Data integrity fixes — atomic stock, offline deltas, flush retry (#13) (2026-09-18)
+
+- [x] F1 foundation - settings, error feedback, write guards (#14) (2026-09-18)

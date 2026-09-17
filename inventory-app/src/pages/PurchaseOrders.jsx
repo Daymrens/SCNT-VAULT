@@ -1,5 +1,6 @@
-﻿import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
+import { useSettings } from '../contexts/SettingsContext';
 import {
   FaPlus, FaTimes, FaFileInvoice,
   FaEdit, FaTrash, FaBoxes, FaTruck, FaCheckCircle,
@@ -301,7 +302,7 @@ export default function PurchaseOrders() {
           if (!pid) return;
           if (!batches[key].itemMap[pid]) batches[key].itemMap[pid] = {
             PerfumeId:pid, ProductName:item.PerfumeName||item.ProductName||productMap[pid]?.Name||pid,
-            OrderedQuantity:0, ReceivedQuantity:0, UnitCost:productMap[pid]?.CostPrice||145,
+            OrderedQuantity:0, ReceivedQuantity:0, UnitCost:productMap[pid]?.CostPrice||settings.defaultPrices.CostPrice,
           };
           batches[key].itemMap[pid].OrderedQuantity  += (item.Quantity||1);
           batches[key].itemMap[pid].ReceivedQuantity += (item.Quantity||1);
@@ -843,10 +844,10 @@ export default function PurchaseOrders() {
       <ConfirmDialog
         isOpen={!!confirmDelete}
         onClose={() => setConfirmDelete(null)}
-        onConfirm={() => { handleDelete(confirmDelete.id); setConfirmDelete(null); }}
+        onConfirm={() => handleDelete(confirmDelete.id)}
         title="Delete Purchase Order?"
         message="This order will be permanently removed. This cannot be undone."
-        confirmLabel="Yes, Delete"
+        confirmLabel="Yes, Delete" loading={saving}
       />
     </div>
   );
