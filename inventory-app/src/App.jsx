@@ -5,6 +5,7 @@ import { DataProvider } from './contexts/DataContext';
 import { SettingsProvider } from './contexts/SettingsContext';
 import { RoleProvider } from './contexts/RoleContext';
 import { ToastProvider } from './components/shared/Toast';
+import useSessionTimeout from './hooks/useSessionTimeout';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Inventory from './pages/Inventory';
@@ -19,15 +20,10 @@ const POS = lazy(() => import('./pages/POS'));
 import Layout from './components/Layout';
 import PrivateRoute from './components/PrivateRoute';
 
-function App() {
+function AppInner() {
+  useSessionTimeout();
   return (
-    <Router>
-      <ToastProvider>
-        <AuthProvider>
-          <SettingsProvider>
-            <RoleProvider>
-            <DataProvider>
-              <Routes>
+            <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/" element={<PrivateRoute><Layout /></PrivateRoute>}>
                 <Route index element={<Dashboard />} />
@@ -43,6 +39,18 @@ function App() {
               </Route>
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <ToastProvider>
+        <AuthProvider>
+          <SettingsProvider>
+            <RoleProvider>
+            <DataProvider>
+              <AppInner />
             </DataProvider>
             </RoleProvider>
           </SettingsProvider>

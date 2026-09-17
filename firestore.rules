@@ -123,5 +123,12 @@ service cloud.firestore {
       allow create: if isAuth();
       allow update, delete: if isManager();
     }
+
+    // Audit Log Collection
+    match /auditLog/{logId} {
+      allow read: if isOwner();
+      allow create: if isAuth();
+      allow update, delete: if false;
+    }
   }
 }

@@ -223,6 +223,20 @@ export default function Login() {
     }
   }
 
+  async function getPasswordStrength(pw) {
+    let score = 0;
+    if (pw.length >= 8) score++;
+    if (pw.length >= 12) score++;
+    if (/[A-Z]/.test(pw)) score++;
+    if (/[0-9]/.test(pw)) score++;
+    if (/[^A-Za-z0-9]/.test(pw)) score++;
+    if (score <= 1) return { label: 'Weak', color: '#ef4444', width: '20%' };
+    if (score <= 2) return { label: 'Fair', color: '#f59e0b', width: '40%' };
+    if (score <= 3) return { label: 'Good', color: '#3b82f6', width: '60%' };
+    if (score <= 4) return { label: 'Strong', color: '#10b981', width: '80%' };
+    return { label: 'Very Strong', color: '#059669', width: '100%' };
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
     try {
@@ -231,7 +245,11 @@ export default function Login() {
       await signIn(email, password);
       navigate('/');
     } catch (err) {
-      setError('Failed to sign in. Check your credentials.');
+      if (err.message && err.message.includes('Too many')) {
+        setError(err.message);
+      } else {
+        setError('Failed to sign in. Check your credentials.');
+      }
     } finally {
       setLoading(false);
     }
@@ -326,6 +344,16 @@ export default function Login() {
                     onBlur={(e) => { e.target.style.borderColor = 'var(--border)'; }}
                   />
                 </div>
+                {password.length > 0 && (
+                  <div style={{ marginTop: 8 }}>
+                    <div style={{ height: 4, background: 'var(--border)', borderRadius: 2, overflow: 'hidden' }}>
+                      <div style={{ height: '100%', width: getPasswordStrength(password).width, background: getPasswordStrength(password).color, borderRadius: 2, transition: 'width 0.3s, background 0.3s' }} />
+                    </div>
+                    <div style={{ fontSize: 11, color: getPasswordStrength(password).color, marginTop: 4, fontWeight: 600 }}>
+                      {getPasswordStrength(password).label}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div style={{ textAlign:'right', marginTop:-12, marginBottom:20 }}>
