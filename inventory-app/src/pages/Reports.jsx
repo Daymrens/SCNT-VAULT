@@ -5,6 +5,7 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
 import { FaDownload, FaCalendarAlt, FaChartBar, FaBoxes, FaUsers, FaHandshake } from 'react-icons/fa';
+import { toCsv } from '../utils/csv';
 
 const COLORS = ['#2dd4bf','#64748b','#3b82f6','#f59e0b','#a78bfa','#ec4899','#ef4444','#14b8a6'];
 
@@ -30,7 +31,7 @@ export default function Reports() {
 
   const filteredSales = useMemo(() =>
     sales.filter(s => toDate(s.SaleDate) >= cutoff),
-    [sales, rangeDays]
+    [sales, rangeDays, cutoff]
   );
 
   // -- Core metrics ----------------------------------------------
@@ -96,7 +97,7 @@ export default function Reports() {
   const poSpend = useMemo(() =>
     purchaseOrders.filter(po => toDate(po.OrderDate) >= cutoff)
       .reduce((s, po) => s + (po.TotalAmount || 0), 0),
-    [purchaseOrders, rangeDays]
+    [purchaseOrders, rangeDays, cutoff]
   );
 
   // -- Customer map ----------------------------------------------
@@ -119,7 +120,7 @@ export default function Reports() {
       const items = (s.Items||[]).reduce((t,i) => t+(i.Quantity||0), 0);
       rows.push([d, who, items, s.Total||0, s.PaymentMethod||'Cash']);
     });
-    const csv = rows.map(r => r.join(',')).join('\n');
+    const csv = toCsv(rows);
     const blob = new Blob([csv], { type:'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a'); a.href = url;

@@ -12,6 +12,15 @@ const hoist = vi.hoisted(() => {
 // ---- Mock firebase/firestore: writes reject with a Spark quota error ----
 vi.mock('firebase/firestore', () => {
   const throwQuota = () => { throw hoist.quotaError; };
+  class MockTimestamp {
+    constructor(seconds, nanoseconds) {
+      this.seconds = seconds || 0;
+      this.nanoseconds = nanoseconds || 0;
+    }
+    toDate() { return new Date(this.seconds * 1000); }
+    static now() { return new MockTimestamp(Math.floor(Date.now() / 1000), 0); }
+    static fromDate(d) { return new MockTimestamp(Math.floor((d ? d.getTime() : Date.now()) / 1000), 0); }
+  }
   return {
     doc: vi.fn(),
     collection: vi.fn(),
@@ -19,7 +28,7 @@ vi.mock('firebase/firestore', () => {
     where: vi.fn(),
     onSnapshot: vi.fn(() => () => {}),
     getDoc: vi.fn(),
-    Timestamp: { now: () => ({ toDate: () => new Date() }), fromDate: () => ({}) },
+    Timestamp: MockTimestamp,
     runTransaction: vi.fn(throwQuota),
     addDoc: vi.fn(throwQuota),
     updateDoc: vi.fn(throwQuota),
@@ -66,6 +75,7 @@ vi.mock('../assets/DejaVuSans-Bold.ttf', () => ({ default: '/fake-bold.ttf' }));
 
 // ---- Real source under test ----
 import { isQuotaError, getLocalNumber, getLocalSaleId, enqueuePendingWrite, readPendingWrites, removePendingWrite } from './offlineQueue';
+import { Timestamp } from 'firebase/firestore';
 import { nextInvoiceNumber } from './numbers';
 import { DataProvider, useData } from '../contexts/DataContext';
 import { generateInvoice } from './invoice';
@@ -101,6 +111,17 @@ describe('offlineQueue — quota + local fallback primitives', () => {
     const ts = pending.find((w) => w.type === 'sale').ts;
     removePendingWrite(ts);
     expect(readPendingWrites().some((w) => w.ts === ts)).toBe(false);
+  });
+
+  it('round-trips Firestore Timestamps through the queue as Timestamps', () => {
+    const sale = { SaleDate: new Timestamp(1234567890, 123000000), Items: [{ Qty: 2 }] };
+    enqueuePendingWrite('sale', sale);
+    const pending = readPendingWrites();
+    const data = pending.find((w) => w.type === 'sale').data;
+    expect(typeof data.SaleDate.toDate).toBe('function');
+    expect(data.SaleDate.seconds).toBe(1234567890);
+    expect(data.SaleDate.nanoseconds).toBe(123000000);
+    expect(data.Items[0].Qty).toBe(2);
   });
 });
 

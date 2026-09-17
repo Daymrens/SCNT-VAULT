@@ -182,6 +182,7 @@ export default function POS() {
   const handleCheckout = async () => {
     if (cart.length === 0) { showToast('Cart is empty'); return; }
     if (customerType === 'reseller' && !selectedReseller) { showToast('Please select a reseller'); return; }
+    if (!saleDate || isNaN(new Date(saleDate).getTime())) { showToast('Enter a valid sale date'); return; }
     setProcessing(true);
     try {
       const invoiceNumber = await nextInvoiceNumber(db);

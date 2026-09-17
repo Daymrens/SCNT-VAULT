@@ -10,6 +10,7 @@ import ConfirmDialog from '../components/shared/ConfirmDialog';
 import SearchBar from '../components/shared/SearchBar';
 import Modal from '../components/shared/Modal';
 import { useToast } from '../components/shared/Toast';
+import { toCsv } from '../utils/csv';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
 const TABS = [
@@ -53,7 +54,7 @@ export default function Sales() {
   const [viewSale, setViewSale] = useState(null);
   const [confirmDel, setConfirmDel] = useState(null);
   const searchRef = useRef(null);
-  const toast = useToast();
+  const { showToast } = useToast();
 
   useEffect(() => { loadSales(); }, [loadSales]);
 
@@ -142,6 +143,7 @@ export default function Sales() {
 
   const handleDelete = async () => {
     try {
+      await deleteSale(confirmDel.id);
       const productMap = Object.fromEntries(products.map(p => [p.id, p]));
       for (const item of (confirmDel.Items||[])) {
         const pid = String(item.PerfumeId ?? item.ProductId ?? '');
@@ -150,11 +152,10 @@ export default function Sales() {
         const prod = productMap[pid];
         if (prod) await updateProduct(pid, { Stock: (prod.Stock||0)+qty });
       }
-      await deleteSale(confirmDel.id);
-      toast.success('Sale deleted — stock restored');
+      showToast('Sale deleted — stock restored', 'success');
     } catch (e) {
       console.error(e);
-      toast.error('Failed to delete sale');
+      showToast('Failed to delete sale', 'error');
     }
     finally { setConfirmDel(null); }
   };
@@ -166,7 +167,7 @@ export default function Sales() {
       rows.push([d, customerName(s), saleType(s), s.Items?.length||0,
         s.Subtotal||0, s.Discount||0, s.Total||0, s.PaymentMethod||'Cash']);
     });
-    const csv = rows.map(r => r.join(',')).join('\n');
+    const csv = toCsv(rows);
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([csv], { type:'text/csv' }));
     a.download = `sales-${new Date().toISOString().split('T')[0]}.csv`;

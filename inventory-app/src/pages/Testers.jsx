@@ -65,7 +65,7 @@ export default function Testers() {
   const [filterStatus, setFilterStatus]   = useState('all');
   const [viewMode, setViewMode]   = useState('grid');
   const searchRef = useRef(null);
-  const toast = useToast();
+  const { showToast } = useToast();
 
   useEffect(() => {
     const handler = (e) => {
@@ -110,15 +110,15 @@ export default function Testers() {
     try {
       if (editing) {
         await updateTester(editing.id, form);
-        toast.success('Tester updated');
+        showToast('Tester updated', 'success');
       } else {
         await addTester(form);
-        toast.success('Tester added');
+        showToast('Tester added', 'success');
       }
       closeModal();
     } catch (e) {
       console.error(e);
-      toast.error('Failed to save tester');
+      showToast('Failed to save tester', 'error');
     }
     finally { setSaving(false); }
   };
@@ -126,10 +126,10 @@ export default function Testers() {
   const handleDelete = async (id) => {
     try {
       await deleteTester(id);
-      toast.success('Tester deleted');
+      showToast('Tester deleted', 'success');
     } catch (e) {
       console.error(e);
-      toast.error('Failed to delete tester');
+      showToast('Failed to delete tester', 'error');
     }
     finally { setConfirmDelete(null); }
   };

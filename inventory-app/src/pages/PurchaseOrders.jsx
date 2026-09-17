@@ -52,8 +52,9 @@ export default function PurchaseOrders() {
   const [genResult, setGenResult]       = useState(null);
   const [stockingId, setStockingId]     = useState(null);
   const [releasingId, setReleasingId]   = useState(null);
+  const [processingAction, setProcessingAction] = useState(null);
   const searchRef = useRef(null);
-  const toast = useToast();
+  const { showToast } = useToast();
 
   useEffect(() => { loadPurchaseOrders(); loadSales(); }, [loadPurchaseOrders, loadSales]);
 
@@ -213,21 +214,23 @@ export default function PurchaseOrders() {
       const payload = { ...form, TotalAmount: itemTotal(form.Items) };
       if (editing) {
         await updatePurchaseOrder(editing.id, payload);
-        toast.success('Changes saved');
+        showToast('Changes saved', 'success');
       } else {
         await addPurchaseOrder(payload);
-        toast.success('Purchase order created');
+        showToast('Purchase order created', 'success');
       }
       closeModal();
     } catch(e) {
       console.error(e);
-      toast.error('Failed to save purchase order');
+      showToast('Failed to save purchase order', 'error');
     }
     finally { setSaving(false); }
   };
 
   const handleAddStock = async (po) => {
+    if (processingAction) return;
     setStockingId(po.id);
+    setProcessingAction(po.id);
     try {
       for (const item of (po.Items||[])) {
         const pid = String(item.PerfumeId); const qty = Number(item.OrderedQuantity)||0;
@@ -236,17 +239,19 @@ export default function PurchaseOrders() {
         if (prod) await updateProduct(prod.id, { Stock:(prod.Stock||0)+qty });
       }
       await updatePurchaseOrder(po.id, { ...po, Status:'Completed', _stockAdded:true });
-      toast.success('Stock added to inventory');
+      showToast('Stock added to inventory', 'success');
     } catch(e) {
       console.error(e);
-      toast.error('Failed to add stock');
+      showToast('Failed to add stock', 'error');
     }
-    finally { setStockingId(null); }
+    finally { setProcessingAction(null); setStockingId(null); }
   };
 
   const handleReleaseStock = async (po) => {
     if (hasAnySold(po)) return;
+    if (processingAction) return;
     setReleasingId(po.id);
+    setProcessingAction(po.id);
     try {
       for (const item of (po.Items||[])) {
         const pid = String(item.PerfumeId); const qty = Number(item.OrderedQuantity)||0;
@@ -255,21 +260,21 @@ export default function PurchaseOrders() {
         if (prod) await updateProduct(prod.id, { Stock:Math.max(0,(prod.Stock||0)-qty) });
       }
       await updatePurchaseOrder(po.id, { ...po, Status:'Received', _stockAdded:false });
-      toast.success('Stock released');
+      showToast('Stock released', 'success');
     } catch(e) {
       console.error(e);
-      toast.error('Failed to release stock');
+      showToast('Failed to release stock', 'error');
     }
-    finally { setReleasingId(null); }
+    finally { setProcessingAction(null); setReleasingId(null); }
   };
 
   const handleDelete = async (id) => {
     try {
       await deletePurchaseOrder(id);
-      toast.success('Purchase order deleted');
+      showToast('Purchase order deleted', 'success');
     } catch(e) {
       console.error(e);
-      toast.error('Failed to delete');
+      showToast('Failed to delete', 'error');
     }
     finally { setConfirmDelete(null); }
   };
@@ -318,9 +323,9 @@ export default function PurchaseOrders() {
         created++;
       }
       setGenResult({ created, skipped });
-      if (created > 0) toast.success(`Generated ${created} order${created!==1?'s':''}`);
-      else toast.info('No new orders to generate');
-    } catch(e) { console.error(e); setGenResult({ error:e.message }); toast.error(e.message); }
+      if (created > 0) showToast(`Generated ${created} order${created!==1?'s':''}`, 'success');
+      else showToast('No new orders to generate', 'info');
+    } catch(e) { console.error(e); setGenResult({ error:e.message }); showToast(e.message, 'error'); }
     finally { setGenerating(false); }
   };
 
@@ -592,7 +597,7 @@ export default function PurchaseOrders() {
                               <FaCheckCircle style={{ fontSize:9 }} /> Historical
                             </span>
                           ) : !po._stockAdded && po.Status!=='Cancelled' ? (
-                            <button onClick={() => handleAddStock(po)} disabled={stockingId===po.id}
+                            <button onClick={() => handleAddStock(po)} disabled={processingAction !== null}
                               title="Add stock to inventory"
                               style={{ padding:'5px 10px', background:stockingId===po.id?'var(--bg-secondary)':'var(--accent-dim)',
                                 color:stockingId===po.id?'var(--text-muted)':'var(--accent)', border:'none', borderRadius:6,
@@ -604,7 +609,7 @@ export default function PurchaseOrders() {
                           ) : po._stockAdded ? (() => {
                             const anySold = hasAnySold(po);
                             const busy    = releasingId===po.id;
-                            const dis     = anySold||busy;
+                            const dis     = anySold||busy||processingAction !== null;
                             return (
                               <button onClick={() => !dis && handleReleaseStock(po)} disabled={dis}
                                 title={anySold?`${totalSold}/${itemCount} sold — cannot release`:'Reverse stock'}

@@ -1,3 +1,5 @@
+import { Timestamp } from 'firebase/firestore';
+
 const PENDING_KEY = 'scnt_pending_writes';
 
 export function isQuotaError(err) {
@@ -20,17 +22,52 @@ export function getLocalSaleId() {
   return `SCNT-LOCAL-SALE-${Date.now()}-${rand4()}`;
 }
 
+const isTimestampLike = (v) =>
+  !!v &&
+  (typeof v.toDate === 'function' ||
+    (typeof v === 'object' && typeof v.seconds === 'number' && typeof v.nanoseconds === 'number'));
+
+function encodeValue(v) {
+  if (isTimestampLike(v)) {
+    const ts = v.toDate ? { seconds: v.seconds, nanoseconds: v.nanoseconds } : v;
+    return { __ts: true, seconds: ts.seconds, nanoseconds: ts.nanoseconds };
+  }
+  if (Array.isArray(v)) return v.map(encodeValue);
+  if (v && typeof v === 'object') {
+    const out = {};
+    for (const k of Object.keys(v)) out[k] = encodeValue(v[k]);
+    return out;
+  }
+  return v;
+}
+
+function decodeValue(v) {
+  if (v && typeof v === 'object' && v.__ts === true) {
+    return new Timestamp(v.seconds, v.nanoseconds);
+  }
+  if (Array.isArray(v)) return v.map(decodeValue);
+  if (v && typeof v === 'object') {
+    const out = {};
+    for (const k of Object.keys(v)) out[k] = decodeValue(v[k]);
+    return out;
+  }
+  return v;
+}
+
 export function enqueuePendingWrite(type, data) {
   try {
     const raw = localStorage.getItem(PENDING_KEY);
     const arr = raw ? JSON.parse(raw) : [];
-    arr.push({ type, data, ts: Date.now() });
+    arr.push({ type, data: encodeValue(data), ts: Date.now() });
     localStorage.setItem(PENDING_KEY, JSON.stringify(arr));
   } catch (e) { console.warn('enqueuePendingWrite failed', e); }
 }
 
 export function readPendingWrites() {
-  try { const raw = localStorage.getItem(PENDING_KEY); return raw ? JSON.parse(raw) : []; }
+  try {
+    const raw = localStorage.getItem(PENDING_KEY);
+    return raw ? JSON.parse(raw).map((w) => ({ ...w, data: decodeValue(w.data) })) : [];
+  }
   catch { return []; }
 }
 
