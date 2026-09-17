@@ -194,11 +194,6 @@ export default function Sales() {
             {sales.length} total transaction{sales.length!==1?'s':''}
           </p>
         </div>
-        <div className="header-tabs">
-          <button className="header-tab header-tab-active">Overview</button>
-          <button className="header-tab">Transactions</button>
-          <button className="header-tab">Reports</button>
-        </div>
         <button onClick={handleExport} style={{
           display:'flex', alignItems:'center', gap:8, padding:'10px 18px',
           background:'var(--bg-card)', color:'var(--text-primary)', border:'1px solid var(--border)', borderRadius:10,
