@@ -4,8 +4,10 @@ import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
-import { FaDownload, FaCalendarAlt, FaChartBar, FaBoxes, FaUsers, FaHandshake } from 'react-icons/fa';
+import { FaDownload, FaCalendarAlt, FaChartBar, FaBoxes, FaUsers, FaHandshake, FaExclamationTriangle, FaClock } from 'react-icons/fa';
 import { toCsv } from '../utils/csv';
+import { collection, query, where, getDocs, orderBy, Timestamp } from 'firebase/firestore';
+import { db } from '../firebase/firebase';
 
 const COLORS = ['#2dd4bf','#64748b','#3b82f6','#f59e0b','#a78bfa','#ec4899','#ef4444','#14b8a6'];
 
@@ -21,8 +23,29 @@ export default function Reports() {
   const { sales, products, customers, resellers, suppliers, purchaseOrders, loading, loadSales, loadPurchaseOrders } = useData();
   const [rangeDays, setRangeDays] = useState(30);
   const [activeTab, setActiveTab] = useState('sales');
+  const [stockMovements, setStockMovements] = useState([]);
+  const [loadingMovements, setLoadingMovements] = useState(false);
 
   useEffect(() => { loadSales(); loadPurchaseOrders(); }, [loadSales, loadPurchaseOrders]);
+
+  useEffect(() => {
+    if (activeTab === 'stock-movements' && stockMovements.length === 0 && !loadingMovements) {
+      setLoadingMovements(true);
+      const loadMovements = async () => {
+        try {
+          const q = query(collection(db, 'stockMovements'), orderBy('Date', 'desc'));
+          const snapshot = await getDocs(q);
+          const movements = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+          setStockMovements(movements);
+        } catch (error) {
+          console.error('Error loading stock movements:', error);
+        } finally {
+          setLoadingMovements(false);
+        }
+      };
+      loadMovements();
+    }
+  }, [activeTab, stockMovements.length, loadingMovements]);
 
   const now = new Date();
   const cutoff = rangeDays === 0 ? new Date(0) : new Date(now - rangeDays * 86400000);
@@ -109,6 +132,64 @@ export default function Reports() {
     const m = {}; resellers.forEach(r => { m[r.id] = r; }); return m;
   }, [resellers]);
 
+  // -- Dead Stock Report (products with zero sales in last 90 days AND stock > 0) --
+  const deadStock = useMemo(() => {
+    const ninetyDaysAgo = new Date(now - 90 * 86400000);
+    const soldProducts = new Set();
+    
+    sales.forEach(sale => {
+      const saleDate = toDate(sale.SaleDate);
+      if (saleDate >= ninetyDaysAgo) {
+        (sale.Items || []).forEach(item => {
+          const pid = String(item.PerfumeId ?? item.ProductId ?? '');
+          if (pid) soldProducts.add(pid);
+        });
+      }
+    });
+    
+    return products.filter(p => p.Stock > 0 && !soldProducts.has(p.id)).map(p => {
+      const lastSale = sales
+        .filter(s => (s.Items || []).some(item => String(item.PerfumeId ?? item.ProductId ?? '') === p.id))
+        .sort((a, b) => toDate(b.SaleDate) - toDate(a.SaleDate))[0];
+      const lastSoldDate = lastSale ? toDate(lastSale.SaleDate) : null;
+      const daysSinceLastSale = lastSoldDate ? Math.floor((now - lastSoldDate) / 86400000) : 'Never';
+      return { ...p, lastSoldDate, daysSinceLastSale };
+    });
+  }, [products, sales, now]);
+
+  // -- Slow Mover Report (products with sales velocity < 1 unit/week in last 30 days) --
+  const slowMovers = useMemo(() => {
+    const thirtyDaysAgo = new Date(now - 30 * 86400000);
+    const salesByProduct = {};
+    
+    sales.forEach(sale => {
+      const saleDate = toDate(sale.SaleDate);
+      if (saleDate >= thirtyDaysAgo) {
+        (sale.Items || []).forEach(item => {
+          const pid = String(item.PerfumeId ?? item.ProductId ?? '');
+          if (pid) {
+            salesByProduct[pid] = (salesByProduct[pid] || 0) + (item.Quantity || 0);
+          }
+        });
+      }
+    });
+    
+    return products
+      .filter(p => {
+        const totalSold = salesByProduct[p.id] || 0;
+        const weeklyVelocity = totalSold / 4; // 30 days ≈ 4 weeks
+        return weeklyVelocity < 1 && p.Stock > 0;
+      })
+      .map(p => {
+        const totalSold = salesByProduct[p.id] || 0;
+        const weeklyVelocity = (totalSold / 4).toFixed(2);
+        let suggestedAction = 'restock';
+        if (p.Stock > 20) suggestedAction = 'liquidate';
+        else if (p.Stock > 10) suggestedAction = 'discontinue';
+        return { ...p, weeklyVelocity, suggestedAction };
+      });
+  }, [products, sales, now]);
+
   // -- CSV export ------------------------------------------------
   const exportCSV = () => {
     const rows = [['Date','Customer/Reseller','Items','Total','Payment']];
@@ -128,6 +209,48 @@ export default function Reports() {
     a.click(); URL.revokeObjectURL(url);
   };
 
+  const exportStockMovementsCSV = () => {
+    const rows = [['Date','Product','SKU','Type','Qty','Reference','Notes']];
+    stockMovements.forEach(m => {
+      const d = m.Date?.toDate ? m.Date.toDate().toLocaleDateString('en-PH') : new Date(m.Date || 0).toLocaleDateString('en-PH');
+      rows.push([d, m.ProductName, m.SKU, m.Type, m.Quantity, m.Reference, m.Notes]);
+    });
+    const csv = toCsv(rows);
+    const blob = new Blob([csv], { type:'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url;
+    a.download = `scnt-stock-movements-${new Date().toISOString().slice(0,10)}.csv`;
+    a.click(); URL.revokeObjectURL(url);
+  };
+
+  const exportDeadStockCSV = () => {
+    const rows = [['Product','SKU','Current Stock','Last Sold Date','Days Since Last Sale']];
+    deadStock.forEach(p => {
+      rows.push([p.Name, p.BatchNumber || p.id, p.Stock, 
+        p.lastSoldDate ? p.lastSoldDate.toLocaleDateString('en-PH') : 'Never',
+        p.daysSinceLastSale]);
+    });
+    const csv = toCsv(rows);
+    const blob = new Blob([csv], { type:'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url;
+    a.download = `scnt-dead-stock-${new Date().toISOString().slice(0,10)}.csv`;
+    a.click(); URL.revokeObjectURL(url);
+  };
+
+  const exportSlowMoversCSV = () => {
+    const rows = [['Product','SKU','Current Stock','Weekly Velocity','Suggested Action']];
+    slowMovers.forEach(p => {
+      rows.push([p.Name, p.BatchNumber || p.id, p.Stock, p.weeklyVelocity, p.suggestedAction]);
+    });
+    const csv = toCsv(rows);
+    const blob = new Blob([csv], { type:'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url;
+    a.download = `scnt-slow-movers-${new Date().toISOString().slice(0,10)}.csv`;
+    a.click(); URL.revokeObjectURL(url);
+  };
+
   if (loading) return (
     <div className="inventory-page" style={{ display:'flex', justifyContent:'center', alignItems:'center', height:'60vh' }}>
       <div className="spinner" />
@@ -139,6 +262,9 @@ export default function Reports() {
     { id:'products',  label:'Products',  icon:<FaBoxes /> },
     { id:'customers', label:'Customers', icon:<FaUsers /> },
     { id:'resellers', label:'Resellers', icon:<FaHandshake /> },
+    { id:'stock-movements', label:'Stock Movements', icon:<FaBoxes /> },
+    { id:'dead-stock', label:'Dead Stock', icon:<FaExclamationTriangle /> },
+    { id:'slow-movers', label:'Slow Movers', icon:<FaClock /> },
   ];
 
   const tooltipStyle = { borderRadius:8, border:'1px solid rgba(255,255,255,0.08)', background:'#1f232b', boxShadow:'0 4px 20px rgba(0,0,0,0.3)', fontSize:12, color:'#e2e8f0' };
@@ -478,6 +604,113 @@ export default function Reports() {
                 ];
               })}
             />
+          </div>
+        </div>
+      )}
+
+      {/* -- STOCK MOVEMENTS TAB -- */}
+      {activeTab === 'stock-movements' && (
+        <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+          <div className="chart-card">
+            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:14 }}>
+              <h3 style={{ fontSize:14, fontWeight:700, color:'var(--text-primary)' }}>Stock Movements</h3>
+              <button onClick={exportStockMovementsCSV} className="btn btn-primary" style={{
+                display:'flex', alignItems:'center', gap:7, padding:'9px 16px',
+                borderRadius:10, fontSize:13, fontWeight:700, cursor:'pointer' }}>
+                <FaDownload /> Export CSV
+              </button>
+            </div>
+            {loadingMovements ? (
+              <div style={{ textAlign:'center', padding:20, color:'var(--text-muted)' }}>Loading...</div>
+            ) : stockMovements.length === 0 ? (
+              <Empty text="No stock movements recorded yet" />
+            ) : (
+              <SimpleTable
+                cols={['Date','Product','SKU','Type','Qty','Reference','Notes']}
+                rows={stockMovements.map(m => {
+                  const d = m.Date?.toDate ? m.Date.toDate().toLocaleDateString('en-PH') : new Date(m.Date || 0).toLocaleDateString('en-PH');
+                  return [
+                    d,
+                    m.ProductName,
+                    m.SKU,
+                    <Pill key="t" bg={m.Type === 'in' ? 'var(--success-bg)' : 'var(--danger-bg)'} 
+                          color={m.Type === 'in' ? 'var(--accent)' : 'var(--danger)'}>{m.Type}</Pill>,
+                    m.Quantity,
+                    m.Reference,
+                    m.Notes
+                  ];
+                })}
+              />
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* -- DEAD STOCK TAB -- */}
+      {activeTab === 'dead-stock' && (
+        <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+          <div className="chart-card">
+            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:14 }}>
+              <h3 style={{ fontSize:14, fontWeight:700, color:'var(--text-primary)' }}>
+                Dead Stock (No sales in 90 days, stock &gt; 0)
+              </h3>
+              <button onClick={exportDeadStockCSV} className="btn btn-primary" style={{
+                display:'flex', alignItems:'center', gap:7, padding:'9px 16px',
+                borderRadius:10, fontSize:13, fontWeight:700, cursor:'pointer' }}>
+                <FaDownload /> Export CSV
+              </button>
+            </div>
+            {deadStock.length === 0 ? (
+              <Empty text="No dead stock found" />
+            ) : (
+              <SimpleTable
+                cols={['Product','SKU','Current Stock','Last Sold Date','Days Since Last Sale']}
+                rows={deadStock.map(p => [
+                  p.Name,
+                  p.BatchNumber || p.id,
+                  <Pill key="s" bg="var(--warning-bg)" color="var(--warning)">{p.Stock}</Pill>,
+                  p.lastSoldDate ? p.lastSoldDate.toLocaleDateString('en-PH') : 'Never',
+                  <Pill key="d" bg="var(--danger-bg)" color="var(--danger)">{p.daysSinceLastSale}</Pill>
+                ])}
+              />
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* -- SLOW MOVERS TAB -- */}
+      {activeTab === 'slow-movers' && (
+        <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+          <div className="chart-card">
+            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:14 }}>
+              <h3 style={{ fontSize:14, fontWeight:700, color:'var(--text-primary)' }}>
+                Slow Movers (Velocity &lt; 1 unit/week)
+              </h3>
+              <button onClick={exportSlowMoversCSV} className="btn btn-primary" style={{
+                display:'flex', alignItems:'center', gap:7, padding:'9px 16px',
+                borderRadius:10, fontSize:13, fontWeight:700, cursor:'pointer' }}>
+                <FaDownload /> Export CSV
+              </button>
+            </div>
+            {slowMovers.length === 0 ? (
+              <Empty text="No slow movers found" />
+            ) : (
+              <SimpleTable
+                cols={['Product','SKU','Current Stock','Weekly Velocity','Suggested Action']}
+                rows={slowMovers.map(p => [
+                  p.Name,
+                  p.BatchNumber || p.id,
+                  <Pill key="s" bg="var(--info-bg)" color="var(--info)">{p.Stock}</Pill>,
+                  p.weeklyVelocity,
+                  <Pill key="a" bg={p.suggestedAction === 'restock' ? 'var(--success-bg)' : 
+                         p.suggestedAction === 'liquidate' ? 'var(--warning-bg)' : 'var(--danger-bg)'}
+                        color={p.suggestedAction === 'restock' ? 'var(--accent)' : 
+                               p.suggestedAction === 'liquidate' ? 'var(--warning)' : 'var(--danger)'}>
+                    {p.suggestedAction}
+                  </Pill>
+                ])}
+              />
+            )}
           </div>
         </div>
       )}

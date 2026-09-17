@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react'
 import { useSearchParams } from 'react-router-dom';
 import { useData } from '../contexts/DataContext';
 import { useSettings } from '../contexts/SettingsContext';
-import { FaTrash, FaShoppingCart, FaSearch, FaTimes, FaCheck, FaCheckCircle, FaFilePdf, FaFlask } from 'react-icons/fa';
+import { FaTrash, FaShoppingCart, FaSearch, FaTimes, FaCheck, FaCheckCircle, FaFilePdf, FaFlask, FaPrint } from 'react-icons/fa';
 import { Timestamp, doc, updateDoc, increment } from 'firebase/firestore';
 import ConfirmDialog from '../components/shared/ConfirmDialog';
 import Modal, { CancelButton, PrimaryButton } from '../components/shared/Modal';
@@ -301,6 +301,59 @@ export default function POS() {
     }
     catch (error) { console.error('Error generating invoice:', error); showToast('Failed to generate invoice PDF'); }
     finally { setDownloading(false); }
+  };
+
+  const printReceipt = () => {
+    if (!successSale) return;
+    const receiptContent = `
+      <html>
+      <head>
+        <title>SCNT Vault Receipt</title>
+        <style>
+          @media print {
+            body { width: 72mm; margin: 0; padding: 0; font-family: monospace; font-size: 10pt; }
+            .receipt { width: 72mm; padding: 0; }
+            .center { text-align: center; }
+            .bold { font-weight: bold; }
+            .line { border-top: 1px dashed #000; margin: 8px 0; }
+            .item { display: flex; justify-content: space-between; margin: 4px 0; }
+            .total { font-weight: bold; font-size: 12pt; margin-top: 8px; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="receipt">
+          <div class="center bold">SCNT Vault</div>
+          <div class="center">${new Date().toLocaleString()}</div>
+          <div class="center">Invoice #${successSale.InvoiceNumber || successSale.id}</div>
+          <div class="line"></div>
+          <div class="item"><span>Customer:</span><span>${successSale.CustomerName || 'Walk-in'}</span></div>
+          <div class="item"><span>Payment:</span><span>${successSale.PaymentMethod || 'Cash'}</span></div>
+          <div class="line"></div>
+          ${(successSale.Items || []).map(item => `
+            <div class="item">
+              <span>${item.ProductName || 'Product'} x${item.Quantity}</span>
+              <span>₱${(item.Subtotal || 0).toLocaleString()}</span>
+            </div>
+          `).join('')}
+          <div class="line"></div>
+          <div class="item"><span>Subtotal:</span><span>₱${(successSale.Subtotal || 0).toLocaleString()}</span></div>
+          ${successSale.Discount ? `<div class="item"><span>Discount:</span><span>-₱${successSale.Discount.toLocaleString()}</span></div>` : ''}
+          ${successSale.ShippingFee ? `<div class="item"><span>Shipping:</span><span>₱${successSale.ShippingFee.toLocaleString()}</span></div>` : ''}
+          <div class="item total"><span>TOTAL:</span><span>₱${(successSale.Total || 0).toLocaleString()}</span></div>
+          <div class="line"></div>
+          <div class="center">Thank you!</div>
+          <div class="center">SCNT Vault</div>
+        </div>
+        <script>
+          window.onload = function() { window.print(); }
+        </script>
+      </body>
+      </html>
+    `;
+    const printWindow = window.open('', '_blank', 'width=400,height=600');
+    printWindow.document.write(receiptContent);
+    printWindow.document.close();
   };
 
   if (loading) return (
@@ -682,7 +735,7 @@ export default function POS() {
           <div style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 24, lineHeight: 1.5 }}>
             Invoice #{successSale?.InvoiceNumber || successSale?.id} is ready. Download the PDF invoice below.
           </div>
-          <div style={{ display: 'flex', gap: 10, justifyContent: 'center', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: 10, justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap' }}>
             <CancelButton onClick={() => setSuccessSale(null)} label="Done" />
             <button onClick={downloadInvoice} disabled={downloading}
               style={{ padding: '9px 20px', background: downloading ? 'rgba(255,255,255,0.08)' : 'var(--accent)',
@@ -691,6 +744,14 @@ export default function POS() {
                 display: 'flex', alignItems: 'center', gap: 8 }}>
               <FaFilePdf style={{ fontSize: 13 }} />
               {downloading ? 'Generating...' : 'Download Invoice (PDF)'}
+            </button>
+            <button onClick={printReceipt}
+              style={{ padding: '9px 20px', background: 'rgba(255,255,255,0.08)',
+                color: 'var(--text-secondary)', border: 'none', borderRadius: 8,
+                fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: 8 }}>
+              <FaPrint style={{ fontSize: 13 }} />
+              Print Receipt
             </button>
           </div>
         </div>
