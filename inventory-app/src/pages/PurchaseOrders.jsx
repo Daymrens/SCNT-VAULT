@@ -5,7 +5,7 @@ import {
   FaPlus, FaTimes, FaFileInvoice,
   FaEdit, FaTrash, FaBoxes, FaTruck, FaCheckCircle,
   FaClock, FaTimesCircle, FaChevronDown, FaChevronUp,
-  FaMagic, FaStickyNote
+  FaMagic, FaStickyNote, FaExclamationTriangle, FaCartPlus
 } from 'react-icons/fa';
 import ConfirmDialog from '../components/shared/ConfirmDialog';
 import StatCard from '../components/shared/StatCard';
@@ -54,6 +54,7 @@ export default function PurchaseOrders() {
   const [stockingId, setStockingId]     = useState(null);
   const [releasingId, setReleasingId]   = useState(null);
   const [processingAction, setProcessingAction] = useState(null);
+  const [activeTab, setActiveTab] = useState('orders');
   const searchRef = useRef(null);
   const { showToast } = useToast();
 
@@ -117,6 +118,62 @@ export default function PurchaseOrders() {
     purchaseOrders.forEach(po => { m[po.Status] = (m[po.Status]||0)+1; });
     return m;
   }, [purchaseOrders]);
+
+  // F3.4: Low-stock reorder suggestions
+  const reorderSuggestions = useMemo(() => {
+    const lowStockProducts = products.filter(p => (p.Stock||0) <= (p.LowStockThreshold || settings.lowStockThreshold || 10));
+    if (!lowStockProducts.length) return [];
+    const now = new Date();
+    const thirtyDaysAgo = new Date(now.getTime() - 30*24*60*60*1000);
+    const soldMap = {};
+    sales.forEach(sale => {
+      const sd = sale.SaleDate?.toDate ? sale.SaleDate.toDate() : new Date(sale.SaleDate||0);
+      if (sd < thirtyDaysAgo || sd > now) return;
+      (sale.Items||[]).forEach(item => {
+        const pid = String(item.PerfumeId ?? item.ProductId ?? '');
+        if (pid) soldMap[pid] = (soldMap[pid]||0) + (item.Quantity||0);
+      });
+    });
+    return lowStockProducts.map(p => {
+      const soldLast30 = soldMap[p.id] || 0;
+      const avgWeekly = (soldLast30 / 30) * 7;
+      const safetyStock = avgWeekly * 2;
+      const suggestedQty = Math.max(1, Math.ceil(safetyStock - (p.Stock||0)));
+      const supplier = suppliers.find(s => s.id === p.SupplierId);
+      return {
+        product: p,
+        currentStock: p.Stock || 0,
+        avgWeekly: avgWeekly.toFixed(1),
+        suggestedQty,
+        supplierName: supplier?.Name || '—',
+        supplierId: p.SupplierId || '',
+        unitCost: p.CostPrice || settings.defaultPrices.CostPrice,
+      };
+    });
+  }, [products, sales, suppliers, settings]);
+
+  const handlePrefillPO = () => {
+    if (!reorderSuggestions.length) { showToast('No items to reorder', 'info'); return; }
+    const defaultSupplier = suppliers.find(s => s.id === reorderSuggestions[0]?.supplierId) || suppliers[0];
+    if (!defaultSupplier) { showToast('No suppliers found', 'error'); return; }
+    const items = reorderSuggestions.map(s => ({
+      PerfumeId: s.product.id,
+      ProductName: s.product.Name,
+      OrderedQuantity: s.suggestedQty,
+      UnitCost: s.unitCost,
+    }));
+    setForm({
+      SupplierId: defaultSupplier.id,
+      Status: 'Pending',
+      OrderDate: new Date().toISOString().slice(0,10),
+      DeliveryDate: '',
+      InvoiceNumber: '',
+      Notes: `Auto-filled from reorder suggestions — ${reorderSuggestions.length} item(s)`,
+      Items: items,
+    });
+    setActiveTab('orders');
+    setShowModal(true);
+  };
 
   const fmtDate = (val) => {
     if (!val) return '—';
@@ -381,20 +438,18 @@ export default function PurchaseOrders() {
         {/* Tabs */}
         <div style={{ display:'flex', gap:4, borderBottom:'1px solid var(--border)' }}>
           {[
-            { key:'all', label:'All', count:purchaseOrders.length },
-            { key:'Pending', label:'Pending', count:statusCounts['Pending']||0 },
-            { key:'Ordered', label:'Ordered', count:statusCounts['Ordered']||0 },
-            { key:'Completed', label:'Completed', count:statusCounts['Completed']||0 },
+            { key:'orders', label:'Orders', count:purchaseOrders.length },
+            { key:'reorder', label:'Reorder Suggestions', count:reorderSuggestions.length, icon:<FaExclamationTriangle style={{ fontSize:10 }} /> },
           ].map(tab => (
-            <button key={tab.key} onClick={() => setFilterStatus(tab.key)} style={{
+            <button key={tab.key} onClick={() => setActiveTab(tab.key)} style={{
               padding:'10px 16px', border:'none', background:'none', cursor:'pointer',
-              fontSize:13, fontWeight:600, color:filterStatus===tab.key?'var(--accent)':'var(--text-muted)',
-              borderBottom:filterStatus===tab.key?'2px solid var(--accent)':'2px solid transparent',
+              fontSize:13, fontWeight:600, color:activeTab===tab.key?'var(--accent)':'var(--text-muted)',
+              borderBottom:activeTab===tab.key?'2px solid var(--accent)':'2px solid transparent',
               marginBottom:-1, transition:'all 0.2s', display:'flex', alignItems:'center', gap:6 }}>
-              {tab.label}
+              {tab.icon} {tab.label}
               <span style={{ padding:'2px 7px', borderRadius:10, fontSize:11, fontWeight:700,
-                background:filterStatus===tab.key?'var(--accent-dim)':'var(--bg-secondary)',
-                color:filterStatus===tab.key?'var(--accent)':'var(--text-muted)' }}>
+                background:activeTab===tab.key?'var(--accent-dim)':'var(--bg-secondary)',
+                color:activeTab===tab.key?'var(--accent)':'var(--text-muted)' }}>
                 {tab.count}
               </span>
             </button>
@@ -413,6 +468,84 @@ export default function PurchaseOrders() {
             : `Generated ${genResult.created} order${genResult.created!==1?'s':''}${genResult.skipped>0?` · ${genResult.skipped} already existed`:''}`}
           </span>
           <button onClick={() => setGenResult(null)} style={{ background:'none', border:'none', cursor:'pointer', fontSize:16, color:'inherit' }}><FaTimes /></button>
+        </div>
+      )}
+
+      {/* F3.4: Reorder Suggestions tab */}
+      {activeTab === 'reorder' && (
+        <div style={{ marginBottom:20 }}>
+          {reorderSuggestions.length === 0 ? (
+            <div style={{ background:'var(--bg-card)', border:'1px solid var(--border)', borderRadius:12, padding:'48px 20px', textAlign:'center' }}>
+              <div style={{ width:56, height:56, borderRadius:'50%', background:'var(--success-bg)', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 12px' }}>
+                <FaBoxes style={{ fontSize:24, color:'var(--accent)' }} />
+              </div>
+              <div style={{ fontSize:14, color:'var(--text-secondary)', fontWeight:600 }}>All products are well-stocked</div>
+              <div style={{ fontSize:12, color:'var(--text-muted)', marginTop:4 }}>No items below the low stock threshold</div>
+            </div>
+          ) : (
+            <>
+              <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:12 }}>
+                <div style={{ fontSize:13, color:'var(--text-muted)' }}>
+                  {reorderSuggestions.length} product{reorderSuggestions.length!==1?'s':''} below threshold
+                </div>
+                <button onClick={handlePrefillPO} style={{
+                  display:'flex', alignItems:'center', gap:8, padding:'10px 18px',
+                  background:'var(--accent)', color:'#0f172a', border:'none', borderRadius:8,
+                  fontSize:13, fontWeight:600, cursor:'pointer', transition:'all 0.15s' }}
+                  onMouseEnter={e => e.currentTarget.style.opacity='0.9'}
+                  onMouseLeave={e => e.currentTarget.style.opacity='1'}>
+                  <FaCartPlus /> Generate PO
+                </button>
+              </div>
+              <div style={{ background:'var(--bg-card)', border:'1px solid var(--border)', borderRadius:12, overflow:'hidden' }}>
+                <div style={{ overflowX:'auto' }}>
+                  <table style={{ width:'100%', borderCollapse:'collapse' }}>
+                    <thead>
+                      <tr style={{ background:'var(--bg-secondary)' }}>
+                        {['Product','SKU','Current Stock','Avg Weekly Usage','Suggested Qty','Supplier'].map(h => (
+                          <th key={h} style={{ padding:'12px 16px', textAlign:'left', fontSize:11,
+                            fontWeight:700, color:'var(--text-muted)', textTransform:'uppercase', letterSpacing:'0.5px',
+                            borderBottom:'1px solid var(--border)', whiteSpace:'nowrap' }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {reorderSuggestions.map(s => (
+                        <tr key={s.product.id}
+                          onMouseEnter={e => e.currentTarget.style.background='var(--bg-card-hover)'}
+                          onMouseLeave={e => e.currentTarget.style.background='transparent'}>
+                          <td style={{ padding:'12px 16px', fontSize:13, fontWeight:600, color:'var(--text-primary)' }}>
+                            <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                              <div style={{ width:6, height:6, borderRadius:'50%', background:'var(--danger)' }} />
+                              {s.product.Name}
+                            </div>
+                          </td>
+                          <td style={{ padding:'12px 16px', fontSize:12, color:'var(--text-muted)', fontFamily:'monospace' }}>
+                            {s.product.BatchNumber || s.product.id.slice(0,8)}
+                          </td>
+                          <td style={{ padding:'12px 16px', fontSize:13, color:'var(--danger)', fontWeight:700 }}>
+                            {s.currentStock}
+                          </td>
+                          <td style={{ padding:'12px 16px', fontSize:13, color:'var(--text-secondary)' }}>
+                            {s.avgWeekly}/wk
+                          </td>
+                          <td style={{ padding:'12px 16px' }}>
+                            <span style={{ padding:'3px 10px', borderRadius:20, fontSize:12, fontWeight:700,
+                              background:'var(--warning-bg)', color:'var(--warning)' }}>
+                              {s.suggestedQty}
+                            </span>
+                          </td>
+                          <td style={{ padding:'12px 16px', fontSize:12, color:'var(--text-secondary)' }}>
+                            {s.supplierName}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       )}
 

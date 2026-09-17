@@ -52,10 +52,10 @@ function scentTagStyle(scent) {
   return DEFAULT_SCENT_STYLE;
 }
 
-const EMPTY_FORM = { Name:'', Brand:'', Category:'', Status:'Available', Notes:'' };
+const EMPTY_FORM = { Name:'', Brand:'', Category:'', Status:'Available', Notes:'', ProductId:'' };
 
 export default function Testers() {
-  const { testers, loading, addTester, updateTester, deleteTester } = useData();
+  const { testers, products, loading, addTester, updateTester, deleteTester } = useData();
   const [search, setSearch]       = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing]     = useState(null);
@@ -99,7 +99,7 @@ export default function Testers() {
   const openAdd  = () => { setEditing(null); setForm(EMPTY_FORM); setShowModal(true); };
   const openEdit = (t) => {
     setEditing(t);
-    setForm({ Name: t.Name||'', Brand: t.Brand||'', Category: t.Category||'', Status: t.Status||'Available', Notes: t.Notes||'' });
+    setForm({ Name: t.Name||'', Brand: t.Brand||'', Category: t.Category||'', Status: t.Status||'Available', Notes: t.Notes||'', ProductId: t.ProductId||'' });
     setShowModal(true);
   };
   const closeModal = () => { setShowModal(false); setEditing(null); setForm(EMPTY_FORM); };
@@ -385,6 +385,23 @@ export default function Testers() {
         icon={<FaFlask />} maxWidth={460}>
         <Modal.Body>
           <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
+            <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
+              <label style={lbl}>Link to Product (Optional)</label>
+              <select value={form.ProductId || ''} onChange={e => {
+                const pid = e.target.value;
+                if (pid) {
+                  const prod = products.find(p => p.id === pid);
+                  if (prod) {
+                    setForm(f => ({ ...f, ProductId: pid, Name: prod.Name || f.Name, Brand: prod.Brand || f.Brand, Category: prod.Category || f.Category }));
+                    return;
+                  }
+                }
+                setForm(f => ({ ...f, ProductId: pid }));
+              }} style={inp}>
+                <option value="">No linked product</option>
+                {products.map(p => <option key={p.id} value={p.id}>{p.Name} — {p.Brand}</option>)}
+              </select>
+            </div>
             {[
               { key:'Name',     label:'Tester Name', required:true },
               { key:'Brand',    label:'Brand' },

@@ -5,7 +5,8 @@ import { useToast } from '../components/shared/Toast';
 import {
   FaPlus, FaEdit, FaTrash, FaExclamationTriangle, FaBoxes,
   FaHashtag, FaTh, FaList, FaSort, FaHome, FaShoppingCart,
-  FaCashRegister, FaChartBar, FaArrowUp, FaArrowDown, FaSearch, FaUser
+  FaCashRegister, FaChartBar, FaArrowUp, FaArrowDown, FaSearch, FaUser,
+  FaFlask
 } from 'react-icons/fa';
 import StatCard from '../components/shared/StatCard';
 import SearchBar from '../components/shared/SearchBar';
@@ -79,7 +80,7 @@ const ChartTooltip = ({ active, payload, label }) =>
   ) : null;
 
 export default function Inventory() {
-  const { products, suppliers, sales, loading, addProduct, updateProduct, deleteProduct, loadSales } = useData();
+  const { products, suppliers, sales, loading, addProduct, updateProduct, deleteProduct, addTester, loadSales } = useData();
   const { settings } = useSettings();
   const { showToast } = useToast();
   const [search, setSearch]           = useState('');
@@ -218,6 +219,24 @@ export default function Inventory() {
     try { await deleteProduct(id); }
     catch (e) { console.error(e); }
     finally { setConfirmDelete(null); }
+  };
+
+  const handleAutoCreateTester = async (product) => {
+    try {
+      await addTester({
+        Name: product.Name,
+        Brand: product.Brand || '',
+        Category: product.Category || '',
+        ProductId: product.id,
+        CostPrice: product.CostPrice || 0,
+        Status: 'Available',
+        Notes: `Auto-created from product: ${product.Name}`,
+      });
+      showToast(`Tester created for ${product.Name}`, 'success');
+    } catch (e) {
+      console.error(e);
+      showToast('Failed to create tester', 'error');
+    }
   };
 
   // ── Loading skeleton (#3) ────────────────────────────────
@@ -476,6 +495,15 @@ export default function Inventory() {
                 </div>
                 {/* Actions */}
                 <div style={{ padding:'10px 14px', borderTop:'1px solid var(--border)', display:'flex', gap:8 }}>
+                  <button onClick={() => handleAutoCreateTester(p)} title="Create Tester from Product"
+                    style={{ padding:'7px 10px', background:'rgba(167,139,250,0.12)', color:'#a78bfa',
+                      border:'none', borderRadius:10, fontSize:12, cursor:'pointer',
+                      display:'flex', alignItems:'center', justifyContent:'center',
+                      transition:'background 0.15s' }}
+                    onMouseEnter={e => e.currentTarget.style.background='rgba(167,139,250,0.2)'}
+                    onMouseLeave={e => e.currentTarget.style.background='rgba(167,139,250,0.12)'}>
+                    <FaFlask style={{ fontSize:10 }} />
+                  </button>
                   <button onClick={() => openEdit(p)} style={{
                     flex:1, padding:'7px 0', background:'rgba(255,255,255,0.06)', color:'var(--text-secondary)',
                     border:'none', borderRadius:10, fontSize:12, fontWeight:700,
@@ -552,6 +580,13 @@ export default function Inventory() {
                       </td>
                       <td style={{ padding:'10px 16px', textAlign:'center' }}>
                         <div style={{ display:'flex', gap:6, justifyContent:'center' }}>
+                          <button className="btn-icon" onClick={() => handleAutoCreateTester(p)} title="Create Tester"
+                            style={{ padding:'5px 8px', background:'rgba(167,139,250,0.12)', color:'#a78bfa',
+                              border:'none', borderRadius:7, cursor:'pointer', fontSize:12 }}
+                            onMouseEnter={e => e.currentTarget.style.background='rgba(167,139,250,0.2)'}
+                            onMouseLeave={e => e.currentTarget.style.background='rgba(167,139,250,0.12)'}>
+                            <FaFlask />
+                          </button>
                           <button className="btn-icon btn-edit" onClick={() => openEdit(p)} title="Edit">
                             <FaEdit />
                           </button>
