@@ -2,6 +2,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { FaLock, FaEnvelope } from 'react-icons/fa';
+import { useToast } from '../components/shared/Toast';
 
 const styles = {
   wrapper: {
@@ -202,8 +203,25 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signIn } = useAuth();
+  const [resetSent, setResetSent] = useState(false);
+  const { signIn, resetPassword } = useAuth();
   const navigate = useNavigate();
+  const { showToast } = useToast();
+
+  async function handleForgotPassword(e) {
+    e.preventDefault();
+    if (!email) {
+      showToast('Enter your email first', 'error');
+      return;
+    }
+    try {
+      await resetPassword(email);
+      setResetSent(true);
+      showToast('Password reset email sent — check your inbox', 'success');
+    } catch (err) {
+      showToast('Failed to send reset email', 'error');
+    }
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -308,6 +326,20 @@ export default function Login() {
                     onBlur={(e) => { e.target.style.borderColor = 'var(--border)'; }}
                   />
                 </div>
+              </div>
+
+              <div style={{ textAlign:'right', marginTop:-12, marginBottom:20 }}>
+                <button
+                  onClick={handleForgotPassword}
+                  style={{
+                    background:'none', border:'none', cursor:'pointer',
+                    fontSize:12, fontWeight:600,
+                    color: resetSent ? 'var(--accent)' : 'var(--text-muted)',
+                  }}
+                  disabled={resetSent}
+                >
+                  {resetSent ? 'Reset email sent ✓' : 'Forgot Password?'}
+                </button>
               </div>
 
               <button
