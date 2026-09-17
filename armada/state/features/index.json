@@ -1,3 +1,1 @@
-{
-  "features": ["firestore-sync", "shipping-fee", "ui-redesign", "order-pos-invoice", "stock-99-po", "tester-kit-pos", "invoice-order-numbers"]
-}
+["firestore-sync", "shipping-fee", "ui-redesign", "order-pos-invoice", "stock-99-po", "tester-kit-pos", "invoice-order-numbers", "f1-foundation"]

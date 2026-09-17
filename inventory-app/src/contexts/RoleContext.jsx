@@ -3,7 +3,7 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
 import { useAuth } from './AuthContext';
 
-const OWNER_UID = 'wzlPqoM7Z2Tc8H6nMxPfXl0fKu43';
+const OWNER_UID = '6aOu6pgtNuOWfxbKGMP4UMUCcb';
 
 const ROLE_PERMISSIONS = {
   owner: {

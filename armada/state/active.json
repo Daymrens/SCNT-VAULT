@@ -1,0 +1,29 @@
+{
+  "lane": "c-users-actdr",
+  "contract": "armada/REQUIREMENTS.md",
+  "repo": "D:\\PROJECTS\\Projects\\SCNT WEB",
+  "phaseGraph": {
+    "phases": [
+      { "id": "p1-tokens", "name": "P1 — Design tokens & global styles", "status": "passed", "dependsOn": [] },
+      { "id": "p2-layout", "name": "P2 — Layout & navigation", "status": "passed", "dependsOn": ["p1-tokens"] },
+      { "id": "p3-shared", "name": "P3 — Shared components", "status": "passed", "dependsOn": ["p1-tokens"] },
+      { "id": "p4-dashboard", "name": "P4 — Dashboard page", "status": "passed", "dependsOn": ["p1-tokens", "p2-layout", "p3-shared"] },
+      { "id": "p5-inventory", "name": "P5 — Inventory page", "status": "passed", "dependsOn": ["p1-tokens", "p2-layout", "p3-shared"] },
+      { "id": "p6-sales-po", "name": "P6 — Sales + Purchase Orders", "status": "passed", "dependsOn": ["p1-tokens", "p2-layout", "p3-shared"] },
+      { "id": "p7-customers-resellers", "name": "P7 — Customers + Resellers", "status": "passed", "dependsOn": ["p1-tokens", "p2-layout", "p3-shared"] },
+      { "id": "p8-suppliers-testers", "name": "P8 — Suppliers + Testers", "status": "passed", "dependsOn": ["p1-tokens", "p2-layout", "p3-shared"] },
+      { "id": "p9-reports-pos-login", "name": "P9 — Reports + POS + Login", "status": "passed", "dependsOn": ["p1-tokens", "p2-layout", "p3-shared"] },
+      { "id": "p10-qa", "name": "P10 — QA & final criteria", "status": "passed", "dependsOn": ["p4-dashboard", "p5-inventory", "p6-sales-po", "p7-customers-resellers", "p8-suppliers-testers", "p9-reports-pos-login"] }
+    ]
+  },
+  "nextAction": "Lane CLOSED — PR #13 merged (486384e) + deployed (7bdcf10). All defects remediated. No pending work. Optional housekeeping: update git remote to Daymrens/SCNT-VAULT.git.",
+  "pendingEvidence": [
+    "PR #12 merged + deployed — live",
+    "PR #13 merged (486384e) + deployed (7bdcf10); bundle index-Bp6JWVCp.js live, verified content contains adjustStock + 7b8da3",
+    "QA gates: PASS (56 tests, then 61 tests)",
+    "URLs: https://scnt-vault.web.app/inventory/ — 200",
+    "TODO.md: lines added for #12 and #13"
+  ],
+  "prUrl": "https://github.com/Daymrens/SCNT-VAULT/pull/13",
+  "closed": true
+}

@@ -1,0 +1,25 @@
+{
+  "name": "web-ui-redesign",
+  "contract": "armada/REQUIREMENTS.md",
+  "status": "deployed",
+  "phases": {
+    "p1-tokens": "passed",
+    "p2-layout": "passed",
+    "p3-shared": "passed",
+    "p4-dashboard": "passed",
+    "p5-inventory": "passed",
+    "p6-sales-po": "passed",
+    "p7-customers-resellers": "passed",
+    "p8-suppliers-testers": "passed",
+    "p9-reports-pos-login": "passed",
+    "p10-qa": "passed"
+  },
+  "lastAction": "DELIVERED + DEPLOYED: PR #12 squash-merged (0ca4f53), deploy commit 3cb5a5e, firebase deploy complete, live at https://scnt-vault.web.app/inventory/. Audit fixes (e870873): toast API, CSV escaping, sale delete order, timestamp serialization, PO idempotency, memo dep, POS date guard — QA retest PASS (56 tests).",
+  "evidence": [
+    "9 implementation commits (7396f30..775a472) + fixes e870873",
+    "QA: 8 files/56 tests, build pass",
+    "PR #12 merged: 0ca4f53",
+    "Deploy: 3cb5a5e, hosting live, bundle index-Brg1Uxeo.js",
+    "Follow-up pending: DEF-006/007/008 + FIND-001"
+  ]
+}
