@@ -86,6 +86,16 @@ export default function Inventory() {
   const { products, suppliers, sales, loading, addProduct, updateProduct, deleteProduct, addTester, loadSales, addBulkProducts, applyStockAdjustments } = useData();
   const { settings } = useSettings();
   const { showToast } = useToast();
+  const EMPTY_FORM = {
+    ...BASE_FORM,
+    CostPrice: settings.defaultPrices?.CostPrice ?? 145,
+    SellingPrice: settings.defaultPrices?.SellingPrice ?? 220,
+    ResellerPrice: settings.defaultPrices?.ResellerPrice ?? 150,
+    Price60ml: settings.defaultPrices?.Price60ml ?? 175,
+    Cost60ml: settings.defaultPrices?.Cost60ml ?? 125,
+    LowStockThreshold: settings.lowStockThreshold ?? 10,
+  };
+
   const [search, setSearch]           = useState('');
   const [sortBy, setSortBy]           = useState('name-asc');
   const [categoryFilter, setCategoryFilter] = useState('All');
