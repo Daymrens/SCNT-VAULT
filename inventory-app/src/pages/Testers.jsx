@@ -2,6 +2,7 @@ import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { FaPlus, FaEdit, FaTrash, FaFlask, FaThLarge, FaList, FaSearch } from 'react-icons/fa';
 import ConfirmDialog from '../components/shared/ConfirmDialog';
+import Pagination from '../components/shared/Pagination';
 import Modal from '../components/shared/Modal';
 import CancelButton, { PrimaryButton } from '../components/shared/Modal';
 import { useToast } from '../components/shared/Toast';
@@ -66,6 +67,8 @@ export default function Testers() {
   const [viewMode, setViewMode]   = useState('grid');
   const searchRef = useRef(null);
   const { showToast } = useToast();
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
 
   useEffect(() => {
     const handler = (e) => {
@@ -89,6 +92,13 @@ export default function Testers() {
       return matchSearch && matchStatus;
     });
   }, [testers, search, filterStatus]);
+
+  const paginatedTesters = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return filtered.slice(start, start + pageSize);
+  }, [filtered, page, pageSize]);
+
+  useEffect(() => { setPage(1); }, [search, filterStatus]);
 
   const statusCounts = useMemo(() => {
     const m = {};
@@ -245,8 +255,9 @@ export default function Testers() {
         </div>
       ) : viewMode === 'grid' ? (
         /* Grid View */
+        <>
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(180px, 1fr))', gap:16 }}>
-          {filtered.map(t => {
+          {paginatedTesters.map(t => {
             const scent = scentTagStyle(t.Category);
             return (
               <div key={t.id} style={{
@@ -321,8 +332,17 @@ export default function Testers() {
             );
           })}
         </div>
+        <Pagination
+          totalItems={filtered.length}
+          currentPage={page}
+          pageSize={pageSize}
+          onPageChange={setPage}
+          onPageSizeChange={(size) => { setPageSize(size); setPage(1); }}
+        />
+        </>
       ) : (
         /* Table View */
+        <>
         <div style={{ background:'var(--bg-card)', border:'1px solid var(--border)', borderRadius:16, overflow:'hidden', boxShadow:'0 4px 20px rgba(0,0,0,0.2)' }}>
           <table style={{ width:'100%', borderCollapse:'collapse' }}>
             <thead>
@@ -335,7 +355,7 @@ export default function Testers() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((t) => {
+              {paginatedTesters.map((t) => {
                 const scent = scentTagStyle(t.Category);
                 return (
                   <tr key={t.id}
@@ -377,6 +397,14 @@ export default function Testers() {
             </tbody>
           </table>
         </div>
+        <Pagination
+          totalItems={filtered.length}
+          currentPage={page}
+          pageSize={pageSize}
+          onPageChange={setPage}
+          onPageSizeChange={(size) => { setPageSize(size); setPage(1); }}
+        />
+        </>
       )}
 
       {/* Add / Edit Modal */}

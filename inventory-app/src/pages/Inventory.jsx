@@ -6,10 +6,12 @@ import {
   FaPlus, FaEdit, FaTrash, FaExclamationTriangle, FaBoxes,
   FaHashtag, FaTh, FaList, FaSort, FaHome, FaShoppingCart,
   FaCashRegister, FaChartBar, FaArrowUp, FaArrowDown, FaSearch, FaUser,
-  FaFlask, FaFileImport, FaUpload
+  FaFlask, FaFileImport, FaUpload, FaBarcode
 } from 'react-icons/fa';
 import StatCard from '../components/shared/StatCard';
 import SearchBar from '../components/shared/SearchBar';
+import Pagination from '../components/shared/Pagination';
+import BarcodeScanner from '../components/shared/BarcodeScanner';
 import Modal, { CancelButton, PrimaryButton } from '../components/shared/Modal';
 import ConfirmDialog from '../components/shared/ConfirmDialog';
 import StatusBadge from '../components/shared/StatusBadge';
@@ -103,6 +105,10 @@ export default function Inventory() {
   const [importing, setImporting] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
   const fileInputRef = useRef(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
+  const [showScanner, setShowScanner] = useState(false);
+  const [scannerTarget, setScannerTarget] = useState(null);
 
   useEffect(() => { loadSales(); }, [loadSales]);
 
@@ -176,6 +182,34 @@ export default function Inventory() {
   const totalStockValue  = useMemo(() => products.reduce((s, p) => s + (p.Stock||0)*(p.CostPrice||0), 0), [products]);
   const potentialRevenue = useMemo(() => products.reduce((s, p) => s + (p.Stock||0)*(p.SellingPrice||p.Price||0), 0), [products]);
   const lowStockCount    = useMemo(() => products.filter(p => (p.Stock||0) <= (p.LowStockThreshold||10) && (p.Stock||0) > 0).length, [products]);
+
+  const paginatedProducts = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return filtered.slice(start, start + pageSize);
+  }, [filtered, page, pageSize]);
+
+  useEffect(() => { setPage(1); }, [search, categoryFilter, brandFilter, sortBy]);
+
+  const openScanner = (target) => { setScannerTarget(target); setShowScanner(true); };
+
+  const handleBarcodeScan = (code) => {
+    const found = products.find(p =>
+      p.BatchNumber?.toLowerCase() === code.toLowerCase() ||
+      p.SKU?.toLowerCase() === code.toLowerCase() ||
+      p.id?.toLowerCase() === code.toLowerCase()
+    );
+    if (found) {
+      if (scannerTarget === 'search') {
+        setSearch(found.BatchNumber || found.Name);
+        showToast(`Found: ${found.Name}`, 'success');
+      } else {
+        openEdit(found);
+        showToast(`Opened: ${found.Name}`, 'success');
+      }
+    } else {
+      showToast(`No product found for barcode: ${code}`, 'error');
+    }
+  };
 
   const categoryData = useMemo(() => {
     const catMap = {};
@@ -391,6 +425,14 @@ export default function Inventory() {
               style={{ border:'none', outline:'none', fontSize:13, flex:1, background:'transparent',
                 color:'var(--text-primary)', caretColor:'var(--accent)' }} />
           </div>
+          <button onClick={() => openScanner('search')} style={{ display:'flex', alignItems:'center', gap:8, padding:'10px 18px',
+            background:'rgba(255,255,255,0.06)', color:'var(--text-secondary)',
+            border:'1px solid var(--border)', borderRadius:10, fontSize:13, fontWeight:700,
+            cursor:'pointer', transition:'all 0.2s' }}
+            onMouseEnter={e => e.currentTarget.style.background='rgba(255,255,255,0.12)'}
+            onMouseLeave={e => e.currentTarget.style.background='rgba(255,255,255,0.06)'}>
+            <FaBarcode /> Scan
+          </button>
           <button onClick={openAdd} style={{ display:'flex', alignItems:'center', gap:8, padding:'10px 18px', background:'var(--accent)', color:'#0f172a', border:'none', borderRadius:10, fontSize:13, fontWeight:700, cursor:'pointer', transition:'all 0.2s' }}
             onMouseEnter={e => e.currentTarget.style.background='rgba(45,212,191,0.85)'}
             onMouseLeave={e => e.currentTarget.style.background='var(--accent)'}>
@@ -539,9 +581,10 @@ export default function Inventory() {
         </div>
       ) : viewMode === 'grid' ? (
         /* ── Grid View ── */
+        <>
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(200px, 1fr))', gap:18,
           gridAutoRows:'minmax(300px, auto)' }}>
-          {filtered.map(p => {
+          {paginatedProducts.map(p => {
             const isLow = (p.Stock||0) <= (p.LowStockThreshold||10) && (p.Stock||0) > 0;
             const { sold, nums } = getBottleNumbers(p);
             const nextBottle = sold + 1;
@@ -640,8 +683,17 @@ export default function Inventory() {
             );
           })}
         </div>
+        <Pagination
+          totalItems={filtered.length}
+          currentPage={page}
+          pageSize={pageSize}
+          onPageChange={setPage}
+          onPageSizeChange={(size) => { setPageSize(size); setPage(1); }}
+        />
+        </>
       ) : (
         /* ── Table View (#6) ── */
+        <>
         <div style={{ background:'var(--bg-card)', border:'1px solid var(--border)', borderRadius:12, overflow:'hidden',
           boxShadow:'0 2px 12px rgba(0,0,0,0.2)' }}>
           <div style={{ overflowX:'auto' }}>
@@ -665,7 +717,7 @@ export default function Inventory() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map(p => {
+                {paginatedProducts.map(p => {
                   const isLow = (p.Stock||0) <= (p.LowStockThreshold||10) && (p.Stock||0) > 0;
                   const { sold } = getBottleNumbers(p);
                   return (
@@ -715,6 +767,14 @@ export default function Inventory() {
             </table>
           </div>
         </div>
+        <Pagination
+          totalItems={filtered.length}
+          currentPage={page}
+          pageSize={pageSize}
+          onPageChange={setPage}
+          onPageSizeChange={(size) => { setPageSize(size); setPage(1); }}
+        />
+        </>
       )}
 
       {/* Bottle Numbers Modal (shared Modal) */}
@@ -874,6 +934,13 @@ export default function Inventory() {
         title="Delete Product?"
         message={<span>Are you sure you want to delete <strong>{confirmDelete?.Name}</strong>? This cannot be undone.</span>}
         confirmLabel="Yes, Delete" loading={saving}
+      />
+
+      {/* Barcode Scanner */}
+      <BarcodeScanner
+        isOpen={showScanner}
+        onClose={() => setShowScanner(false)}
+        onScan={handleBarcodeScan}
       />
 
       {/* Import Modal */}

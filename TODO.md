@@ -12,3 +12,4 @@
 - [x] F2 dead UI — tabs, sort pills, forgot password (#15) (2026-09-18)
 - [x] F3 revenue logic — loyalty, reseller discount, testers, reorder (#16) (2026-09-18)
 - [x] F4 export/import/print/reporting (#17) (2026-09-18)
+- [x] F5 roles/scale/speed — RBAC, pagination, barcode scanning (#18) (2026-09-18)

@@ -8,6 +8,7 @@ import {
 } from 'react-icons/fa';
 import ConfirmDialog from '../components/shared/ConfirmDialog';
 import SearchBar from '../components/shared/SearchBar';
+import Pagination from '../components/shared/Pagination';
 import Modal from '../components/shared/Modal';
 import { useToast } from '../components/shared/Toast';
 import { toCsv } from '../utils/csv';
@@ -55,6 +56,8 @@ export default function Sales() {
   const [confirmDel, setConfirmDel] = useState(null);
   const searchRef = useRef(null);
   const { showToast } = useToast();
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
 
   useEffect(() => { loadSales(); }, [loadSales]);
 
@@ -95,6 +98,13 @@ export default function Sales() {
       })
       .sort((a, b) => toDate(b.SaleDate) - toDate(a.SaleDate));
   }, [sales, tab, range, search, customers, resellers]);
+
+  const paginatedSales = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return filtered.slice(start, start + pageSize);
+  }, [filtered, page, pageSize]);
+
+  useEffect(() => { setPage(1); }, [search, tab, range]);
 
   const stats = useMemo(() => {
     const revenue  = filtered.reduce((s, x) => s + (x.Total||0), 0);
@@ -338,6 +348,7 @@ export default function Sales() {
           {search ? 'No sales match your search' : 'No sales in this period'}
         </div>
       ) : (
+        <>
         <div style={{ background:'var(--bg-card)', borderRadius:12, overflow:'hidden',
           border:'1px solid var(--border)' }}>
           <table className="data-table">
@@ -349,7 +360,7 @@ export default function Sales() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((sale, idx) => {
+              {paginatedSales.map((sale, idx) => {
                 const d    = toDate(sale.SaleDate);
                 const ts   = typeStyle(saleType(sale));
                 const bottles = (sale.Items||[]).reduce((s,i) => s+(i.Quantity||0), 0);
@@ -400,6 +411,14 @@ export default function Sales() {
             </tbody>
           </table>
         </div>
+        <Pagination
+          totalItems={filtered.length}
+          currentPage={page}
+          pageSize={pageSize}
+          onPageChange={setPage}
+          onPageSizeChange={(size) => { setPageSize(size); setPage(1); }}
+        />
+        </>
       )}
 
       {/* View Sale Modal */}

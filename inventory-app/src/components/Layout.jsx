@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useRole } from '../contexts/RoleContext';
 import { useToast } from './shared/Toast';
 import { useData } from '../contexts/DataContext';
 import { ToastProvider } from './shared/Toast';
 import {
   FaHome, FaBoxes, FaTruck, FaUsers, FaHandshake,
   FaShoppingCart, FaFileInvoice, FaFlask, FaChartBar,
-  FaCashRegister, FaSignOutAlt, FaBars, FaChevronLeft, FaTimes, FaBell
+  FaCashRegister, FaSignOutAlt, FaBars, FaChevronLeft, FaTimes, FaBell, FaShieldAlt
 } from 'react-icons/fa';
 
 const menuItems = [
@@ -45,6 +46,7 @@ export default function Layout() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const isMobile = useIsMobile();
   const { currentUser, signOut } = useAuth();
+  const { role, canAccessPage } = useRole();
   const { showToast } = useToast();
   const { readyOrders } = useData();
   const navigate = useNavigate();
@@ -52,6 +54,13 @@ export default function Layout() {
   const [searchParams] = useSearchParams();
 
   useEffect(() => { setMobileOpen(false); }, [location.pathname]);
+
+  useEffect(() => {
+    if (location.pathname && !canAccessPage(location.pathname)) {
+      showToast('Permission denied — contact your admin for access', 'error');
+      navigate('/', { replace: true });
+    }
+  }, [location.pathname, canAccessPage, navigate, showToast]);
 
   const posOrderParam = searchParams.get('posOrder');
   useEffect(() => {
@@ -157,7 +166,7 @@ export default function Layout() {
 
         {/* Nav */}
         <nav style={{ flex:1, padding:'12px 8px', overflowY:'auto', overflowX:'hidden' }}>
-          {menuItems.map(item => {
+          {menuItems.filter(item => canAccessPage(item.path)).map(item => {
             const active = location.pathname === item.path ||
               (item.path !== '/' && location.pathname.startsWith(item.path));
             return (
@@ -224,8 +233,13 @@ export default function Layout() {
             <span style={{ color:'var(--text-primary)', fontWeight:700, fontSize:16 }}>{pageLabel}</span>
           </div>
 
-          {/* Right side: email + logout */}
+          {/* Right side: email + role badge + logout */}
           <div style={{ display:'flex', alignItems:'center', gap:16 }}>
+            <span style={{ display:'inline-flex', alignItems:'center', gap:5, padding:'3px 10px',
+              borderRadius:20, fontSize:10, fontWeight:700, textTransform:'uppercase',
+              background:'var(--accent-dim)', color:'var(--accent)' }}>
+              <FaShieldAlt style={{ fontSize:10 }} /> {role}
+            </span>
             <span style={{ fontSize:13, color:'var(--text-muted)' }}>{currentUser?.email}</span>
             <button onClick={handleLogout} style={{
               display:'flex', alignItems:'center', gap:6,
