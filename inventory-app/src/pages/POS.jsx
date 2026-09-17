@@ -16,7 +16,7 @@ const inp = { padding:'9px 12px', border:'1.5px solid var(--border)', borderRadi
   background:'var(--bg-input)', color:'var(--text-primary)' };
 
 export default function POS() {
-  const { products, customers, resellers, addSale, updateProduct, updateOrder, getOrder, loading } = useData();
+  const { products, customers, resellers, addSale, adjustStock, updateOrder, getOrder, loading } = useData();
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState('');
   const [cart, setCart] = useState([]);
@@ -201,13 +201,17 @@ export default function POS() {
               Quantity: item.quantity, UnitPrice: item.price,
               Subtotal: item.price * item.quantity })
       };
-      const saleId = await addSale(saleData);
-      if (typeof saleId === 'string' && saleId.startsWith('SCNT-LOCAL-SALE')) {
+      const stockDeltas = cart
+        .filter(item => !item.isTesterKit && products.some(p => p.id === item.id))
+        .map(item => ({ productId: item.id, delta: -item.quantity }));
+      const saleId = await addSale(saleData, { stockDeltas });
+      const saleQueuedOffline = typeof saleId === 'string' && saleId.startsWith('SCNT-LOCAL-SALE');
+      if (saleQueuedOffline) {
         showToast('Saved locally — invoice generated; will sync when quota resets', 'info');
-      }
-      for (const item of cart) {
-        const product = products.find(p => p.id === item.id);
-        if (product) await updateProduct(item.id, { ...product, Stock: (product.Stock || 0) - item.quantity });
+      } else {
+        for (const d of stockDeltas) {
+          await adjustStock(d.productId, d.delta);
+        }
       }
       const orderForSale = activeOrder;
       const customerInfo = orderForSale

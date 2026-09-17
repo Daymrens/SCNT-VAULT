@@ -9,7 +9,8 @@ import {
   query,
   where,
   getDoc,
-  Timestamp
+  Timestamp,
+  increment
 } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
 import { useAuth } from './AuthContext';
@@ -87,19 +88,36 @@ export function DataProvider({ children }) {
     };
   }, []);
 
+  const retryCountsRef = React.useRef(new Map());
+
   useEffect(() => {
     const flush = async () => {
       const pending = readPendingWrites().filter((w) => w.type === 'sale');
       for (const w of pending) {
         try {
-          const { _localId, ...data } = w.data;
+          const { _localId, stockDeltas, ...data } = w.data;
           await addDoc(collection(db, 'sales'), data);
+          if (Array.isArray(stockDeltas) && stockDeltas.length) {
+            for (const d of stockDeltas) {
+              if (!d || !d.productId) continue;
+              await updateDoc(doc(db, 'products', d.productId), { Stock: increment(Number(d.delta) || 0) });
+            }
+          }
           removePendingWrite(w.ts);
+          retryCountsRef.current.delete(w.ts);
         } catch (err) {
           if (isQuotaError(err)) {
             continue;
           }
-          removePendingWrite(w.ts);
+          const attempts = (retryCountsRef.current.get(w.ts) || 0) + 1;
+          retryCountsRef.current.set(w.ts, attempts);
+          if (attempts >= 5) {
+            console.error('[flush] permanently dropping pending sale after 5 failed attempts:', w.ts, err);
+            removePendingWrite(w.ts);
+            retryCountsRef.current.delete(w.ts);
+          } else {
+            console.warn(`[flush] retrying pending sale (attempt ${attempts}/5):`, w.ts, err);
+          }
         }
       }
     };
@@ -162,6 +180,19 @@ export function DataProvider({ children }) {
     await deleteDoc(doc(db, 'products', id));
   };
 
+  const adjustStock = async (productId, delta) => {
+    const docRef = doc(db, 'products', productId);
+    try {
+      await updateDoc(docRef, { Stock: increment(delta) });
+    } catch (err) {
+      if (isQuotaError(err)) {
+        console.warn('[quota] stock adjustment skipped (offline):', productId, delta);
+        return;
+      }
+      throw err;
+    }
+  };
+
   // Supplier CRUD operations
   const addSupplier = async (supplier) => {
     const docRef = await addDoc(collection(db, 'suppliers'), {
@@ -218,7 +249,7 @@ export function DataProvider({ children }) {
   };
 
   // Sale CRUD operations
-  const addSale = async (sale) => {
+  const addSale = async (sale, opts = {}) => {
     const payload = { ...sale, SaleDate: sale.SaleDate || Timestamp.now(), createdAt: Timestamp.now() };
     try {
       const docRef = await addDoc(collection(db, 'sales'), payload);
@@ -226,7 +257,11 @@ export function DataProvider({ children }) {
     } catch (err) {
       if (isQuotaError(err)) {
         const localId = getLocalSaleId();
-        enqueuePendingWrite('sale', { ...payload, _localId: localId });
+        const queued = { ...payload, _localId: localId };
+        if (Array.isArray(opts.stockDeltas) && opts.stockDeltas.length) {
+          queued.stockDeltas = opts.stockDeltas;
+        }
+        enqueuePendingWrite('sale', queued);
         console.warn('[quota] sale saved locally; will sync later:', localId);
         return localId;
       }
@@ -302,6 +337,7 @@ export function DataProvider({ children }) {
     addProduct,
     updateProduct,
     deleteProduct,
+    adjustStock,
     addSupplier,
     updateSupplier,
     deleteSupplier,
