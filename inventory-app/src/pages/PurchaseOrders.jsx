@@ -37,7 +37,7 @@ const avatarColor = (name) => {
 
 export default function PurchaseOrders() {
   const { purchaseOrders, suppliers, products, sales, loading,
-          addPurchaseOrder, updatePurchaseOrder, deletePurchaseOrder, updateProduct,
+          addPurchaseOrder, updatePurchaseOrder, deletePurchaseOrder, adjustStock,
           loadSales, loadPurchaseOrders } = useData();
 
   const [search, setSearch]             = useState('');
@@ -236,7 +236,7 @@ export default function PurchaseOrders() {
         const pid = String(item.PerfumeId); const qty = Number(item.OrderedQuantity)||0;
         if (!pid || qty<=0) continue;
         const prod = resolveProduct(pid);
-        if (prod) await updateProduct(prod.id, { Stock:(prod.Stock||0)+qty });
+        if (prod) await adjustStock(prod.id, +qty);
       }
       await updatePurchaseOrder(po.id, { ...po, Status:'Completed', _stockAdded:true });
       showToast('Stock added to inventory', 'success');
@@ -257,7 +257,10 @@ export default function PurchaseOrders() {
         const pid = String(item.PerfumeId); const qty = Number(item.OrderedQuantity)||0;
         if (!pid || qty<=0) continue;
         const prod = resolveProduct(pid);
-        if (prod) await updateProduct(prod.id, { Stock:Math.max(0,(prod.Stock||0)-qty) });
+        if (prod) {
+          const release = Math.min(qty, Math.max(0, prod.Stock || 0));
+          if (release > 0) await adjustStock(prod.id, -release);
+        }
       }
       await updatePurchaseOrder(po.id, { ...po, Status:'Received', _stockAdded:false });
       showToast('Stock released', 'success');

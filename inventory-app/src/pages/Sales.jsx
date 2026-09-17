@@ -47,7 +47,7 @@ const paymentIcon = (method) => {
 };
 
 export default function Sales() {
-  const { sales, customers, resellers, products, deleteSale, updateProduct, loading, loadSales } = useData();
+  const { sales, customers, resellers, products, deleteSale, adjustStock, loading, loadSales } = useData();
   const [tab, setTab]           = useState('all');
   const [range, setRange]       = useState('30');
   const [search, setSearch]     = useState('');
@@ -150,7 +150,7 @@ export default function Sales() {
         const qty = Number(item.Quantity)||0;
         if (!pid || qty <= 0) continue;
         const prod = productMap[pid];
-        if (prod) await updateProduct(pid, { Stock: (prod.Stock||0)+qty });
+        if (prod) await adjustStock(pid, +qty);
       }
       showToast('Sale deleted — stock restored', 'success');
     } catch (e) {
