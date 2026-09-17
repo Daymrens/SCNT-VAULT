@@ -6,6 +6,7 @@ import {
   FaToggleOn, FaToggleOff, FaEye, FaSearch
 } from 'react-icons/fa';
 import SearchBar from '../components/shared/SearchBar';
+import Pagination from '../components/shared/Pagination';
 import Modal, { CancelButton, PrimaryButton } from '../components/shared/Modal';
 import ConfirmDialog from '../components/shared/ConfirmDialog';
 import { useToast } from '../components/shared/Toast';
@@ -72,6 +73,8 @@ export default function Resellers() {
   const [confirmDelete, setConfirmDelete] = useState(null);
   const [viewSales, setViewSales]       = useState(null);
   const searchRef = useRef(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
 
   useEffect(() => { loadSales(); }, [loadSales]);
 
@@ -119,6 +122,13 @@ export default function Resellers() {
     });
     return sortResellers(list, sortBy, resellerStats);
   }, [resellers, search, filterActive, sortBy, resellerStats]);
+
+  const paginatedResellers = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return filtered.slice(start, start + pageSize);
+  }, [filtered, page, pageSize]);
+
+  useEffect(() => { setPage(1); }, [search, filterActive, sortBy]);
 
   const activeCount  = resellers.filter(r => r.IsActive).length;
   const totalRevenue = Object.values(resellerStats).reduce((s, r) => s + r.total, 0);
@@ -308,8 +318,9 @@ export default function Resellers() {
         </div>
       ) : viewMode === 'grid' ? (
         /* ── Grid View ── */
+        <>
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(320px, 1fr))', gap:20 }}>
-          {filtered.map(r => {
+          {paginatedResellers.map(r => {
             const color = avatarColor(r.Name);
             const stats = resellerStats[r.id] || { count: 0, total: 0, sales: [] };
             const isActive = r.IsActive !== false;
@@ -418,8 +429,17 @@ export default function Resellers() {
             );
           })}
         </div>
+        <Pagination
+          totalItems={filtered.length}
+          currentPage={page}
+          pageSize={pageSize}
+          onPageChange={setPage}
+          onPageSizeChange={(size) => { setPageSize(size); setPage(1); }}
+        />
+        </>
       ) : (
         /* ── Table View ── */
+        <>
         <div style={{ background:'#1f232b', borderRadius:12, overflow:'hidden',
           border:'1px solid rgba(255,255,255,0.06)' }}>
           <div style={{ overflowX:'auto' }}>
@@ -434,7 +454,7 @@ export default function Resellers() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map(r => {
+                {paginatedResellers.map(r => {
                   const color = avatarColor(r.Name);
                   const stats = resellerStats[r.id] || { count: 0, total: 0, sales: [] };
                   const isActive = r.IsActive !== false;
@@ -520,6 +540,14 @@ export default function Resellers() {
             </table>
           </div>
         </div>
+        <Pagination
+          totalItems={filtered.length}
+          currentPage={page}
+          pageSize={pageSize}
+          onPageChange={setPage}
+          onPageSizeChange={(size) => { setPageSize(size); setPage(1); }}
+        />
+        </>
       )}
 
       {/* View Sales Modal */}

@@ -10,6 +10,7 @@ import {
 import ConfirmDialog from '../components/shared/ConfirmDialog';
 import StatCard from '../components/shared/StatCard';
 import SearchBar from '../components/shared/SearchBar';
+import Pagination from '../components/shared/Pagination';
 import Modal from '../components/shared/Modal';
 import CancelButton, { PrimaryButton } from '../components/shared/Modal';
 import StatusBadge from '../components/shared/StatusBadge';
@@ -57,6 +58,8 @@ export default function PurchaseOrders() {
   const [activeTab, setActiveTab] = useState('orders');
   const searchRef = useRef(null);
   const { showToast } = useToast();
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
 
   useEffect(() => { loadPurchaseOrders(); loadSales(); }, [loadPurchaseOrders, loadSales]);
 
@@ -111,6 +114,13 @@ export default function PurchaseOrders() {
         return db - da;
       });
   }, [purchaseOrders, search, filterStatus, supplierMap]);
+
+  const paginatedPOs = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return filtered.slice(start, start + pageSize);
+  }, [filtered, page, pageSize]);
+
+  useEffect(() => { setPage(1); }, [search, filterStatus]);
 
   const totalSpend   = useMemo(() => purchaseOrders.reduce((s, po) => s + (po.TotalAmount||0), 0), [purchaseOrders]);
   const statusCounts = useMemo(() => {
@@ -629,7 +639,7 @@ export default function PurchaseOrders() {
                   </div>
                   {!search && <div style={{ fontSize:12, color:'var(--text-muted)', marginTop:4 }}>Click "New Order" to create one</div>}
                 </td></tr>
-              ) : filtered.map((po, idx) => {
+              ) : paginatedPOs.map((po, idx) => {
                 const sup        = resolveSupplier(po.SupplierId);
                 const st         = STATUS_STYLE[po.Status] || STATUS_STYLE['Pending'];
                 const itemCount  = (po.Items||[]).reduce((s,i) => s+(i.OrderedQuantity||0), 0);
@@ -889,6 +899,14 @@ export default function PurchaseOrders() {
           </table>
         </div>
       </div>
+
+      <Pagination
+        totalItems={filtered.length}
+        currentPage={page}
+        pageSize={pageSize}
+        onPageChange={setPage}
+        onPageSizeChange={(size) => { setPageSize(size); setPage(1); }}
+      />
 
       {/* Add / Edit Modal */}
       <Modal isOpen={showModal} onClose={closeModal}

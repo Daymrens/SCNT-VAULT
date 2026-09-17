@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider } from './contexts/AuthContext';
 import { DataProvider } from './contexts/DataContext';
 import { SettingsProvider } from './contexts/SettingsContext';
+import { RoleProvider } from './contexts/RoleContext';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Inventory from './pages/Inventory';
@@ -22,6 +23,7 @@ function App() {
     <Router>
       <AuthProvider>
         <SettingsProvider>
+          <RoleProvider>
           <DataProvider>
             <Routes>
               <Route path="/login" element={<Login />} />
@@ -40,6 +42,7 @@ function App() {
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </DataProvider>
+          </RoleProvider>
         </SettingsProvider>
       </AuthProvider>
     </Router>

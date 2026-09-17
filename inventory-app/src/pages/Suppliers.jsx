@@ -6,6 +6,7 @@ import {
   FaEye, FaCheck, FaSearch
 } from 'react-icons/fa';
 import SearchBar from '../components/shared/SearchBar';
+import Pagination from '../components/shared/Pagination';
 import Modal, { CancelButton, PrimaryButton } from '../components/shared/Modal';
 import ConfirmDialog from '../components/shared/ConfirmDialog';
 import { useToast } from '../components/shared/Toast';
@@ -49,6 +50,8 @@ export default function Suppliers() {
   const [viewSupplier, setViewSupplier]   = useState(null);
   const [copied, setCopied]             = useState('');
   const searchRef = useRef(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
 
   useEffect(() => {
     const handler = (e) => {
@@ -98,6 +101,13 @@ export default function Suppliers() {
     );
     return sortSuppliers(list, sortBy, poBySupplier, productsBySupplier);
   }, [suppliers, search, sortBy, poBySupplier, productsBySupplier]);
+
+  const paginatedSuppliers = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return filtered.slice(start, start + pageSize);
+  }, [filtered, page, pageSize]);
+
+  useEffect(() => { setPage(1); }, [search, sortBy]);
 
   const openAdd  = () => { setEditing(null); setForm(EMPTY_FORM); setShowModal(true); };
   const openEdit = (s) => {
@@ -267,8 +277,9 @@ export default function Suppliers() {
         </div>
       ) : viewMode === 'grid' ? (
         /* ── Grid View ── */
+        <>
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(300px, 1fr))', gap:20 }}>
-          {filtered.map(s => {
+          {paginatedSuppliers.map(s => {
             const color    = avatarColor(s.Name);
             const prodList = productsBySupplier[s.id] || [];
             const poStats  = poBySupplier[s.id] || { count: 0, total: 0 };
@@ -410,8 +421,17 @@ export default function Suppliers() {
             );
           })}
         </div>
+        <Pagination
+          totalItems={filtered.length}
+          currentPage={page}
+          pageSize={pageSize}
+          onPageChange={setPage}
+          onPageSizeChange={(size) => { setPageSize(size); setPage(1); }}
+        />
+        </>
       ) : (
         /* ── Table View ── */
+        <>
         <div style={{ background:'var(--bg-card)', border:'1px solid var(--border)', borderRadius:16, overflow:'hidden',
           boxShadow:'0 4px 20px rgba(0,0,0,0.2)' }}>
           <div style={{ overflowX:'auto' }}>
@@ -426,7 +446,7 @@ export default function Suppliers() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map(s => {
+                {paginatedSuppliers.map(s => {
                   const color    = avatarColor(s.Name);
                   const prodList = productsBySupplier[s.id] || [];
                   const poStats  = poBySupplier[s.id] || { count: 0, total: 0 };
@@ -505,6 +525,14 @@ export default function Suppliers() {
             </table>
           </div>
         </div>
+        <Pagination
+          totalItems={filtered.length}
+          currentPage={page}
+          pageSize={pageSize}
+          onPageChange={setPage}
+          onPageSizeChange={(size) => { setPageSize(size); setPage(1); }}
+        />
+        </>
       )}
 
       {/* View Products Modal */}

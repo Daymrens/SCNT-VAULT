@@ -8,6 +8,7 @@ import {
   FaCrown, FaMedal, FaAward, FaSearch
 } from 'react-icons/fa';
 import SearchBar from '../components/shared/SearchBar';
+import Pagination from '../components/shared/Pagination';
 import Modal, { CancelButton, PrimaryButton } from '../components/shared/Modal';
 import ConfirmDialog from '../components/shared/ConfirmDialog';
 import { useToast } from '../components/shared/Toast';
@@ -54,6 +55,8 @@ export default function Customers() {
   const [viewOrders, setViewOrders]       = useState(null);
   const [copied, setCopied]               = useState('');
   const searchRef = useRef(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
 
   useEffect(() => { loadSales(); }, [loadSales]);
 
@@ -125,6 +128,13 @@ export default function Customers() {
       return (a.Name||'').localeCompare(b.Name||'');
     });
   }, [customers, search, sortBy, customerStats]);
+
+  const paginatedCustomers = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return filtered.slice(start, start + pageSize);
+  }, [filtered, page, pageSize]);
+
+  useEffect(() => { setPage(1); }, [search, sortBy]);
 
   const openAdd  = () => { setEditing(null); setForm(EMPTY_FORM); setShowModal(true); };
   const openEdit = (c) => {
@@ -293,8 +303,9 @@ export default function Customers() {
         </div>
       ) : viewMode === 'grid' ? (
         /* ── Grid View ── */
+        <>
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(280px, 1fr))', gap:18 }}>
-          {filtered.map(c => {
+          {paginatedCustomers.map(c => {
             const color  = avatarColor(c.Name);
             const stats  = customerStats[c.id] || { count:0, totalSpent:0, lastOrder:null, topProducts:[] };
             const tier   = loyaltyTier(c.LoyaltyPoints, settings.loyaltyTiers || 0);
@@ -443,8 +454,17 @@ export default function Customers() {
             );
           })}
         </div>
+        <Pagination
+          totalItems={filtered.length}
+          currentPage={page}
+          pageSize={pageSize}
+          onPageChange={setPage}
+          onPageSizeChange={(size) => { setPageSize(size); setPage(1); }}
+        />
+        </>
       ) : (
         /* ── Table View ── */
+        <>
         <div style={{ background:'#1f232b', borderRadius:12, overflow:'hidden',
           border:'1px solid rgba(255,255,255,0.06)' }}>
           <div style={{ overflowX:'auto' }}>
@@ -459,7 +479,7 @@ export default function Customers() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map(c => {
+                {paginatedCustomers.map(c => {
                   const color = avatarColor(c.Name);
                   const stats = customerStats[c.id] || { count:0, totalSpent:0, lastOrder:null };
                   const tier  = loyaltyTier(c.LoyaltyPoints, settings.loyaltyTiers || 0);
@@ -549,6 +569,14 @@ export default function Customers() {
             </table>
           </div>
         </div>
+        <Pagination
+          totalItems={filtered.length}
+          currentPage={page}
+          pageSize={pageSize}
+          onPageChange={setPage}
+          onPageSizeChange={(size) => { setPageSize(size); setPage(1); }}
+        />
+        </>
       )}
 
       {/* Order History Modal */}

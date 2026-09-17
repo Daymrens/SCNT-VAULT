@@ -2,9 +2,10 @@ import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react'
 import { useSearchParams } from 'react-router-dom';
 import { useData } from '../contexts/DataContext';
 import { useSettings } from '../contexts/SettingsContext';
-import { FaTrash, FaShoppingCart, FaSearch, FaTimes, FaCheck, FaCheckCircle, FaFilePdf, FaFlask, FaPrint } from 'react-icons/fa';
+import { FaTrash, FaShoppingCart, FaSearch, FaTimes, FaCheck, FaCheckCircle, FaFilePdf, FaFlask, FaPrint, FaBarcode } from 'react-icons/fa';
 import { Timestamp, doc, updateDoc, increment } from 'firebase/firestore';
 import ConfirmDialog from '../components/shared/ConfirmDialog';
+import BarcodeScanner from '../components/shared/BarcodeScanner';
 import Modal, { CancelButton, PrimaryButton } from '../components/shared/Modal';
 import { useToast } from '../components/shared/Toast';
 import { generateInvoice } from '../utils/invoice';
@@ -40,8 +41,27 @@ export default function POS() {
   const [testerKitPrice, setTesterKitPrice] = useState('');
   const searchRef = useRef(null);
   const checkoutRef = useRef(null);
+  const [showScanner, setShowScanner] = useState(false);
 
   const { showToast } = useToast();
+
+  const handleBarcodeScan = (code) => {
+    const found = products.find(p =>
+      p.BatchNumber?.toLowerCase() === code.toLowerCase() ||
+      p.SKU?.toLowerCase() === code.toLowerCase() ||
+      p.id?.toLowerCase() === code.toLowerCase()
+    );
+    if (found) {
+      if ((found.Stock || 0) > 0) {
+        addToCart(found);
+        showToast(`Added: ${found.Name}`, 'success');
+      } else {
+        showToast(`${found.Name} is out of stock`, 'error');
+      }
+    } else {
+      showToast(`No product found for barcode: ${code}`, 'error');
+    }
+  };
 
   const filteredProducts = useMemo(() => {
     return products.filter(p =>
@@ -393,6 +413,10 @@ export default function POS() {
                 <FaTimes />
               </button>
             )}
+            <button onClick={() => setShowScanner(true)} style={{ background:'none', border:'none', cursor:'pointer', color:'var(--accent)', padding:4, display:'flex', alignItems:'center' }}
+              title="Scan barcode">
+              <FaBarcode style={{ fontSize:16 }} />
+            </button>
           </div>
 
           {/* Product grid */}
@@ -701,6 +725,12 @@ export default function POS() {
       <ConfirmDialog isOpen={clearConfirm} onClose={() => setClearConfirm(false)}
         onConfirm={() => { setCart([]); setActiveOrder(null); setClearConfirm(false); }}
         title="Clear Cart?" message="Remove all items from the cart?" confirmLabel="Clear Cart" />
+
+      <BarcodeScanner
+        isOpen={showScanner}
+        onClose={() => setShowScanner(false)}
+        onScan={handleBarcodeScan}
+      />
 
       <Modal isOpen={testerKitOpen} onClose={() => setTesterKitOpen(false)} title="Configure Tester Kit"
         icon={<FaFlask style={{ fontSize: 16 }} />} maxWidth={400}
