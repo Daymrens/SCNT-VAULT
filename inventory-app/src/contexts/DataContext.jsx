@@ -341,6 +341,54 @@ export function DataProvider({ children }) {
     return snapshot.exists() ? { id: snapshot.id, ...snapshot.data() } : null;
   };
 
+  const addBulkProducts = async (productsArray) => {
+    const results = { success: 0, errors: [] };
+    for (const product of productsArray) {
+      try {
+        await addDoc(collection(db, 'products'), {
+          ...product,
+          Stock: product.Stock || 0,
+          LowStockThreshold: product.LowStockThreshold || 10,
+          createdAt: Timestamp.now(),
+          updatedAt: Timestamp.now()
+        });
+        results.success++;
+      } catch (err) {
+        results.errors.push({ row: product, error: err.message });
+      }
+    }
+    return results;
+  };
+
+  const applyStockAdjustments = async (adjustmentsArray) => {
+    const results = { success: 0, errors: [] };
+    for (const adj of adjustmentsArray) {
+      try {
+        const product = products.find(p => 
+          p.BatchNumber === adj.SKU || p.id === adj.SKU
+        );
+        if (!product) {
+          results.errors.push({ row: adj, error: 'Product not found' });
+          continue;
+        }
+        await updateDoc(doc(db, 'products', product.id), { Stock: increment(adj.Adjustment) });
+        await logStockMovement({
+          productId: product.id,
+          productName: product.Name,
+          sku: product.BatchNumber || product.id,
+          type: adj.Adjustment > 0 ? 'in' : 'out',
+          quantity: Math.abs(adj.Adjustment),
+          reference: 'CSV Import',
+          notes: adj.Notes || 'Bulk stock adjustment'
+        });
+        results.success++;
+      } catch (err) {
+        results.errors.push({ row: adj, error: err.message });
+      }
+    }
+    return results;
+  };
+
   const value = {
     products,
     suppliers,
@@ -376,7 +424,9 @@ export function DataProvider({ children }) {
     updateOrder,
     getOrder,
     loadSales,
-    loadPurchaseOrders
+    loadPurchaseOrders,
+    addBulkProducts,
+    applyStockAdjustments
   };
 
   return (
