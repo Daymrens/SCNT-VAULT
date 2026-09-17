@@ -12,6 +12,16 @@ import { generateInvoice } from '../utils/invoice';
 import { nextInvoiceNumber } from '../utils/numbers';
 import { db } from '../firebase/firebase';
 
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 const lbl = { fontSize:12, fontWeight:600, color:'var(--text-muted)', textTransform:'uppercase', letterSpacing:'0.5px' };
 const inp = { padding:'9px 12px', border:'1.5px solid var(--border)', borderRadius:8, fontSize:13,
   outline:'none', width:'100%', boxSizing:'border-box', fontFamily:'inherit', transition:'border-color 0.2s',
@@ -344,15 +354,15 @@ export default function POS() {
       <body>
         <div class="receipt">
           <div class="center bold">SCNT Vault</div>
-          <div class="center">${new Date().toLocaleString()}</div>
-          <div class="center">Invoice #${successSale.InvoiceNumber || successSale.id}</div>
+          <div class="center">${escapeHtml(new Date().toLocaleString())}</div>
+          <div class="center">Invoice #${escapeHtml(successSale.InvoiceNumber || successSale.id)}</div>
           <div class="line"></div>
-          <div class="item"><span>Customer:</span><span>${successSale.CustomerName || 'Walk-in'}</span></div>
-          <div class="item"><span>Payment:</span><span>${successSale.PaymentMethod || 'Cash'}</span></div>
+          <div class="item"><span>Customer:</span><span>${escapeHtml(successSale.CustomerName || 'Walk-in')}</span></div>
+          <div class="item"><span>Payment:</span><span>${escapeHtml(successSale.PaymentMethod || 'Cash')}</span></div>
           <div class="line"></div>
           ${(successSale.Items || []).map(item => `
             <div class="item">
-              <span>${item.ProductName || 'Product'} x${item.Quantity}</span>
+              <span>${escapeHtml(item.ProductName || 'Product')} x${escapeHtml(String(item.Quantity))}</span>
               <span>₱${(item.Subtotal || 0).toLocaleString()}</span>
             </div>
           `).join('')}

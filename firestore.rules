@@ -3,94 +3,125 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Products Collection
+    // Helper: check if user is authenticated
+    function isAuth() {
+      return request.auth != null;
+    }
+    
+    // Helper: check if user is owner
+    function isOwner() {
+      return isAuth() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'owner';
+    }
+    
+    // Helper: check if user is manager or above
+    function isManager() {
+      return isAuth() && (
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'owner' ||
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'manager'
+      );
+    }
+
+    // Products Collection — authenticated read, manager+ write
     match /products/{productId} {
-      allow read: if true;
-      allow write: if true;
+      allow read: if isAuth();
+      allow create, update: if isManager();
+      allow delete: if isOwner();
     }
     
     // Suppliers Collection
     match /suppliers/{supplierId} {
-      allow read: if true;
-      allow write: if true; // Temporary for migration
+      allow read: if isAuth();
+      allow create, update: if isManager();
+      allow delete: if isOwner();
     }
     
     // Customers Collection
     match /customers/{customerId} {
-      allow read: if true;
-      allow write: if true; // Temporary for migration
+      allow read: if isAuth();
+      allow create, update: if isManager();
+      allow delete: if isOwner();
     }
     
     // Resellers Collection
     match /resellers/{resellerId} {
-      allow read: if true;
-      allow write: if true; // Temporary for migration
+      allow read: if isAuth();
+      allow create, update: if isManager();
+      allow delete: if isOwner();
     }
     
     // Sales Collection
     match /sales/{saleId} {
-      allow read: if true;
-      allow write: if true; // Temporary for migration
+      allow read: if isAuth();
+      allow create: if isManager();
+      allow update, delete: if isOwner();
     }
     
     // Purchase Orders Collection
     match /purchaseOrders/{orderId} {
-      allow read: if true;
-      allow write: if true; // Temporary for migration
+      allow read: if isAuth();
+      allow create, update: if isManager();
+      allow delete: if isOwner();
     }
     
     // Testers Collection
     match /testers/{testerId} {
-      allow read: if true;
-      allow write: if true; // Temporary for migration
+      allow read: if isAuth();
+      allow create, update: if isManager();
+      allow delete: if isOwner();
+    }
+    
+    // Stock Movements Collection
+    match /stockMovements/{movementId} {
+      allow read: if isAuth();
+      allow create: if isManager();
+      allow delete: if isOwner();
     }
     
     // Counters Collection (invoice/order numbering)
     match /counters/{counterId} {
-      allow read, write: if true;
+      allow read: if isAuth();
+      allow write: if isManager();
+    }
+    
+    // Settings Collection
+    match /settings/{settingId} {
+      allow read: if isAuth();
+      allow write: if isOwner();
+    }
+    
+    // Users Collection — can only read others, can ONLY update own name (not role)
+    match /users/{userId} {
+      allow read: if isAuth();
+      allow create: if isAuth();
+      // Users can only update their own doc, and NEVER the role field
+      allow update: if isAuth() && request.auth.uid == userId 
+                    && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role']);
+      // Only owner can delete users
+      allow delete: if isOwner();
     }
     
     // Analytics Collection (page/product view tracking)
     match /analytics/{docId} {
-      allow read, write: if true;
+      allow read: if isAuth();
+      allow write: if isAuth();
     }
     
     // Newsletter Collection
     match /newsletter/{docId} {
-      allow read, write: if true;
+      allow read: if isAuth();
+      allow write: if isAuth();
     }
     
     // Test Collection (connection checks)
     match /test/{docId} {
       allow read, write: if true;
     }
-    
-    // Settings Collection
-    match /settings/{settingId} {
-      allow read: if true;
-      allow write: if request.auth != null;
-    }
-    
-    // Orders Collection (legacy)
-    match /orders/{orderId} {
-      allow create: if true;
-      allow read: if request.auth != null;
-      allow update: if request.auth != null;
-      allow delete: if request.auth != null;
-    }
 
     // Contacts Collection
     match /contacts/{contactId} {
-      allow create: if true;
-      allow read: if request.auth != null;
-      allow update: if request.auth != null;
-      allow delete: if request.auth != null;
-    }
-
-    // Users Collection (role-based access control)
-    match /users/{userId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null;
+      allow read: if isAuth();
+      allow create: if isAuth();
+      allow update, delete: if isManager();
     }
   }
 }
