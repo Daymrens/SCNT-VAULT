@@ -9,3 +9,4 @@
 - [x] Data integrity fixes — atomic stock, offline deltas, flush retry (#13) (2026-09-18)
 
 - [x] F1 foundation - settings, error feedback, write guards (#14) (2026-09-18)
+- [x] F2 dead UI — tabs, sort pills, forgot password (#15) (2026-09-18)
