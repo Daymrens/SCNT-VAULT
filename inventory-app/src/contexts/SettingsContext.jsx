@@ -23,6 +23,7 @@ const DEFAULT_SETTINGS = {
     Gold: 100,
     Silver: 50,
   },
+  loyaltyEarnRate: 1,
 };
 
 export function useSettings() {
@@ -48,6 +49,7 @@ export function SettingsProvider({ children }) {
             ...(data.testerKit ? { testerKit: { ...prev.testerKit, ...data.testerKit } } : {}),
             ...(data.paymentMethods ? { paymentMethods: data.paymentMethods } : {}),
             ...(data.loyaltyTiers ? { loyaltyTiers: { ...prev.loyaltyTiers, ...data.loyaltyTiers } } : {}),
+            ...(data.loyaltyEarnRate != null ? { loyaltyEarnRate: data.loyaltyEarnRate } : {}),
           }));
         }
         setLoaded(true);
