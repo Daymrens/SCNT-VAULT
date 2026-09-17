@@ -6,3 +6,4 @@
 - [x] Tester kit on POS (#6) (2026-08-15)
 - [x] Formal SCNT invoice & order numbers (#7) (2026-08-15)
 - [x] SCNT Vault web app dark redesign — Option A (#12) (2026-09-17)
+- [x] Data integrity fixes — atomic stock, offline deltas, flush retry (#13) (2026-09-18)
