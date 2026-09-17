@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useData } from '../contexts/DataContext';
 import {
   FaPlus, FaEdit, FaTrash, FaTruck, FaSort,
@@ -629,10 +629,10 @@ export default function Suppliers() {
       <ConfirmDialog
         isOpen={!!confirmDelete}
         onClose={() => setConfirmDelete(null)}
-        onConfirm={() => { handleDelete(confirmDelete.id); setConfirmDelete(null); }}
+        onConfirm={() => handleDelete(confirmDelete.id)}
         title="Delete Supplier?"
         message={<span>Are you sure you want to delete <strong>{confirmDelete?.Name}</strong>? This cannot be undone.</span>}
-        confirmLabel="Yes, Delete"
+        confirmLabel="Yes, Delete" loading={saving}
       />
     </div>
   );

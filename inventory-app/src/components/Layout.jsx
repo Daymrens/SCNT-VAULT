@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from './shared/Toast';
 import { useData } from '../contexts/DataContext';
 import { ToastProvider } from './shared/Toast';
 import {
@@ -44,6 +45,7 @@ export default function Layout() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const isMobile = useIsMobile();
   const { currentUser, signOut } = useAuth();
+  const { showToast } = useToast();
   const { readyOrders } = useData();
   const navigate = useNavigate();
   const location = useLocation();

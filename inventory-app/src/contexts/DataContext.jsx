@@ -15,12 +15,16 @@ import {
 import { db } from '../firebase/firebase';
 import { useAuth } from './AuthContext';
 import { isQuotaError, getLocalSaleId, enqueuePendingWrite, readPendingWrites, removePendingWrite } from '../utils/offlineQueue';
+import { toastBus } from '../components/shared/Toast';
 
 const DataContext = createContext();
 
 export function useData() {
   return useContext(DataContext);
 }
+
+// Guard: only toast subscription errors once for unauthenticated users
+let _subWarned = false;
 
 export function DataProvider({ children }) {
   const { currentUser } = useAuth();
@@ -58,6 +62,10 @@ export function DataProvider({ children }) {
           console.error(`Error loading ${name}:`, error);
           setter([]);
           onLoaded(name);
+          if (currentUser && !_subWarned) {
+            _subWarned = true;
+            toastBus.fire(`Failed to load ${name} — check connection`, 'error');
+          }
         })
       );
     };
@@ -134,6 +142,9 @@ export function DataProvider({ children }) {
     }, (error) => {
       console.error('Error loading sales:', error);
       setSales([]);
+      if (currentUser) {
+        toastBus.fire('Failed to load sales — check connection', 'error');
+      }
     });
   };
 
@@ -145,6 +156,9 @@ export function DataProvider({ children }) {
     }, (error) => {
       console.error('Error loading purchaseOrders:', error);
       setPurchaseOrders([]);
+      if (currentUser) {
+        toastBus.fire('Failed to load purchase orders — check connection', 'error');
+      }
     });
   };
 
@@ -170,6 +184,7 @@ export function DataProvider({ children }) {
     } catch (err) {
       if (isQuotaError(err)) {
         console.warn('[quota] product stock update skipped (offline):', id);
+        toastBus.fire('Saved locally — will sync when back online', 'info');
         return;
       }
       throw err;
@@ -187,6 +202,7 @@ export function DataProvider({ children }) {
     } catch (err) {
       if (isQuotaError(err)) {
         console.warn('[quota] stock adjustment skipped (offline):', productId, delta);
+        toastBus.fire('Saved locally — will sync when back online', 'info');
         return;
       }
       throw err;
@@ -263,6 +279,7 @@ export function DataProvider({ children }) {
         }
         enqueuePendingWrite('sale', queued);
         console.warn('[quota] sale saved locally; will sync later:', localId);
+        toastBus.fire('Saved locally — will sync when back online', 'info');
         return localId;
       }
       throw err;
