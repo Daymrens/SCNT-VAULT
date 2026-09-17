@@ -20,6 +20,36 @@ function toDate(v) {
   return v?.toDate ? v.toDate() : new Date(v);
 }
 
+const SORT_OPTIONS = [
+  { value:'name-asc',      label:'Name A→Z' },
+  { value:'name-desc',     label:'Name Z→A' },
+  { value:'discount-desc', label:'Discount ↓' },
+  { value:'discount-asc',  label:'Discount ↑' },
+  { value:'recent',        label:'Newest' },
+  { value:'oldest',        label:'Oldest' },
+];
+
+function sortResellers(arr, sortBy, stats) {
+  const sorted = [...arr];
+  switch (sortBy) {
+    case 'name-asc':      return sorted.sort((a,b) => (a.Name||'').localeCompare(b.Name||''));
+    case 'name-desc':     return sorted.sort((a,b) => (b.Name||'').localeCompare(a.Name||''));
+    case 'discount-desc': return sorted.sort((a,b) => (b.DiscountRate||0) - (a.DiscountRate||0));
+    case 'discount-asc':  return sorted.sort((a,b) => (a.DiscountRate||0) - (b.DiscountRate||0));
+    case 'recent':        return sorted.sort((a,b) => {
+      const da = a.CreatedAt?.toDate ? a.CreatedAt.toDate() : new Date(a.CreatedAt || 0);
+      const db = b.CreatedAt?.toDate ? b.CreatedAt.toDate() : new Date(b.CreatedAt || 0);
+      return db - da;
+    });
+    case 'oldest':        return sorted.sort((a,b) => {
+      const da = a.CreatedAt?.toDate ? a.CreatedAt.toDate() : new Date(a.CreatedAt || 0);
+      const db = b.CreatedAt?.toDate ? b.CreatedAt.toDate() : new Date(b.CreatedAt || 0);
+      return da - db;
+    });
+    default:              return sorted;
+  }
+}
+
 const FILTER_OPTIONS = [
   { value:'all',      label:'All' },
   { value:'active',   label:'Active' },
@@ -32,6 +62,7 @@ export default function Resellers() {
   const { resellers, sales, loading, addReseller, updateReseller, deleteReseller, loadSales } = useData();
   const { showToast } = useToast();
   const [search, setSearch]             = useState('');
+  const [sortBy, setSortBy]             = useState('name-asc');
   const [filterActive, setFilterActive] = useState('all');
   const [viewMode, setViewMode]         = useState('grid');
   const [showModal, setShowModal]       = useState(false);
@@ -74,7 +105,7 @@ export default function Resellers() {
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
-    return resellers.filter(r => {
+    const list = resellers.filter(r => {
       const matchSearch =
         r.Name?.toLowerCase().includes(q) ||
         r.ContactPerson?.toLowerCase().includes(q) ||
@@ -86,7 +117,8 @@ export default function Resellers() {
         (filterActive === 'inactive' && !r.IsActive);
       return matchSearch && matchActive;
     });
-  }, [resellers, search, filterActive]);
+    return sortResellers(list, sortBy, resellerStats);
+  }, [resellers, search, filterActive, sortBy, resellerStats]);
 
   const activeCount  = resellers.filter(r => r.IsActive).length;
   const totalRevenue = Object.values(resellerStats).reduce((s, r) => s + r.total, 0);
@@ -178,10 +210,10 @@ export default function Resellers() {
         </div>
         <div style={{ display:'flex', alignItems:'center', gap:12 }}>
           <div className="header-tabs">
-            {['Overview', 'Grid', 'Table'].map((tab, i) => (
+            {['Grid', 'Table'].map((tab, i) => (
               <button key={tab}
-                className={`header-tab ${(i === 1 && viewMode === 'grid') || (i === 2 && viewMode === 'table') ? 'header-tab-active' : ''}`}
-                onClick={() => { if (i === 1) setViewMode('grid'); if (i === 2) setViewMode('table'); }}>
+                className={`header-tab ${(i === 0 && viewMode === 'grid') || (i === 1 && viewMode === 'table') ? 'header-tab-active' : ''}`}
+                onClick={() => { if (i === 0) setViewMode('grid'); if (i === 1) setViewMode('table'); }}>
                 {tab}
               </button>
             ))}
@@ -242,6 +274,23 @@ export default function Resellers() {
               padding:'7px 14px', border:'none', fontSize:12, fontWeight:600, cursor:'pointer',
               background: filterActive === o.value ? '#2dd4bf' : 'transparent',
               color: filterActive === o.value ? '#0f172a' : '#64748b',
+              transition:'all 0.2s', whiteSpace:'nowrap' }}>
+              {o.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Sort pills */}
+      <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:20, flexWrap:'wrap' }}>
+        <FaSort style={{ color:'#64748b', fontSize:13 }} />
+        <div style={{ display:'flex', background:'#1f232b', borderRadius:10, overflow:'hidden',
+          border:'1px solid rgba(255,255,255,0.06)' }}>
+          {SORT_OPTIONS.map(o => (
+            <button key={o.value} onClick={() => setSortBy(o.value)} style={{
+              padding:'7px 12px', border:'none', fontSize:11, fontWeight:600, cursor:'pointer',
+              background: sortBy === o.value ? '#2dd4bf' : 'transparent',
+              color: sortBy === o.value ? '#0f172a' : '#64748b',
               transition:'all 0.2s', whiteSpace:'nowrap' }}>
               {o.label}
             </button>

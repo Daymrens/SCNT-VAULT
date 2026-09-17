@@ -265,11 +265,7 @@ export default function Inventory() {
           <p style={{ color:'var(--text-secondary)', fontSize:13 }}>{filtered.length} of {products.length} products</p>
         </div>
         <div style={{ display:'flex', alignItems:'center', gap:12, flexWrap:'wrap' }}>
-          <div className="header-tabs">
-            {['Overview', 'Products', 'Categories', 'Brands'].map((tab, i) => (
-              <button key={tab} className={`header-tab ${i === 0 ? 'header-tab-active' : ''}`}>{tab}</button>
-            ))}
-          </div>
+
           <div style={{ display:'flex', background:'var(--bg-card)', borderRadius:10, padding:'8px 12px',
             border:`1.5px solid ${searchFocused ? 'var(--accent)' : 'var(--border)'}`,
             boxShadow:'0 2px 8px rgba(0,0,0,0.2)', alignItems:'center', gap:8, minWidth:200,

@@ -188,10 +188,10 @@ export default function Suppliers() {
         </div>
         <div style={{ display:'flex', alignItems:'center', gap:12 }}>
           <div className="header-tabs">
-            {['Overview', 'Grid', 'Table'].map((tab, i) => (
+            {['Grid', 'Table'].map((tab, i) => (
               <button key={tab}
-                className={`header-tab ${(i === 1 && viewMode === 'grid') || (i === 2 && viewMode === 'table') ? 'header-tab-active' : ''}`}
-                onClick={() => { if (i === 1) setViewMode('grid'); if (i === 2) setViewMode('table'); }}>
+                className={`header-tab ${(i === 0 && viewMode === 'grid') || (i === 1 && viewMode === 'table') ? 'header-tab-active' : ''}`}
+                onClick={() => { if (i === 0) setViewMode('grid'); if (i === 1) setViewMode('table'); }}>
                 {tab}
               </button>
             ))}
