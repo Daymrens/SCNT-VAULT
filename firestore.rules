@@ -10,15 +10,17 @@ service cloud.firestore {
     
     // Helper: check if user is owner
     function isOwner() {
-      return isAuth() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'owner';
+      return isAuth() && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'owner';
     }
     
     // Helper: check if user is manager or above
     function isManager() {
-      return isAuth() && (
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'owner' ||
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'manager'
-      );
+      return isAuth() && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'owner' ||
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'manager');
     }
 
     // Products Collection — authenticated read, manager+ write
