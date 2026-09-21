@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react'
 import { useSearchParams } from 'react-router-dom';
 import { useData } from '../contexts/DataContext';
 import { useSettings } from '../contexts/SettingsContext';
-import { FaTrash, FaShoppingCart, FaSearch, FaTimes, FaCheck, FaCheckCircle, FaFilePdf, FaFlask, FaPrint, FaBarcode } from 'react-icons/fa';
+import { FaTrash, FaShoppingCart, FaSearch, FaTimes, FaCheck, FaCheckCircle, FaFilePdf, FaFlask, FaPrint, FaBarcode, FaUndo } from 'react-icons/fa';
 import { Timestamp, doc, updateDoc, increment } from 'firebase/firestore';
 import ConfirmDialog from '../components/shared/ConfirmDialog';
 import BarcodeScanner from '../components/shared/BarcodeScanner';
@@ -52,8 +52,39 @@ export default function POS() {
   const searchRef = useRef(null);
   const checkoutRef = useRef(null);
   const [showScanner, setShowScanner] = useState(false);
+  const [hasDraft, setHasDraft] = useState(false);
 
   const { showToast } = useToast();
+
+  // Restore cart from localStorage on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('pos-cart');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const validated = parsed.filter(item => item && item.id && item.name && typeof item.price === 'number');
+          if (validated.length > 0) {
+            setCart(validated);
+            setHasDraft(true);
+            showToast('Draft cart restored', 'info');
+          } else {
+            localStorage.removeItem('pos-cart');
+          }
+        }
+      }
+    } catch { localStorage.removeItem('pos-cart'); }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Persist cart to localStorage on every change
+  useEffect(() => {
+    if (cart.length > 0) {
+      localStorage.setItem('pos-cart', JSON.stringify(cart));
+    } else {
+      localStorage.removeItem('pos-cart');
+    }
+  }, [cart]);
 
   const handleBarcodeScan = (code) => {
     const found = products.find(p =>
@@ -317,6 +348,7 @@ export default function POS() {
       showToast('Sale completed!', 'success');
       setCart([]); setSelectedCustomer(null); setSelectedReseller(null);
       setDiscount(0); setShippingFee(''); setPaymentMethod('Cash'); setSaleDate(new Date().toISOString().split('T')[0]); setSearchTerm('');
+      setHasDraft(false); localStorage.removeItem('pos-cart');
     } catch (error) {
       console.error('Error completing sale:', error);
       showToast('Failed to complete sale');
@@ -530,16 +562,33 @@ export default function POS() {
                   {cart.reduce((s, i) => s + i.quantity, 0)} items
                 </span>
               )}
+              {hasDraft && cart.length > 0 && (
+                <span style={{ fontSize:10, padding:'2px 7px', borderRadius:20, background:'rgba(251,191,36,0.15)', color:'#fbbf24', fontWeight:700 }}>
+                  Draft
+                </span>
+              )}
             </div>
-            {cart.length > 0 && (
-              <button onClick={() => setClearConfirm(true)}
-                style={{ padding:'6px 12px', background:'rgba(255,255,255,0.06)', color:'var(--text-muted)', border:'none',
-                  borderRadius:8, fontSize:11, fontWeight:600, cursor:'pointer', transition:'background 0.15s' }}
-                onMouseEnter={e => e.currentTarget.style.background='rgba(255,255,255,0.1)'}
-                onMouseLeave={e => e.currentTarget.style.background='rgba(255,255,255,0.06)'}>
-                Clear
-              </button>
-            )}
+            <div style={{ display:'flex', gap:6 }}>
+              {cart.length > 0 && (
+                <button onClick={() => { setCart([]); setHasDraft(false); localStorage.removeItem('pos-cart'); showToast('Draft cleared', 'info'); }}
+                  style={{ padding:'6px 12px', background:'rgba(251,191,36,0.12)', color:'#fbbf24', border:'none',
+                    borderRadius:8, fontSize:11, fontWeight:600, cursor:'pointer', display:'flex', alignItems:'center', gap:4,
+                    transition:'background 0.15s' }}
+                  onMouseEnter={e => e.currentTarget.style.background='rgba(251,191,36,0.22)'}
+                  onMouseLeave={e => e.currentTarget.style.background='rgba(251,191,36,0.12)'}>
+                  <FaUndo style={{ fontSize:10 }} /> Clear Draft
+                </button>
+              )}
+              {cart.length > 0 && (
+                <button onClick={() => setClearConfirm(true)}
+                  style={{ padding:'6px 12px', background:'rgba(255,255,255,0.06)', color:'var(--text-muted)', border:'none',
+                    borderRadius:8, fontSize:11, fontWeight:600, cursor:'pointer', transition:'background 0.15s' }}
+                  onMouseEnter={e => e.currentTarget.style.background='rgba(255,255,255,0.1)'}
+                  onMouseLeave={e => e.currentTarget.style.background='rgba(255,255,255,0.06)'}>
+                  Clear
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Customer type */}
@@ -733,7 +782,7 @@ export default function POS() {
       </div>
 
       <ConfirmDialog isOpen={clearConfirm} onClose={() => setClearConfirm(false)}
-        onConfirm={() => { setCart([]); setActiveOrder(null); setClearConfirm(false); }}
+        onConfirm={() => { setCart([]); setActiveOrder(null); setClearConfirm(false); setHasDraft(false); localStorage.removeItem('pos-cart'); }}
         title="Clear Cart?" message="Remove all items from the cart?" confirmLabel="Clear Cart" />
 
       <BarcodeScanner
