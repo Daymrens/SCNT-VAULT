@@ -56,9 +56,13 @@ export default function POS() {
 
   const { showToast } = useToast();
 
-  // Restore cart from localStorage on mount
+  // Restore cart and customer type from localStorage on mount
   useEffect(() => {
     try {
+      const savedType = localStorage.getItem('pos-customer-type');
+      if (savedType === 'retail' || savedType === 'reseller') {
+        setCustomerType(savedType);
+      }
       const saved = localStorage.getItem('pos-cart');
       if (saved) {
         const parsed = JSON.parse(saved);
@@ -85,6 +89,11 @@ export default function POS() {
       localStorage.removeItem('pos-cart');
     }
   }, [cart]);
+
+  // Persist customer type to localStorage
+  useEffect(() => {
+    localStorage.setItem('pos-customer-type', customerType);
+  }, [customerType]);
 
   const handleBarcodeScan = (code) => {
     const found = products.find(p =>
@@ -348,7 +357,7 @@ export default function POS() {
       showToast('Sale completed!', 'success');
       setCart([]); setSelectedCustomer(null); setSelectedReseller(null);
       setDiscount(0); setShippingFee(''); setPaymentMethod('Cash'); setSaleDate(new Date().toISOString().split('T')[0]); setSearchTerm('');
-      setHasDraft(false); localStorage.removeItem('pos-cart');
+      setHasDraft(false); localStorage.removeItem('pos-cart'); localStorage.removeItem('pos-customer-type');
     } catch (error) {
       console.error('Error completing sale:', error);
       showToast('Failed to complete sale');
@@ -570,7 +579,7 @@ export default function POS() {
             </div>
             <div style={{ display:'flex', gap:6 }}>
               {cart.length > 0 && (
-                <button onClick={() => { setCart([]); setHasDraft(false); localStorage.removeItem('pos-cart'); showToast('Draft cleared', 'info'); }}
+                <button onClick={() => { setCart([]); setHasDraft(false); localStorage.removeItem('pos-cart'); localStorage.removeItem('pos-customer-type'); showToast('Draft cleared', 'info'); }}
                   style={{ padding:'6px 12px', background:'rgba(251,191,36,0.12)', color:'#fbbf24', border:'none',
                     borderRadius:8, fontSize:11, fontWeight:600, cursor:'pointer', display:'flex', alignItems:'center', gap:4,
                     transition:'background 0.15s' }}
@@ -782,7 +791,7 @@ export default function POS() {
       </div>
 
       <ConfirmDialog isOpen={clearConfirm} onClose={() => setClearConfirm(false)}
-        onConfirm={() => { setCart([]); setActiveOrder(null); setClearConfirm(false); setHasDraft(false); localStorage.removeItem('pos-cart'); }}
+        onConfirm={() => { setCart([]); setActiveOrder(null); setClearConfirm(false); setHasDraft(false); localStorage.removeItem('pos-cart'); localStorage.removeItem('pos-customer-type'); }}
         title="Clear Cart?" message="Remove all items from the cart?" confirmLabel="Clear Cart" />
 
       <BarcodeScanner
