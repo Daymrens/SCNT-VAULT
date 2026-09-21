@@ -41,6 +41,7 @@ export default function PurchaseOrders() {
   const { purchaseOrders, suppliers, products, sales, loading,
           addPurchaseOrder, updatePurchaseOrder, deletePurchaseOrder, adjustStock,
           loadSales, loadPurchaseOrders } = useData();
+  const { settings } = useSettings();
 
   const [search, setSearch]             = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
