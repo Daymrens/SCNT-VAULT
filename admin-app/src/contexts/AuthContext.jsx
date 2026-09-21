@@ -5,7 +5,7 @@ import {
   onAuthStateChanged,
   sendPasswordResetEmail
 } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '../firebase/firebase';
 
 const AuthContext = createContext();
@@ -39,8 +39,15 @@ export function AuthProvider({ children }) {
         setUserRole(role);
         return role;
       }
-      setUserRole(null);
-      return null;
+      // Auto-create user doc with default employee role if missing
+      const defaultRole = 'employee';
+      await setDoc(doc(db, 'users', uid), {
+        role: defaultRole,
+        email: auth.currentUser?.email || '',
+        createdAt: serverTimestamp()
+      });
+      setUserRole(defaultRole);
+      return defaultRole;
     } catch (err) {
       console.error('Failed to fetch user role:', err);
       setUserRole(null);
