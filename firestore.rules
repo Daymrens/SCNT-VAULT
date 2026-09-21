@@ -126,9 +126,17 @@ service cloud.firestore {
       allow update, delete: if isManager();
     }
 
+    // Orders Collection (website orders)
+    match /orders/{orderId} {
+      allow read: if isAuth();
+      allow create: if isAuth();
+      allow update: if isManager();
+      allow delete: if isOwner();
+    }
+
     // Audit Log Collection
     match /auditLog/{logId} {
-      allow read: if isOwner();
+      allow read: if isManager();
       allow create: if isAuth();
       allow update, delete: if false;
     }
