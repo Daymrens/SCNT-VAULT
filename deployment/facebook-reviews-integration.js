@@ -148,9 +148,8 @@ function updateReviewStats(reviews) {
 // Function to initialize Facebook reviews
 async function initializeFacebookReviews() {
     // Check if configuration is set
-    if (FACEBOOK_CONFIG.pageId === 'YOUR_FACEBOOK_PAGE_ID' || 
-        FACEBOOK_CONFIG.accessToken === 'YOUR_ACCESS_TOKEN') {
-        console.warn('⚠️ Facebook Reviews: Configuration required');
+    if (FACEBOOK_CONFIG.pageId === 'YOUR_FACEBOOK_PAGE_ID' || !FACEBOOK_CONFIG.accessToken) {
+        console.warn('Facebook Reviews: Configuration required');
         console.log('To enable Facebook reviews integration:');
         console.log('1. Get your Facebook Page ID from your page settings');
         console.log('2. Generate an Access Token from Facebook Developer Console');
