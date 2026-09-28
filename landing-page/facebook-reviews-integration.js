@@ -3,7 +3,7 @@
 
 const FACEBOOK_CONFIG = {
     pageId: '103899272631309',  // Replace with your Facebook Page ID
-    accessToken: 'EAFZBCInbO4MUBQZB788pwYcQtMNrudKce3TI2EDWOI7ZAkjZCIY1Oeu5ZA8HifBUGbSh9WDa4yneI1oHGZBgOU9ZClmtgyBjdnrCcxu0EraPhMZBLHs758nTe9M5iuHxlr7dzqabZB0vilC9KVLJCDw2L0CAepg5i4Uf56nHcrUCZA2J9SdY6ZC4EV42A6tilUfnF5ihMZBgqpqQWif4ILmnrFrBcLvD2qH14GkZCMqwgXmH9gRE1qpPFVRwWwcgZD',  // Replace with your Facebook Access Token
+    accessToken: '',  // Inject through a server-side integration; never commit access tokens.
     reviewsLimit: 10  // Number of reviews to fetch
 };
 

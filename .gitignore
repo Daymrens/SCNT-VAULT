@@ -130,6 +130,7 @@ images/
 
 # Embedded repos
 .gitmodules
+hive/
 
 # dataconnect generated files
 .dataconnect
