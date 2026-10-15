@@ -15,19 +15,19 @@ export default function PrivateRoute({ children }) {
     return (
       <div style={{
         minHeight: '100vh',
-        background: '#0f172a',
+        background: '#f6f7f9',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        color: '#f1f5f9',
-        fontFamily: "'Inter', 'Segoe UI', sans-serif",
+        color: '#14181f',
+        fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif",
         textAlign: 'center',
         padding: 24,
       }}>
         <div>
           <div style={{ fontSize: 48, marginBottom: 16 }}>🔒</div>
           <h1 style={{ fontSize: 24, fontWeight: 800, marginBottom: 8 }}>Access Denied</h1>
-          <p style={{ color: '#94a3b8', fontSize: 14 }}>
+          <p style={{ color: '#6b7280', fontSize: 14 }}>
             You don't have permission to access the admin panel.<br />
             Contact your administrator for access.
           </p>

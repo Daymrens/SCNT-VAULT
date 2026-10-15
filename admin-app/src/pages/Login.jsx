@@ -7,11 +7,11 @@ const styles = {
     display: 'flex',
     minHeight: '100vh',
     width: '100%',
-    background: '#0f172a',
+    background: '#f6f7f9',
   },
   leftPanel: {
     flex: '1 1 50%',
-    background: '#0f172a',
+    background: '#ffffff',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -19,11 +19,12 @@ const styles = {
     padding: '60px 40px',
     position: 'relative',
     overflow: 'hidden',
+    borderRight: '1px solid #e6e8ec',
   },
   leftPanelOverlay: {
     position: 'absolute',
     inset: 0,
-    background: 'radial-gradient(ellipse at 30% 20%, rgba(45,212,191,0.08) 0%, transparent 60%)',
+    background: 'radial-gradient(ellipse at 30% 20%, rgba(13,148,136,0.07) 0%, transparent 60%)',
     pointerEvents: 'none',
   },
   brandContent: {
@@ -31,39 +32,51 @@ const styles = {
     zIndex: 1,
     textAlign: 'center',
   },
-  brandName: {
-    fontSize: 32,
+  brandMark: {
+    width: 56,
+    height: 56,
+    borderRadius: 14,
+    background: '#0d9488',
+    display: 'grid',
+    placeItems: 'center',
+    color: '#fff',
     fontWeight: 800,
-    color: '#f1f5f9',
-    letterSpacing: 6,
+    fontSize: 20,
+    letterSpacing: 1,
+    margin: '0 auto 20px',
+  },
+  brandName: {
+    fontSize: 30,
+    fontWeight: 800,
+    color: '#14181f',
+    letterSpacing: 5,
     textTransform: 'uppercase',
     marginBottom: 8,
-    fontFamily: "'Inter', 'Segoe UI', sans-serif",
   },
   brandSubtitle: {
-    fontSize: 13,
-    color: 'rgba(148,163,184,0.7)',
+    fontSize: 12,
+    color: '#9aa3af',
     letterSpacing: 2,
     textTransform: 'uppercase',
-    fontWeight: 500,
+    fontWeight: 600,
   },
   brandDivider: {
     width: 48,
     height: 2,
-    background: 'linear-gradient(90deg, transparent, #2dd4bf, transparent)',
-    margin: '28px auto',
+    background: '#e6e8ec',
+    margin: '26px auto',
     borderRadius: 1,
   },
   brandTagline: {
     fontSize: 14,
-    color: 'rgba(148,163,184,0.5)',
+    color: '#6b7280',
     lineHeight: 1.6,
-    maxWidth: 260,
+    maxWidth: 280,
     margin: '0 auto',
   },
   rightPanel: {
     flex: '1 1 50%',
-    background: '#0f172a',
+    background: '#f6f7f9',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -72,95 +85,96 @@ const styles = {
   formCard: {
     width: '100%',
     maxWidth: 380,
-    background: '#1e293b',
-    borderRadius: 16,
-    padding: '40px 36px',
-    boxShadow: '0 2px 16px rgba(0,0,0,0.3)',
-    border: '1px solid #334155',
+    background: '#ffffff',
+    borderRadius: 14,
+    padding: '36px 32px',
+    boxShadow: '0 1px 2px rgba(16,24,40,0.05)',
+    border: '1px solid #e6e8ec',
   },
   formTitle: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 800,
-    color: '#f1f5f9',
-    marginBottom: 6,
+    color: '#14181f',
+    marginBottom: 4,
+    letterSpacing: '-.3px',
   },
   formSubtitle: {
-    fontSize: 14,
-    color: '#94a3b8',
-    marginBottom: 32,
+    fontSize: 13.5,
+    color: '#6b7280',
+    marginBottom: 28,
   },
   inputGroup: {
-    marginBottom: 20,
+    marginBottom: 18,
   },
   inputLabel: {
     display: 'block',
-    fontSize: 12,
+    fontSize: 11.5,
     fontWeight: 700,
-    color: '#94a3b8',
+    color: '#6b7280',
     textTransform: 'uppercase',
     letterSpacing: '0.5px',
-    marginBottom: 8,
+    marginBottom: 7,
   },
   input: {
     width: '100%',
-    padding: '12px 14px',
-    border: '1.5px solid #334155',
-    borderRadius: 10,
+    padding: '11px 13px',
+    border: '1.5px solid #e6e8ec',
+    borderRadius: 9,
     fontSize: 14,
-    fontFamily: "'Inter', 'Segoe UI', sans-serif",
-    color: '#f1f5f9',
-    background: '#0f172a',
-    transition: 'border-color 0.2s, box-shadow 0.2s',
+    fontFamily: 'inherit',
+    color: '#14181f',
+    background: '#ffffff',
+    transition: 'border-color 0.15s, box-shadow 0.15s',
     outline: 'none',
   },
   submitButton: {
     width: '100%',
-    padding: '13px 20px',
-    background: '#2dd4bf',
-    color: '#0f172a',
+    padding: '12px 20px',
+    background: '#0d9488',
+    color: '#ffffff',
     border: 'none',
-    borderRadius: 10,
+    borderRadius: 9,
     fontSize: 14,
     fontWeight: 700,
-    fontFamily: "'Inter', 'Segoe UI', sans-serif",
+    fontFamily: 'inherit',
     cursor: 'pointer',
-    transition: 'background 0.2s, transform 0.1s',
+    transition: 'background 0.15s',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    marginTop: 8,
+    marginTop: 6,
   },
   submitButtonDisabled: {
-    opacity: 0.6,
+    opacity: 0.65,
     cursor: 'not-allowed',
   },
   spinner: {
-    width: 18,
-    height: 18,
-    border: '2px solid rgba(15,23,42,0.3)',
-    borderTop: '2px solid #0f172a',
+    width: 16,
+    height: 16,
+    border: '2px solid rgba(255,255,255,0.35)',
+    borderTop: '2px solid #ffffff',
     borderRadius: '50%',
     animation: 'adminSpin 0.7s linear infinite',
   },
   error: {
-    background: 'rgba(239,68,68,0.1)',
-    color: '#ef4444',
-    padding: '12px 16px',
-    borderRadius: 10,
+    background: '#fdf2f2',
+    color: '#dc2626',
+    padding: '11px 14px',
+    borderRadius: 9,
     fontSize: 13,
     fontWeight: 600,
-    marginBottom: 20,
+    marginBottom: 18,
     display: 'flex',
     alignItems: 'center',
     gap: 10,
-    borderLeft: '4px solid #ef4444',
+    border: '1px solid #f5d5d5',
   },
   footer: {
-    marginTop: 32,
+    marginTop: 28,
     textAlign: 'center',
-    fontSize: 12,
-    color: '#94a3b8',
+    fontSize: 11.5,
+    color: '#9aa3af',
   },
 };
 
@@ -173,7 +187,7 @@ const keyframes = `
     .admin-login-wrapper { flex-direction: column !important; }
     .admin-login-left { display: none !important; }
     .admin-login-right { flex: 1 1 100% !important; padding: 24px 16px !important; }
-    .admin-login-card { padding: 32px 24px !important; }
+    .admin-login-card { padding: 28px 22px !important; }
   }
 `;
 
@@ -221,6 +235,7 @@ export default function Login() {
         <div style={styles.leftPanel} className="admin-login-left">
           <div style={styles.leftPanelOverlay} />
           <div style={styles.brandContent}>
+            <div style={styles.brandMark}>SC</div>
             <div style={styles.brandName}>SCNT Vault</div>
             <div style={styles.brandSubtitle}>Admin Panel</div>
             <div style={styles.brandDivider} />
@@ -232,8 +247,8 @@ export default function Login() {
 
         <div style={styles.rightPanel} className="admin-login-right">
           <div style={styles.formCard} className="admin-login-card">
-            <div style={styles.formTitle}>Welcome Back</div>
-            <div style={styles.formSubtitle}>Sign in to admin panel</div>
+            <div style={styles.formTitle}>Welcome back</div>
+            <div style={styles.formSubtitle}>Sign in to the admin panel</div>
 
             {error && (
               <div style={styles.error}>
@@ -257,8 +272,8 @@ export default function Login() {
                   required
                   placeholder="your@email.com"
                   autoFocus
-                  onFocus={(e) => { e.target.style.borderColor = '#2dd4bf'; }}
-                  onBlur={(e) => { e.target.style.borderColor = '#334155'; }}
+                  onFocus={(e) => { e.target.style.borderColor = '#0d9488'; e.target.style.boxShadow = '0 0 0 3px rgba(13,148,136,0.12)'; }}
+                  onBlur={(e) => { e.target.style.borderColor = '#e6e8ec'; e.target.style.boxShadow = 'none'; }}
                 />
               </div>
 
@@ -271,12 +286,12 @@ export default function Login() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   placeholder="Enter password"
-                  onFocus={(e) => { e.target.style.borderColor = '#2dd4bf'; }}
-                  onBlur={(e) => { e.target.style.borderColor = '#334155'; }}
+                  onFocus={(e) => { e.target.style.borderColor = '#0d9488'; e.target.style.boxShadow = '0 0 0 3px rgba(13,148,136,0.12)'; }}
+                  onBlur={(e) => { e.target.style.borderColor = '#e6e8ec'; e.target.style.boxShadow = 'none'; }}
                 />
               </div>
 
-              <div style={{ textAlign: 'right', marginTop: -12, marginBottom: 20 }}>
+              <div style={{ textAlign: 'right', marginTop: -10, marginBottom: 18 }}>
                 <button
                   onClick={handleForgotPassword}
                   style={{
@@ -285,11 +300,11 @@ export default function Login() {
                     cursor: 'pointer',
                     fontSize: 12,
                     fontWeight: 600,
-                    color: resetSent ? '#2dd4bf' : '#94a3b8',
+                    color: resetSent ? '#0f766e' : '#6b7280',
                   }}
                   disabled={resetSent}
                 >
-                  {resetSent ? 'Reset email sent ✓' : 'Forgot Password?'}
+                  {resetSent ? 'Reset email sent ✓' : 'Forgot password?'}
                 </button>
               </div>
 
@@ -300,8 +315,8 @@ export default function Login() {
                   ...(loading ? styles.submitButtonDisabled : {}),
                 }}
                 disabled={loading}
-                onMouseEnter={(e) => { if (!loading) e.currentTarget.style.background = '#14b8a6'; }}
-                onMouseLeave={(e) => { if (!loading) e.currentTarget.style.background = '#2dd4bf'; }}
+                onMouseEnter={(e) => { if (!loading) e.currentTarget.style.background = '#0f766e'; }}
+                onMouseLeave={(e) => { if (!loading) e.currentTarget.style.background = '#0d9488'; }}
               >
                 {loading ? (
                   <>
@@ -309,7 +324,7 @@ export default function Login() {
                     Signing in...
                   </>
                 ) : (
-                  'Sign In'
+                  'Sign in'
                 )}
               </button>
             </form>

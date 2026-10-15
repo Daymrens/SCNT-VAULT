@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+﻿import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { collection, getDocs, updateDoc, doc } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
 import {
@@ -13,47 +13,47 @@ const STATUS_OPTIONS = ['All', 'unread', 'read', 'replied'];
 const STATUS_LABELS = { unread: 'Unread', read: 'Read', replied: 'Replied' };
 
 const STATUS_COLORS = {
-  unread: { bg: 'rgba(239,68,68,0.15)', color: '#ef4444', dot: '#ef4444' },
-  read: { bg: 'rgba(148,163,184,0.15)', color: '#94a3b8', dot: '#94a3b8' },
-  replied: { bg: 'rgba(34,197,94,0.15)', color: '#22c55e', dot: '#22c55e' },
+  unread: { bg: '#fdf2f2', color: '#dc2626', dot: '#dc2626' },
+  read: { bg: 'rgba(148,163,184,0.15)', color: '#6b7280', dot: '#6b7280' },
+  replied: { bg: '#e9f9ef', color: '#15803d', dot: '#15803d' },
 };
 
 const inputStyle = {
   width: '100%', padding: '10px 12px', borderRadius: 8,
-  border: '1px solid #334155', background: '#0f172a', color: '#f1f5f9',
+  border: '1px solid #e6e8ec', background: '#f6f7f9', color: '#14181f',
   fontSize: 13, outline: 'none', transition: 'border-color 0.2s',
 };
 
 const btnPrimary = {
   display: 'inline-flex', alignItems: 'center', gap: 6,
-  background: 'rgba(45,212,191,0.15)', color: '#2dd4bf',
-  border: '1px solid rgba(45,212,191,0.3)', borderRadius: 8,
+  background: 'rgba(13,148,136,0.15)', color: '#0d9488',
+  border: '1px solid rgba(13,148,136,0.3)', borderRadius: 8,
   padding: '8px 16px', fontSize: 13, fontWeight: 600, cursor: 'pointer',
   transition: 'all 0.2s',
 };
 
 const btnGhost = {
-  background: 'transparent', border: '1px solid #334155', borderRadius: 8,
-  padding: '6px 10px', color: '#94a3b8', cursor: 'pointer',
+  background: 'transparent', border: '1px solid #e6e8ec', borderRadius: 8,
+  padding: '6px 10px', color: '#6b7280', cursor: 'pointer',
   display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12,
   fontWeight: 600, transition: 'all 0.2s',
 };
 
 const btnGhostActive = {
-  ...btnGhost, background: 'rgba(45,212,191,0.15)',
-  color: '#2dd4bf', border: '1px solid rgba(45,212,191,0.3)',
+  ...btnGhost, background: 'rgba(13,148,136,0.15)',
+  color: '#0d9488', border: '1px solid rgba(13,148,136,0.3)',
 };
 
 const modalOverlay = {
-  position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)',
+  position: 'fixed', inset: 0, background: 'rgba(16,24,40,0.35)',
   display: 'flex', alignItems: 'center', justifyContent: 'center',
   zIndex: 1000, backdropFilter: 'blur(4px)',
 };
 
 const modalBox = {
-  background: '#1e293b', border: '1px solid #334155', borderRadius: 16,
+  background: '#ffffff', border: '1px solid #e6e8ec', borderRadius: 16,
   width: '90%', maxWidth: 720, maxHeight: '85vh', overflow: 'auto',
-  boxShadow: '0 24px 48px rgba(0,0,0,0.4)',
+  boxShadow: '0 24px 48px rgba(16,24,40,0.12)',
 };
 
 function formatDate(v) {
@@ -77,19 +77,19 @@ function ContactDetail({ contact, onClose, onMarkRead, onMarkReplied }) {
       <div style={{ ...modalBox, maxWidth: 640 }} onClick={e => e.stopPropagation()}>
         <div style={{
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          padding: '16px 20px', borderBottom: '1px solid #334155',
+          padding: '16px 20px', borderBottom: '1px solid #e6e8ec',
         }}>
           <div>
-            <h2 style={{ color: '#f1f5f9', fontSize: 16, fontWeight: 700 }}>
+            <h2 style={{ color: '#14181f', fontSize: 16, fontWeight: 700 }}>
               {contact.subject || 'Contact Message'}
             </h2>
-            <p style={{ color: '#94a3b8', fontSize: 12, marginTop: 2 }}>
+            <p style={{ color: '#6b7280', fontSize: 12, marginTop: 2 }}>
               From {contact.name || contact.Name || '\u2014'}
             </p>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <StatusBadge status={contact.status || 'unread'} />
-            <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: 18 }}>
+            <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#6b7280', cursor: 'pointer', fontSize: 18 }}>
               <FaTimes />
             </button>
           </div>
@@ -98,41 +98,41 @@ function ContactDetail({ contact, onClose, onMarkRead, onMarkReplied }) {
         <div style={{ padding: 20 }}>
           {/* Contact Info */}
           <div style={{
-            background: '#0f172a', border: '1px solid #334155', borderRadius: 10,
+            background: '#f6f7f9', border: '1px solid #e6e8ec', borderRadius: 10,
             padding: 16, marginBottom: 20,
           }}>
-            <h3 style={{ color: '#94a3b8', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>
+            <h3 style={{ color: '#6b7280', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>
               Contact Information
             </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#94a3b8', fontSize: 12 }}>Name</span>
-                <span style={{ color: '#f1f5f9', fontSize: 12, fontWeight: 600 }}>{contact.name || contact.Name || '\u2014'}</span>
+                <span style={{ color: '#6b7280', fontSize: 12 }}>Name</span>
+                <span style={{ color: '#14181f', fontSize: 12, fontWeight: 600 }}>{contact.name || contact.Name || '\u2014'}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#94a3b8', fontSize: 12 }}>Email</span>
-                <span style={{ color: '#f1f5f9', fontSize: 12 }}>{contact.email || contact.Email || '\u2014'}</span>
+                <span style={{ color: '#6b7280', fontSize: 12 }}>Email</span>
+                <span style={{ color: '#14181f', fontSize: 12 }}>{contact.email || contact.Email || '\u2014'}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#94a3b8', fontSize: 12 }}>Phone</span>
-                <span style={{ color: '#f1f5f9', fontSize: 12 }}>{contact.phone || contact.Phone || '\u2014'}</span>
+                <span style={{ color: '#6b7280', fontSize: 12 }}>Phone</span>
+                <span style={{ color: '#14181f', fontSize: 12 }}>{contact.phone || contact.Phone || '\u2014'}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#94a3b8', fontSize: 12 }}>Date</span>
-                <span style={{ color: '#f1f5f9', fontSize: 12 }}>{formatDateTime(contact.createdAt || contact.date || contact.Date)}</span>
+                <span style={{ color: '#6b7280', fontSize: 12 }}>Date</span>
+                <span style={{ color: '#14181f', fontSize: 12 }}>{formatDateTime(contact.createdAt || contact.date || contact.Date)}</span>
               </div>
             </div>
           </div>
 
           {/* Message */}
           <div style={{
-            background: '#0f172a', border: '1px solid #334155', borderRadius: 10,
+            background: '#f6f7f9', border: '1px solid #e6e8ec', borderRadius: 10,
             padding: 16, marginBottom: 20,
           }}>
-            <h3 style={{ color: '#94a3b8', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>
+            <h3 style={{ color: '#6b7280', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>
               Message
             </h3>
-            <p style={{ color: '#f1f5f9', fontSize: 13, lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
+            <p style={{ color: '#14181f', fontSize: 13, lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
               {contact.message || contact.Message || '\u2014'}
             </p>
           </div>
@@ -147,8 +147,8 @@ function ContactDetail({ contact, onClose, onMarkRead, onMarkReplied }) {
             )}
             {(contact.status || 'unread') !== 'replied' && (
               <button onClick={() => onMarkReplied(contact.id)} style={{
-                ...btnPrimary, background: 'rgba(34,197,94,0.15)',
-                color: '#22c55e', border: '1px solid rgba(34,197,94,0.3)',
+                ...btnPrimary, background: '#e9f9ef',
+                color: '#15803d', border: '1px solid #c8ecd8',
               }}>
                 <FaReply /> Mark as Replied
               </button>
@@ -276,20 +276,20 @@ export default function Contacts() {
             100% { background-position: -200% 0; }
           }
         `}</style>
-        <h1 style={{ color: '#f1f5f9', fontWeight: 800, fontSize: 24, marginBottom: 20 }}>Contacts</h1>
+        <h1 style={{ color: '#14181f', fontWeight: 800, fontSize: 24, marginBottom: 20 }}>Contacts</h1>
         <div style={{
-          background: '#1e293b', border: '1px solid #334155', borderRadius: 12,
+          background: '#ffffff', border: '1px solid #e6e8ec', borderRadius: 12,
           padding: 20, overflow: 'hidden',
         }}>
           {Array.from({ length: 5 }).map((_, i) => (
             <div key={i} style={{
               display: 'flex', gap: 16, padding: '12px 0',
-              borderBottom: i < 4 ? '1px solid #334155' : 'none',
+              borderBottom: i < 4 ? '1px solid #e6e8ec' : 'none',
             }}>
               {['120px', '140px', '100px', '180px', '60px', '80px', '60px'].map((w, j) => (
                 <div key={j} style={{
                   width: w, height: 14, borderRadius: 4,
-                  background: 'linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%)',
+                  background: 'linear-gradient(90deg, #eceff2 25%, #f4f6f8 50%, #eceff2 75%)',
                   backgroundSize: '200% 100%', animation: 'shimmer 1.5s infinite',
                 }} />
               ))}
@@ -303,13 +303,13 @@ export default function Contacts() {
   if (error) {
     return (
       <>
-        <h1 style={{ color: '#f1f5f9', fontWeight: 800, fontSize: 24, marginBottom: 20 }}>Contacts</h1>
+        <h1 style={{ color: '#14181f', fontWeight: 800, fontSize: 24, marginBottom: 20 }}>Contacts</h1>
         <div style={{
-          background: '#1e293b', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 12,
+          background: '#ffffff', border: '1px solid #f3d6d6', borderRadius: 12,
           padding: 32, textAlign: 'center',
         }}>
-          <FaExclamationTriangle style={{ fontSize: 32, color: '#ef4444', marginBottom: 12 }} />
-          <p style={{ color: '#f1f5f9', fontSize: 14, fontWeight: 600, marginBottom: 8 }}>{error}</p>
+          <FaExclamationTriangle style={{ fontSize: 32, color: '#dc2626', marginBottom: 12 }} />
+          <p style={{ color: '#14181f', fontSize: 14, fontWeight: 600, marginBottom: 8 }}>{error}</p>
           <button onClick={fetchContacts} style={btnPrimary}>Retry</button>
         </div>
       </>
@@ -319,19 +319,19 @@ export default function Contacts() {
   return (
     <>
       <style>{`
-        .contact-row:hover { background: rgba(45,212,191,0.04) !important; }
+        .contact-row:hover { background: rgba(13,148,136,0.04) !important; }
         .contact-btn:hover { opacity: 0.8; }
-        .contact-input:focus { border-color: #2dd4bf !important; }
-        .contact-tab:hover { background: rgba(45,212,191,0.08) !important; }
+        .contact-input:focus { border-color: #0d9488 !important; }
+        .contact-tab:hover { background: rgba(13,148,136,0.08) !important; }
       `}</style>
 
-      <h1 style={{ color: '#f1f5f9', fontWeight: 800, fontSize: 24, marginBottom: 20 }}>Contacts</h1>
+      <h1 style={{ color: '#14181f', fontWeight: 800, fontSize: 24, marginBottom: 20 }}>Contacts</h1>
 
       <div style={{
         display: 'flex', flexWrap: 'wrap', gap: 12, marginBottom: 16, alignItems: 'center',
       }}>
         <div style={{ flex: 1, minWidth: 200, position: 'relative' }}>
-          <FaSearch style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: 13 }} />
+          <FaSearch style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#6b7280', fontSize: 13 }} />
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
@@ -358,8 +358,8 @@ export default function Contacts() {
             }}>
               {label}
               <span style={{
-                background: isActive ? 'rgba(45,212,191,0.2)' : 'rgba(148,163,184,0.15)',
-                color: isActive ? '#2dd4bf' : '#64748b',
+                background: isActive ? 'rgba(13,148,136,0.2)' : 'rgba(148,163,184,0.15)',
+                color: isActive ? '#0d9488' : '#6b7280',
                 padding: '2px 7px', borderRadius: 10, fontSize: 10, fontWeight: 700,
               }}>
                 {count}
@@ -369,31 +369,31 @@ export default function Contacts() {
         })}
       </div>
 
-      <p style={{ color: '#94a3b8', fontSize: 12, marginBottom: 12 }}>
+      <p style={{ color: '#6b7280', fontSize: 12, marginBottom: 12 }}>
         {filtered.length} contact{filtered.length !== 1 ? 's' : ''} found
         {filtered.length > ITEMS_PER_PAGE && ` \u2014 Page ${safePage} of ${totalPages}`}
       </p>
 
       {filtered.length === 0 ? (
         <div style={{
-          background: '#1e293b', border: '1px solid #334155', borderRadius: 12,
+          background: '#ffffff', border: '1px solid #e6e8ec', borderRadius: 12,
           padding: 48, textAlign: 'center',
         }}>
-          <FaEnvelope style={{ fontSize: 40, color: '#334155', marginBottom: 12 }} />
-          <p style={{ color: '#94a3b8', fontSize: 14 }}>No contacts found</p>
+          <FaEnvelope style={{ fontSize: 40, color: '#e6e8ec', marginBottom: 12 }} />
+          <p style={{ color: '#6b7280', fontSize: 14 }}>No contacts found</p>
         </div>
       ) : (
         <div style={{
-          background: '#1e293b', border: '1px solid #334155', borderRadius: 12,
+          background: '#ffffff', border: '1px solid #e6e8ec', borderRadius: 12,
           overflow: 'hidden', marginBottom: 20,
         }}>
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 900 }}>
               <thead>
-                <tr style={{ borderBottom: '1px solid #334155' }}>
+                <tr style={{ borderBottom: '1px solid #e6e8ec' }}>
                   {['Name', 'Email', 'Subject', 'Message', 'Status', 'Date', 'Actions'].map(h => (
                     <th key={h} style={{
-                      color: '#94a3b8', fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
+                      color: '#6b7280', fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
                       padding: '12px', textAlign: 'left', whiteSpace: 'nowrap', letterSpacing: 0.5,
                     }}>{h}</th>
                   ))}
@@ -402,30 +402,30 @@ export default function Contacts() {
               <tbody>
                 {paged.map(c => (
                   <tr key={c.id} className="contact-row" style={{
-                    borderBottom: '1px solid rgba(51,65,85,0.5)',
+                    borderBottom: '1px solid #eff1f4',
                     transition: 'background 0.15s',
                   }}>
-                    <td style={{ padding: '12px', fontSize: 13, fontWeight: 600, color: '#f1f5f9' }}>
+                    <td style={{ padding: '12px', fontSize: 13, fontWeight: 600, color: '#14181f' }}>
                       {c.name || c.Name || '\u2014'}
                     </td>
-                    <td style={{ padding: '12px', fontSize: 12, color: '#94a3b8' }}>
+                    <td style={{ padding: '12px', fontSize: 12, color: '#6b7280' }}>
                       {c.email || c.Email || '\u2014'}
                     </td>
-                    <td style={{ padding: '12px', fontSize: 13, color: '#f1f5f9', fontWeight: 500 }}>
+                    <td style={{ padding: '12px', fontSize: 13, color: '#14181f', fontWeight: 500 }}>
                       {truncate(c.subject || c.Subject || '\u2014', 30)}
                     </td>
-                    <td style={{ padding: '12px', fontSize: 12, color: '#94a3b8', maxWidth: 200 }}>
+                    <td style={{ padding: '12px', fontSize: 12, color: '#6b7280', maxWidth: 200 }}>
                       {truncate(c.message || c.Message, 40)}
                     </td>
                     <td style={{ padding: '12px' }}>
                       <StatusBadge status={c.status || 'unread'} />
                     </td>
-                    <td style={{ padding: '12px', fontSize: 12, color: '#94a3b8', whiteSpace: 'nowrap' }}>
+                    <td style={{ padding: '12px', fontSize: 12, color: '#6b7280', whiteSpace: 'nowrap' }}>
                       {formatDate(c.createdAt || c.date || c.Date)}
                     </td>
                     <td style={{ padding: '12px' }}>
                       <button onClick={() => setSelectedContact(c)} className="contact-btn" style={{
-                        background: 'rgba(45,212,191,0.1)', color: '#2dd4bf',
+                        background: 'rgba(13,148,136,0.1)', color: '#0d9488',
                         border: 'none', borderRadius: 6, padding: '5px 10px', cursor: 'pointer',
                         fontSize: 12, transition: 'opacity 0.2s', display: 'inline-flex', alignItems: 'center', gap: 4,
                       }} title="View Details">
@@ -459,7 +459,7 @@ export default function Contacts() {
             }, [])
             .map((n, i) => (
               n === '...' ? (
-                <span key={'e' + i} style={{ color: '#94a3b8', fontSize: 13, padding: '0 4px' }}>{'\u2026'}</span>
+                <span key={'e' + i} style={{ color: '#6b7280', fontSize: 13, padding: '0 4px' }}>{'\u2026'}</span>
               ) : (
                 <button
                   key={n}
