@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCNT Vault — Find Your Scent</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="cart-styles.css">
+
+    <link rel="stylesheet" href="version-3.css">
+</head>
+<body data-catalog-layout="carousel">
+    <nav class="navbar">
+        <div class="container">
+            <a class="logo edition-wordmark" href="#home" aria-label="SCNT Vault home">SCNT<span>VAULT</span></a>
+            <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="22" height="22">
+                    <line class="hamburger-line top" x1="3" y1="6" x2="21" y2="6"/>
+                    <line class="hamburger-line middle" x1="3" y1="12" x2="21" y2="12"/>
+                    <line class="hamburger-line bottom" x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#perfumes">Shop fragrances</a></li>
+                <li><a href="#resellers">Resellers</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li><a href="#" id="navCartBtn" class="nav-cart-link" aria-label="Open shopping cart">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20" style="vertical-align: -4px;"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                    <span class="nav-cart-count" id="navCartCount">0</span>
+                </a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="mobile-menu-backdrop" id="mobileMenuBackdrop"></div>
+
+    <section id="home" class="hero simple-hero" aria-labelledby="simple-title">
+        <div class="container simple-hero-layout">
+            <div class="simple-hero-copy">
+                <p class="simple-eyebrow">Everyday fragrances</p>
+                <h1 id="simple-title">Find a scent that<br>feels like you.</h1>
+                <p>Explore oil-based perfumes for every day.<br>85ml bottles, ₱220 each.</p>
+                <a href="#perfumes" class="simple-shop">Browse perfumes <span aria-hidden="true">→</span></a>
+            </div>
+            <div class="simple-hero-photo"><img src="images/PERFUME%20BOTTLES/BARE%20VANILLA.png" alt="SCNT Vault Bare Vanilla perfume" width="3875" height="5462" fetchpriority="high"></div>
+        </div>
+    </section>
+
+
+
+
+
+
+
+    <section id="perfumes" class="perfumes">
+        <div class="container">
+            <div class="section-header-main" data-reveal="up">
+                <span class="section-badge-main">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" style="vertical-align: -2px; margin-right: 4px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                    Explore
+                </span>
+                <h2>Find your fragrance</h2>
+                <p class="section-subtitle-main">Search for a favorite or explore by scent family.</p>
+            </div>
+            
+            <div class="simple-families" id="scent-moods" aria-label="Browse by scent family">
+                <button type="button" data-mood="" aria-pressed="true">All scents</button>
+                <button type="button" data-mood="fresh" aria-pressed="false">Fresh</button>
+                <button type="button" data-mood="floral" aria-pressed="false">Floral</button>
+                <button type="button" data-mood="woody" aria-pressed="false">Woody</button>
+                <button type="button" data-mood="gourmand" aria-pressed="false">Sweet</button>
+            </div>
+            <p id="moodStatus" class="mood-status" role="status" aria-live="polite"></p>
+            <div class="product-availability-notice">
+                <span class="notice-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                </span>
+                <p>Some scents may be pre-order. We will confirm availability before completing your order.</p>
+            </div>
+            
+
+            
+            <div class="filter-container">
+                <div class="search-container">
+                    <span class="search-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    </span>
+                    <input type="text" id="perfumeSearch" aria-label="Search perfumes" placeholder="Search by name or scent..." class="search-bar">
+                    <button class="voice-search-btn" id="voiceSearchBtn" title="Voice Search">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                    </button>
+                </div>
+                <div class="category-container">
+                    <label for="categoryFilter" class="filter-label">For</label>
+                    <select id="categoryFilter" class="category-filter">
+                        <option value="all">All Categories</option>
+                        <option value="Women">Women</option>
+                        <option value="Men">Men</option>
+                        <option value="Unisex">Unisex</option>
+                    </select>
+                </div>
+                <div class="sort-container">
+                    <label for="sortFilter" class="filter-label">Sort by</label>
+                    <select id="sortFilter" class="sort-filter">
+                        <option value="name-az" selected>Name: A to Z</option>
+                        <option value="name-za">Name: Z to A</option>
+                        <option value="popular">Most Popular</option>
+                        <option value="default">Default</option>
+                    </select>
+                </div>
+            </div>
+            
+
+            
+            <div class="results-info">
+                <span id="resultsCount">Showing all perfumes</span>
+                <button id="clearFilters" class="clear-btn" style="display: none;">
+                    <span>✕</span>
+                    <span>Clear Filters</span>
+                </button>
+            </div>
+            
+            <div class="catalog-carousel" role="region" aria-label="Perfume collection carousel">
+                <div class="carousel-toolbar">
+                    <p id="carouselPosition" class="carousel-position" aria-live="polite">Explore the collection</p>
+                    <div class="carousel-controls">
+                        <button type="button" id="carouselPrev" aria-label="Previous perfumes" aria-controls="perfumeGrid">← Previous</button>
+                        <button type="button" id="carouselNext" aria-label="Next perfumes" aria-controls="perfumeGrid">Next →</button>
+                    </div>
+                </div>
+                <div class="fragrance-stage" id="fragranceStage" data-family="woody">
+                    <div class="stage-copy">
+                        <p class="stage-kicker">Selected fragrance <span id="stageIndex">01 / 83</span></p>
+                        <p class="stage-family" id="stageFamily">SPICY / WOODY</p>
+                        <h3 id="stageName">Find your signature.</h3>
+                        <p class="stage-brand" id="stageBrand"></p>
+                        <div class="stage-tags" id="stageTags"></div>
+                        <div class="stage-purchase"><span id="stagePrice">₱220</span><button type="button" id="stageDetails">View details <span aria-hidden="true">↗</span></button></div>
+
+                    </div>
+                    <div class="stage-visual">
+
+                        <div class="stage-arch"><img id="stageImage" src="images/scnt_default.png" alt="Featured SCNT Vault perfume" width="3875" height="5462"></div>
+
+                    </div>
+                </div>
+                <div class="gallery-selector" id="gallerySelector"><label for="galleryRange">Browse fragrances</label><input id="galleryRange" type="range" min="1" max="83" value="1" aria-label="Choose fragrance"><span id="galleryRangeLabel">01 / 83</span></div>
+                <div class="perfume-grid" id="perfumeGrid" tabindex="0" aria-label="Perfumes. Use left and right arrow keys to browse.">
+                <!-- Perfumes will be loaded dynamically from JSON -->
+                </div>
+                <p id="carouselEmpty" class="carousel-empty" hidden>No fragrances match. Try another search or clear your filters.</p>
+                <span class="carousel-hint">Swipe or use the arrows to explore</span>
+            </div>
+            <div class="pagination">
+                <button id="prevBtn" class="pagination-btn">← Previous</button>
+                <span id="pageInfo" class="page-info">Page 1 of 1</span>
+                <button id="nextBtn" class="pagination-btn">Next →</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="resellers" class="resellers">
+        <div class="container">
+            <h2 data-reveal="up">Reseller Package</h2>
+            <p class="reseller-description" data-reveal="up">Contact us for more details on the best package to start.</p>
+            
+            <div class="reseller-packages">
+                <div class="package-card" data-reveal="left" data-reveal-delay="1">
+                    <div class="package-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="40" height="40"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                    </div>
+                    <h3>Package 1</h3>
+                    <div class="package-bottles">10 Bottles</div>
+                    <p class="package-description">Includes:</p>
+                    <ul class="package-features">
+                        <li>3 Testers</li>
+                        <li>Bottle Pouch</li>
+                    </ul>
+                    <div class="package-price">₱ ****</div>
+                    <a href="#contact" class="btn package-btn">Get Started</a>
+                </div>
+
+                <div class="package-card featured-package" data-reveal="scale" data-reveal-delay="2">
+                    <div class="package-badge">MOST POPULAR</div>
+                    <div class="package-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="40" height="40"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                    </div>
+                    <h3>Package 2</h3>
+                    <div class="package-bottles">15 Bottles</div>
+                    <p class="package-description">Includes:</p>
+                    <ul class="package-features">
+                       <li>5 Testers</li>
+                        <li>Bottle Pouch</li>
+                    </ul>
+                    <div class="package-price">₱ ****</div>
+                    <a href="#contact" class="btn package-btn">Get Started</a>
+                </div>
+
+                <div class="package-card" data-reveal="right" data-reveal-delay="3">
+                    <div class="package-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="40" height="40"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                    </div>
+                    <h3>Package 3</h3>
+                    <div class="package-bottles">25 Bottles</div>
+                    <p class="package-description">Includes:</p>
+                    <ul class="package-features">
+                        <li>8 Testers</li>
+                        <li>Bottle Pouch</li>
+                    </ul>
+                    <div class="package-price">₱ ****</div>
+                    <a href="#contact" class="btn package-btn">Get Started</a>
+                </div>
+            </div>
+            
+            <p class="package-note">Price may change for selected variants</p>
+            
+            <div class="reseller-contact-info">
+                <div class="contact-item" data-reveal="left">
+                    <span class="contact-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="28" height="28"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    </span>
+                    <div>
+                        <strong>Contact Information</strong>
+                        <p>+63 991 732 8593</p>
+                    </div>
+                </div>
+                <div class="contact-item" data-reveal="right">
+                    <span class="contact-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="28" height="28"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    </span>
+                    <div>
+                        <strong>More Information</strong>
+                        <p><a href="https://www.scnt-vault.firebaseapp.com" target="_blank">www.scnt-vault.firebaseapp.com</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal for expanded perfume view -->
+    <div id="perfumeModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="modal-body">
+                <div class="modal-image-container">
+                    <div id="modalImage" class="modal-image"></div>
+                </div>
+                <div class="modal-info">
+                    <h2 id="modalName"></h2>
+                    <p class="modal-brand" id="modalBrand"></p>
+                    <p class="modal-category" id="modalCategory"></p>
+                    <p class="modal-gender" id="modalGender"></p>
+                    <p class="modal-size" id="modalSize"></p>
+                    
+                    <!-- Scent Notes -->
+                    <div class="scent-notes" id="scentNotes">
+                        <h3>Scent Profile</h3>
+                        <div class="scent-pyramid">
+                            <div class="scent-layer top-notes">
+                                <span class="layer-label">Top Notes</span>
+                                <span class="layer-content" id="topNotes">Citrus, Bergamot</span>
+                            </div>
+                            <div class="scent-layer middle-notes">
+                                <span class="layer-label">Heart Notes</span>
+                                <span class="layer-content" id="middleNotes">Jasmine, Rose</span>
+                            </div>
+                            <div class="scent-layer base-notes">
+                                <span class="layer-label">Base Notes</span>
+                                <span class="layer-content" id="baseNotes">Musk, Vanilla</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p class="modal-price" id="modalPrice"></p>
+                    <div class="modal-actions">
+                        <button class="btn add-to-cart-btn" id="addToCartModal">🛒 Add to Cart</button>
+                        <button class="btn share-btn" id="shareBtn">Share</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Similar Products Section -->
+            <div class="similar-products" id="similarProducts">
+                <h3>You May Also Like</h3>
+                <div class="similar-products-grid" id="similarProductsGrid"></div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Social Media Section -->
+    <section class="social-media-section">
+        <div class="container">
+            <div class="social-content">
+                <div class="social-header" data-reveal="up">
+                    <h2>Connect With Us</h2>
+                    <p class="social-subtitle">Follow us on social media for exclusive deals, new arrivals, and fragrance tips!</p>
+                </div>
+                <div class="social-links-container">
+                    <a href="https://facebook.com/scntvault" target="_blank" rel="noopener noreferrer" class="social-link facebook" data-reveal="left" data-reveal-delay="1">
+                        <div class="social-icon-wrapper">
+                            <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                            </svg>
+                        </div>
+                        <div class="social-info">
+                            <span class="social-name">Facebook</span>
+                            <span class="social-handle">@scntvault</span>
+                        </div>
+                    </a>
+                    <a href="https://instagram.com/scntvault" target="_blank" rel="noopener noreferrer" class="social-link instagram" data-reveal="up" data-reveal-delay="2">
+                        <div class="social-icon-wrapper">
+                            <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                            </svg>
+                        </div>
+                        <div class="social-info">
+                            <span class="social-name">Instagram</span>
+                            <span class="social-handle">@scntvault</span>
+                        </div>
+                    </a>
+                    <a href="https://tiktok.com/@scntvault" target="_blank" rel="noopener noreferrer" class="social-link tiktok" data-reveal="right" data-reveal-delay="3">
+                        <div class="social-icon-wrapper">
+                            <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+                            </svg>
+                        </div>
+                        <div class="social-info">
+                            <span class="social-name">TikTok</span>
+                            <span class="social-handle">@scntvault</span>
+                        </div>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Recently Viewed Section -->
+    <section id="recentlyViewedSection" class="recently-viewed-section" style="display: none;">
+        <div class="container">
+            <h2 data-reveal="up">Recently Viewed</h2>
+            <div class="recently-viewed-carousel-container">
+                <button class="recently-viewed-nav prev" id="recentlyViewedPrev" aria-label="Previous">‹</button>
+                <div class="recently-viewed-grid" id="recentlyViewedGrid"></div>
+                <button class="recently-viewed-nav next" id="recentlyViewedNext" aria-label="Next">›</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cart Panel -->
+    <div id="cartPanel" class="cart-panel">
+        <div class="cart-header">
+            <h3>Shopping Cart</h3>
+            <span class="close-cart">&times;</span>
+        </div>
+        <div id="cartItems" class="cart-items">
+            <p class="empty-cart">Your cart is empty</p>
+        </div>
+        <div id="cartSummary" class="cart-summary" style="display: none;">
+            <div class="cart-notice">
+                <span class="notice-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                </span>
+                <p><strong>Note:</strong> Some items may be pre-order. We'll confirm availability and details with you.</p>
+            </div>
+            <div class="cart-total">
+                <span>Subtotal:</span>
+                <span id="cartSubtotal">₱0</span>
+            </div>
+            <div class="cart-total grand-total">
+                <span>Total:</span>
+                <span id="cartTotal">₱0</span>
+            </div>
+            <button class="btn checkout-btn" id="checkoutBtn" onclick="if(typeof openCheckout === 'function') openCheckout();">Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div id="checkoutModal" class="modal checkout-modal">
+        <div class="modal-content checkout-modal-content">
+            <span class="close-modal close-checkout">&times;</span>
+            <h2>Checkout</h2>
+            
+            <div class="checkout-notice">
+                <div class="notice-header">
+                    <span class="notice-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    </span>
+                    <strong>Order Request Notice</strong>
+                </div>
+                <p>This checkout sends your order request to us. We will:</p>
+                <ul>
+                    <li>✓ Check product availability (some items may be pre-order)</li>
+                    <li>✓ Confirm order details with you</li>
+                    <li>✓ Provide payment instructions</li>
+                    <li>✓ Arrange delivery once confirmed</li>
+                </ul>
+                <p class="notice-footer">You are <strong>not</strong> making a direct purchase. We'll contact you to finalize your order.</p>
+            </div>
+
+
+            <form id="checkoutForm" class="checkout-form">
+                <div class="form-section">
+                    <h3>Contact Information</h3>
+                    <input type="text" name="fullName" placeholder="Full Name *" required>
+                    <input type="email" name="email" placeholder="Email Address *" required>
+                    <input type="tel" name="phone" placeholder="Phone Number *" required>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Shipping Address</h3>
+                    <input type="text" name="address" placeholder="Street Address *" required>
+                    <input type="text" name="city" placeholder="City *" required>
+                    <input type="text" name="province" placeholder="Province *" required>
+                    <input type="text" name="zipCode" placeholder="Zip Code *" required>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Additional Notes</h3>
+                    <textarea name="notes" placeholder="Order notes (optional)" rows="3"></textarea>
+                </div>
+                
+                <div class="checkout-summary">
+                    <h3>Order Summary</h3>
+                    <div id="checkoutItems"></div>
+                    <div class="checkout-totals">
+                        <div class="checkout-total-row">
+                            <span>Subtotal:</span>
+                            <span id="checkoutSubtotal">₱0</span>
+                        </div>
+                        <div class="checkout-total-row grand-total">
+                            <span>Total:</span>
+                            <span id="checkoutTotal">₱0</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn place-order-btn">Place Order</button>
+            </form>
+        </div>
+    </div>
+
+    
+
+    <!-- Chat Bot Widget -->
+    <div id="chatWidget" class="chat-widget">
+        <div class="chat-header">
+            <h4>SCNT Assistant</h4>
+            <button class="close-chat" id="closeChat">×</button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="bot-message">
+                <p>Hi! I'm your SCNT Vault assistant. How can I help you today?</p>
+                <div class="quick-replies">
+                    <button class="quick-reply" data-message="Show me popular perfumes">Popular perfumes</button>
+                    <button class="quick-reply" data-message="What's on sale?">Sales</button>
+                    <button class="quick-reply" data-message="Help me choose">Help me choose</button>
+                </div>
+            </div>
+        </div>
+        <div class="chat-input-container">
+            <input type="text" id="chatInput" placeholder="Type your message...">
+            <button id="sendChatBtn">Send</button>
+        </div>
+    </div>
+
+    <!-- Quick Actions Menu -->
+    <div class="quick-actions-menu" id="quickActionsMenu">
+        <!-- Cart Button -->
+    <button id="cartBtn" class="cart-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22" style="vertical-align: -4px;"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        <span id="cartCount">0</span>
+    </button>
+    </div>
+
+
+    <!-- FAQ Section -->
+    <section class="faq-section">
+        <div class="container">
+            <h2 data-reveal="up">Frequently Asked Questions</h2>
+            <div class="faq-grid">
+                <div class="faq-item" data-reveal="up" data-reveal-delay="1">
+                    <button class="faq-question">
+                        <span>How long does the perfume last?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Our perfumes typically last 6-8 hours on the skin. Longevity depends on skin type, application method, and environmental factors. For best results, apply to pulse points and moisturized skin.</p>
+                    </div>
+                </div>
+                <div class="faq-item" data-reveal="up" data-reveal-delay="2">
+                    <button class="faq-question">
+                        <span>How should I apply perfume?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Apply to pulse points: wrists, neck, behind ears, and inner elbows. Don't rub wrists together as it breaks down the fragrance. Spray from 6-8 inches away. Apply to moisturized skin for better longevity.</p>
+                    </div>
+                </div>
+                <div class="faq-item" data-reveal="up" data-reveal-delay="3">
+                    <button class="faq-question">
+                        <span>How should I store my perfume?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Store in a cool, dry place away from direct sunlight and heat. Keep the bottle closed when not in use. Avoid storing in bathrooms due to humidity. Proper storage can extend shelf life to 3-5 years.</p>
+                    </div>
+                </div>
+                <div class="faq-item" data-reveal="up" data-reveal-delay="4">
+                    <button class="faq-question">
+                        <span>What size bottles do you offer?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>We offer 85ml bottle. Priced at ₱220. Check individual product pages for available sizes.</p>
+                    </div>
+                </div>
+                <div class="faq-item" data-reveal="up" data-reveal-delay="5">
+                    <button class="faq-question">
+                        <span>Do you offer samples?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Yes! We offer sample vials for ₱50 each. Perfect for trying before committing to a full bottle. Contact us to request specific samples.</p>
+                    </div>
+                </div>
+                <div class="faq-item" data-reveal="up" data-reveal-delay="6">
+                    <button class="faq-question">
+                        <span>Are your perfumes authentic?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Absolutely! All our perfumes are 100% authentic and sourced directly from authorized distributors. We guarantee quality and authenticity on every purchase.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Review Modal -->
+    <div id="reviewModal" class="modal">
+        <div class="modal-content review-modal-content">
+            <span class="close-modal close-review">&times;</span>
+            <h2>Write a Review</h2>
+            <form id="reviewForm" class="review-form">
+                <div class="rating-input">
+                    <label>Your Rating:</label>
+                    <div class="star-rating">
+                        <span class="star" data-rating="1">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="32" height="32"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        </span>
+                        <span class="star" data-rating="2">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="32" height="32"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        </span>
+                        <span class="star" data-rating="3">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="32" height="32"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        </span>
+                        <span class="star" data-rating="4">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="32" height="32"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        </span>
+                        <span class="star" data-rating="5">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="32" height="32"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        </span>
+                    </div>
+                    <input type="hidden" id="ratingValue" required>
+                </div>
+                <input type="text" id="reviewerName" placeholder="Your Name" required>
+                <textarea id="reviewText" placeholder="Share your experience..." rows="5" required></textarea>
+                <button type="submit" class="btn">Submit Review</button>
+            </form>
+        </div>
+    </div>
+
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2 data-reveal="up">Get In Touch</h2>
+            <form class="contact-form" id="contactForm" data-reveal="left">
+                <input type="text" placeholder="Your Name" required>
+                <input type="email" placeholder="Your Email" required>
+                <input type="text" placeholder="Subject">
+                <textarea placeholder="Your Message" rows="5" required></textarea>
+                <button type="submit" class="btn">Send Message</button>
+            </form>
+            <div class="contact-info" data-reveal="right">
+                <p>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" style="vertical-align: -3px;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                    Email: scnt.vaultsup@gmail.com
+                </p>
+                <p>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" style="vertical-align: -3px;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    Phone: +63 9917185681
+                </p>
+                <p>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" style="vertical-align: -3px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    Address: Proper, Damolog, Sogod, Cebu
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <footer data-reveal="fade">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section" data-reveal="up" data-reveal-delay="1">
+                    <h3>SCNT Vault</h3>
+                    <p>Your destination for premium fragrances</p>
+                    <div class="social-links">
+                        <a href="https://facebook.com/scntvault" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+                            <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                        </a>
+                        <a href="https://instagram.com/scntvault" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                            <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                        </a>
+                        <a href="https://tiktok.com/@scntvault" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+                            <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-section" data-reveal="up" data-reveal-delay="2">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#perfumes">Shop</a></li>
+                        <li><a href="#resellers">Become a Reseller</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section" data-reveal="up" data-reveal-delay="3">
+                    <h4>Contact Info</h4>
+                    <p>scnt.vaultsup@gmail.com</p>
+                    <p>+63 9917185681</p>
+                    <p>Proper, Damolog, Sogod, Cebu</p>
+                </div>
+                <div class="footer-section" data-reveal="up" data-reveal-delay="4">
+                    <h4>Newsletter</h4>
+                    <form id="newsletterForm" class="newsletter-form">
+                        <input type="email" placeholder="Your email" required>
+                        <button type="submit" class="btn">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 SCNT Vault. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="loading-spinner">
+        <div class="spinner"></div>
+    </div>
+
+    <script src="perfumes-data.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    
+    <!-- Firebase SDK - Optional, loads asynchronously -->
+    <script type="module" src="firebase-loader.js"></script>
+    
+    <!-- Main Script -->
+    <script defer src="script.js"></script>
+    <script defer src="version-3.js"></script>
+</body>
+</html>
+
+
+
+
+
+

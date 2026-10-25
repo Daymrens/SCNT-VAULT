@@ -4,7 +4,7 @@ let createOrder, saveContactMessage, subscribeNewsletter, trackPageView, trackPr
 
 // Pagination variables
 let currentPage = 1;
-const itemsPerPage = 12; // Show 12 perfumes per page
+const itemsPerPage = document.body.dataset.catalogLayout === 'carousel' ? Number.MAX_SAFE_INTEGER : 12;
 let filteredPerfumes = [];
 let currentSearchTerm = '';
 let currentCategory = 'all';
