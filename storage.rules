@@ -1,0 +1,13 @@
+rules_version = '2';
+
+// No app in this project uses Cloud Storage yet.
+// Everything is denied by default, so the bucket cannot be used as free file
+// hosting even if it is enabled later. Open a specific path when a feature
+// actually needs uploads.
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
