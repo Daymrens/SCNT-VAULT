@@ -16,6 +16,7 @@ import Sales from './pages/Sales';
 import PurchaseOrders from './pages/PurchaseOrders';
 import Testers from './pages/Testers';
 import Reports from './pages/Reports';
+import PendingOrders from './pages/PendingOrders';
 const POS = lazy(() => import('./pages/POS'));
 import Layout from './components/Layout';
 import PrivateRoute from './components/PrivateRoute';
@@ -35,6 +36,7 @@ function AppInner() {
                 <Route path="purchase-orders" element={<PurchaseOrders />} />
                 <Route path="testers" element={<Testers />} />
                 <Route path="reports" element={<Reports />} />
+                <Route path="pending-orders" element={<PendingOrders />} />
                 <Route path="pos" element={<Suspense fallback={<div style={{ display:'flex', justifyContent:'center', alignItems:'center', height:'60vh' }}><div className="spinner" /></div>}><POS /></Suspense>} />
               </Route>
               <Route path="*" element={<Navigate to="/" replace />} />

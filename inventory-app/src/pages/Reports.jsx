@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
@@ -9,7 +9,7 @@ import { toCsv } from '../utils/csv';
 import { collection, query, where, getDocs, orderBy, Timestamp } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
 
-const COLORS = ['#2dd4bf','#64748b','#3b82f6','#f59e0b','#a78bfa','#ec4899','#ef4444','#14b8a6'];
+const COLORS = ['#0d9488','#94a3b8','#3b82f6','#f59e0b','#8b5cf6','#ec4899','#ef4444','#14b8a6'];
 
 const RANGES = [
   { label:'Last 7 days',  days:7  },
@@ -177,7 +177,7 @@ export default function Reports() {
     return products
       .filter(p => {
         const totalSold = salesByProduct[p.id] || 0;
-        const weeklyVelocity = totalSold / 4; // 30 days ≈ 4 weeks
+        const weeklyVelocity = totalSold / 4; // 30 days � 4 weeks
         return weeklyVelocity < 1 && p.Stock > 0;
       })
       .map(p => {
@@ -267,7 +267,7 @@ export default function Reports() {
     { id:'slow-movers', label:'Slow Movers', icon:<FaClock /> },
   ];
 
-  const tooltipStyle = { borderRadius:8, border:'1px solid rgba(255,255,255,0.08)', background:'#1f232b', boxShadow:'0 4px 20px rgba(0,0,0,0.3)', fontSize:12, color:'#e2e8f0' };
+  const tooltipStyle = { borderRadius:8, border:'1px solid var(--border)', background:'var(--bg-card)', boxShadow:'0 4px 20px rgba(16,24,40,0.10)', fontSize:12, color:'var(--text-primary)' };
 
   return (
     <div className="inventory-page">
@@ -286,12 +286,12 @@ export default function Reports() {
         <div style={{ display:'flex', gap:10, alignItems:'center' }}>
           {/* Date range */}
           <div style={{ display:'flex', background:'var(--bg-card)', borderRadius:12, overflow:'hidden',
-            boxShadow:'0 2px 8px rgba(0,0,0,0.2)', border:'1px solid var(--border)' }}>
+            boxShadow:'0 2px 8px rgba(16,24,40,0.07)', border:'1px solid var(--border)' }}>
             {RANGES.map(r => (
               <button key={r.days} onClick={() => setRangeDays(r.days)} style={{
                 padding:'8px 14px', border:'none', fontSize:12, fontWeight:600, cursor:'pointer',
                 background: rangeDays === r.days ? 'var(--accent)' : 'transparent',
-                color: rangeDays === r.days ? '#0f172a' : 'var(--text-muted)',
+                color: rangeDays === r.days ? '#ffffff' : 'var(--text-muted)',
                 transition:'all 0.2s', whiteSpace:'nowrap' }}>
                 {r.label}
               </button>
@@ -313,7 +313,7 @@ export default function Reports() {
           </div>
           <div className="stat-cashflow-label">Revenue</div>
           <div className="stat-cashflow-value">
-            ₱{metrics.revenue.toLocaleString('en-PH')}
+            ?{metrics.revenue.toLocaleString('en-PH')}
           </div>
         </div>
         <div className="stat-cashflow">
@@ -322,7 +322,7 @@ export default function Reports() {
           </div>
           <div className="stat-cashflow-label">Cost</div>
           <div className="stat-cashflow-value" style={{ color:'var(--danger)' }}>
-            ₱{metrics.cost.toLocaleString('en-PH')}
+            ?{metrics.cost.toLocaleString('en-PH')}
           </div>
         </div>
         <div className="stat-cashflow stat-cashflow-green">
@@ -331,11 +331,11 @@ export default function Reports() {
           </div>
           <div className="stat-cashflow-label">Profit</div>
           <div className="stat-cashflow-value" style={{ color:'white' }}>
-            ₱{metrics.profit.toLocaleString('en-PH')}
+            ?{metrics.profit.toLocaleString('en-PH')}
           </div>
         </div>
         <div className="stat-cashflow stat-cashflow-dark">
-          <div className="stat-cashflow-icon" style={{ background:'rgba(255,255,255,0.15)' }}>
+          <div className="stat-cashflow-icon" style={{ background:'rgba(0,0,0,0.06)' }}>
             <FaBoxes style={{ color:'white' }} />
           </div>
           <div className="stat-cashflow-label">Bottles Sold</div>
@@ -347,14 +347,14 @@ export default function Reports() {
 
       {/* Margin indicator */}
       <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:20, padding:'10px 16px',
-        background:'var(--bg-card)', borderRadius:12, boxShadow:'0 2px 12px rgba(0,0,0,0.2)', fontSize:13, fontWeight:600,
+        background:'var(--bg-card)', borderRadius:12, boxShadow:'0 2px 12px rgba(16,24,40,0.07)', fontSize:13, fontWeight:600,
         border:'1px solid var(--border)' }}>
         <span style={{ color:'var(--text-muted)' }}>Margin:</span>
         <span style={{ color:'var(--accent)', display:'flex', alignItems:'center', gap:4 }}>
           {metrics.marginPct}%
         </span>
-        <span style={{ color:'rgba(255,255,255,0.1)', margin:'0 4px' }}>|</span>
-        <span style={{ color:'var(--text-muted)' }}>PO Spend: <span style={{ color:'var(--danger)' }}>₱{poSpend.toLocaleString('en-PH')}</span></span>
+        <span style={{ color:'var(--border)', margin:'0 4px' }}>|</span>
+        <span style={{ color:'var(--text-muted)' }}>PO Spend: <span style={{ color:'var(--danger)' }}>?{poSpend.toLocaleString('en-PH')}</span></span>
       </div>
 
       {/* -- SALES TAB -- */}
@@ -367,14 +367,14 @@ export default function Reports() {
             {metrics.salesByDate.length === 0 ? <Empty /> :
               <ResponsiveContainer width="100%" height={260}>
                 <LineChart data={metrics.salesByDate}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
-                  <XAxis dataKey="day" tick={{ fontSize:11, fill:'#64748b' }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize:11, fill:'#64748b' }} axisLine={false} tickLine={false}
-                    tickFormatter={v => `₱${(v/1000).toFixed(0)}k`} />
-                  <Tooltip formatter={v => [`₱${v.toLocaleString()}`, 'Revenue']}
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--bg-secondary)" vertical={false} />
+                  <XAxis dataKey="day" tick={{ fontSize:11, fill:'var(--text-muted)' }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize:11, fill:'var(--text-muted)' }} axisLine={false} tickLine={false}
+                    tickFormatter={v => `?${(v/1000).toFixed(0)}k`} />
+                  <Tooltip formatter={v => [`?${v.toLocaleString()}`, 'Revenue']}
                     contentStyle={tooltipStyle} />
-                  <Line type="monotone" dataKey="revenue" stroke="#2dd4bf" strokeWidth={2.5}
-                    dot={{ r:3, fill:'#2dd4bf', strokeWidth:2, stroke:'#1f232b' }} activeDot={{ r:6 }} />
+                  <Line type="monotone" dataKey="revenue" stroke="#0d9488" strokeWidth={2.5}
+                    dot={{ r:3, fill:'#0d9488', strokeWidth:2, stroke:'#ffffff' }} activeDot={{ r:6 }} />
                 </LineChart>
               </ResponsiveContainer>
             }
@@ -394,10 +394,10 @@ export default function Reports() {
                       ]}
                       cx="50%" cy="50%" innerRadius={55} outerRadius={80}
                       paddingAngle={4} dataKey="value" startAngle={90} endAngle={-270}>
-                      <Cell fill="#2dd4bf" />
-                      <Cell fill="#334155" />
+                      <Cell fill="#0d9488" />
+                      <Cell fill="#cbd5e1" />
                     </Pie>
-                    <Tooltip formatter={v => `₱${v.toLocaleString()}`} contentStyle={tooltipStyle} />
+                    <Tooltip formatter={v => `?${v.toLocaleString()}`} contentStyle={tooltipStyle} />
                     <Legend />
                   </PieChart>
                 </ResponsiveContainer>
@@ -413,14 +413,14 @@ export default function Reports() {
                     { name:'PO Spend', value: poSpend },
                     { name:'Profit',  value: Math.max(metrics.profit, 0) },
                   ]}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
-                    <XAxis dataKey="name" tick={{ fontSize:11, fill:'#64748b' }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize:11, fill:'#64748b' }} axisLine={false} tickLine={false}
-                      tickFormatter={v => `₱${(v/1000).toFixed(0)}k`} />
-                    <Tooltip formatter={v => `₱${v.toLocaleString()}`}
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--bg-secondary)" vertical={false} />
+                    <XAxis dataKey="name" tick={{ fontSize:11, fill:'var(--text-muted)' }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize:11, fill:'var(--text-muted)' }} axisLine={false} tickLine={false}
+                      tickFormatter={v => `?${(v/1000).toFixed(0)}k`} />
+                    <Tooltip formatter={v => `?${v.toLocaleString()}`}
                       contentStyle={tooltipStyle} />
                     <Bar dataKey="value" radius={[8,8,0,0]}>
-                      <Cell fill="#2dd4bf" />
+                      <Cell fill="#0d9488" />
                       <Cell fill="#ef4444" />
                       <Cell fill="#3b82f6" />
                     </Bar>
@@ -441,9 +441,9 @@ export default function Reports() {
               {metrics.topProducts.length === 0 ? <Empty /> :
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={metrics.topProducts} layout="vertical" margin={{ left:8, right:16 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" horizontal={false} />
-                    <XAxis type="number" tick={{ fontSize:11, fill:'#64748b' }} axisLine={false} tickLine={false} />
-                    <YAxis type="category" dataKey="name" width={130} tick={{ fontSize:10, fill:'#64748b' }} axisLine={false} tickLine={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--bg-secondary)" horizontal={false} />
+                    <XAxis type="number" tick={{ fontSize:11, fill:'var(--text-muted)' }} axisLine={false} tickLine={false} />
+                    <YAxis type="category" dataKey="name" width={130} tick={{ fontSize:10, fill:'var(--text-muted)' }} axisLine={false} tickLine={false} />
                     <Tooltip formatter={v => [`${v} bottles`, 'Sold']}
                       contentStyle={tooltipStyle} />
                     <Bar dataKey="qty" radius={[0,8,8,0]}>
@@ -464,7 +464,7 @@ export default function Reports() {
                     </Pie>
                     <Tooltip formatter={(v, n) => [`${v} bottles`, n]}
                       contentStyle={tooltipStyle} />
-                    <Legend iconType="circle" iconSize={10} wrapperStyle={{ fontSize:11, color:'#94a3b8' }} />
+                    <Legend iconType="circle" iconSize={10} wrapperStyle={{ fontSize:11, color:'var(--text-secondary)' }} />
                   </PieChart>
                 </ResponsiveContainer>
               }
@@ -478,8 +478,8 @@ export default function Reports() {
               rows={metrics.topProducts.map(p => [
                 p.name,
                 <Pill key="q" bg="var(--accent-dim)" color="var(--accent)">{p.qty}</Pill>,
-                <span key="r" style={{ fontWeight:700, color:'var(--accent)' }}>₱{p.revenue.toLocaleString()}</span>,
-                `₱${p.qty > 0 ? (p.revenue/p.qty).toFixed(0) : 0}`
+                <span key="r" style={{ fontWeight:700, color:'var(--accent)' }}>?{p.revenue.toLocaleString()}</span>,
+                `?${p.qty > 0 ? (p.revenue/p.qty).toFixed(0) : 0}`
               ])}
             />
           </div>
@@ -498,11 +498,11 @@ export default function Reports() {
                     name: customerMap[c.id]?.Name || 'Walk-in',
                     total: c.total
                   }))} layout="vertical" margin={{ left:8, right:16 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" horizontal={false} />
-                    <XAxis type="number" tick={{ fontSize:11, fill:'#64748b' }} axisLine={false} tickLine={false}
-                      tickFormatter={v => `₱${(v/1000).toFixed(0)}k`} />
-                    <YAxis type="category" dataKey="name" width={110} tick={{ fontSize:10, fill:'#64748b' }} axisLine={false} tickLine={false} />
-                    <Tooltip formatter={v => [`₱${v.toLocaleString()}`, 'Spent']}
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--bg-secondary)" horizontal={false} />
+                    <XAxis type="number" tick={{ fontSize:11, fill:'var(--text-muted)' }} axisLine={false} tickLine={false}
+                      tickFormatter={v => `?${(v/1000).toFixed(0)}k`} />
+                    <YAxis type="category" dataKey="name" width={110} tick={{ fontSize:10, fill:'var(--text-muted)' }} axisLine={false} tickLine={false} />
+                    <Tooltip formatter={v => [`?${v.toLocaleString()}`, 'Spent']}
                       contentStyle={tooltipStyle} />
                     <Bar dataKey="total" radius={[0,8,8,0]}>
                       {metrics.topCustomers.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
@@ -519,7 +519,7 @@ export default function Reports() {
                   ['Active in Period',   metrics.topCustomers.length,                                    'var(--accent)'],
                   ['Total Transactions', metrics.salesCount,                                             'var(--warning)'],
                   ['Avg per Customer',   metrics.topCustomers.length > 0
-                    ? `₱${(metrics.revenue / metrics.topCustomers.length).toFixed(0)}` : '₱0',          '#a78bfa'],
+                    ? `?${(metrics.revenue / metrics.topCustomers.length).toFixed(0)}` : '?0',          '#a78bfa'],
                   ['Repeat Customers',   metrics.topCustomers.filter(c => c.count > 1).length,           'var(--info)'],
                 ].map(([l, v, c]) => (
                   <div key={l} style={{ display:'flex', justifyContent:'space-between', alignItems:'center',
@@ -538,8 +538,8 @@ export default function Reports() {
               rows={metrics.topCustomers.map(c => [
                 customerMap[c.id]?.Name || 'Walk-in',
                 <Pill key="p" bg="var(--accent-dim)" color="var(--accent)">{c.count}</Pill>,
-                <span key="t" style={{ fontWeight:700, color:'var(--accent)' }}>₱{c.total.toLocaleString()}</span>,
-                `₱${(c.total / c.count).toFixed(0)}`
+                <span key="t" style={{ fontWeight:700, color:'var(--accent)' }}>?{c.total.toLocaleString()}</span>,
+                `?${(c.total / c.count).toFixed(0)}`
               ])}
             />
           </div>
@@ -558,11 +558,11 @@ export default function Reports() {
                     name: resellerMap[r.id]?.Name || 'Unknown',
                     total: r.total
                   }))}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
-                    <XAxis dataKey="name" tick={{ fontSize:10, fill:'#64748b' }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize:11, fill:'#64748b' }} axisLine={false} tickLine={false}
-                      tickFormatter={v => `₱${(v/1000).toFixed(0)}k`} />
-                    <Tooltip formatter={v => [`₱${v.toLocaleString()}`, 'Revenue']}
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--bg-secondary)" vertical={false} />
+                    <XAxis dataKey="name" tick={{ fontSize:10, fill:'var(--text-muted)' }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize:11, fill:'var(--text-muted)' }} axisLine={false} tickLine={false}
+                      tickFormatter={v => `?${(v/1000).toFixed(0)}k`} />
+                    <Tooltip formatter={v => [`?${v.toLocaleString()}`, 'Revenue']}
                       contentStyle={tooltipStyle} />
                     <Bar dataKey="total" radius={[8,8,0,0]}>
                       {metrics.topResellers.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
@@ -577,7 +577,7 @@ export default function Reports() {
                 {[
                   ['Total Resellers',    resellers.length,                                                'var(--text-primary)'],
                   ['Active in Period',   metrics.topResellers.length,                                    'var(--accent)'],
-                  ['Reseller Revenue',   `₱${metrics.topResellers.reduce((s,r)=>s+r.total,0).toLocaleString('en-PH')}`, 'var(--warning)'],
+                  ['Reseller Revenue',   `?${metrics.topResellers.reduce((s,r)=>s+r.total,0).toLocaleString('en-PH')}`, 'var(--warning)'],
                   ['Reseller Orders',    metrics.topResellers.reduce((s,r)=>s+r.count,0),               '#a78bfa'],
                 ].map(([l, v, c]) => (
                   <div key={l} style={{ display:'flex', justifyContent:'space-between', alignItems:'center',
@@ -598,9 +598,9 @@ export default function Reports() {
                 return [
                   res?.Name || 'Unknown',
                   <Pill key="o" bg="var(--info-bg)" color="var(--info)">{r.count}</Pill>,
-                  <span key="t" style={{ fontWeight:700, color:'var(--accent)' }}>₱{r.total.toLocaleString()}</span>,
-                  `₱${(r.total / r.count).toFixed(0)}`,
-                  res?.DiscountRate ? `${res.DiscountRate}%` : '·'
+                  <span key="t" style={{ fontWeight:700, color:'var(--accent)' }}>?{r.total.toLocaleString()}</span>,
+                  `?${(r.total / r.count).toFixed(0)}`,
+                  res?.DiscountRate ? `${res.DiscountRate}%` : '�'
                 ];
               })}
             />

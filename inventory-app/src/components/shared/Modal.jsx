@@ -22,7 +22,7 @@ export default function Modal({ isOpen, onClose, title, icon, children, maxWidth
       <div style={{ background:'var(--bg-card)', borderRadius:20, width:'100%', maxWidth,
         maxHeight:'90vh', display:'flex', flexDirection:'column', color:'var(--text-primary)',
         border:'1px solid var(--border)',
-        boxShadow:'0 20px 60px rgba(0,0,0,0.5)', overflow:'hidden' }}>
+        boxShadow:'0 20px 60px rgba(16,24,40,0.18)', overflow:'hidden' }}>
         {/* Header */}
         <div style={{ padding:'20px 24px', background:'var(--bg-sidebar)',
           borderBottom:'1px solid var(--border)',
@@ -31,12 +31,12 @@ export default function Modal({ isOpen, onClose, title, icon, children, maxWidth
             {icon && <span style={{ color:'var(--accent)', fontSize:16 }}>{icon}</span>}
             <span style={{ color:'var(--text-primary)', fontWeight:700, fontSize:16 }}>{title}</span>
           </div>
-          <button onClick={onClose} style={{ background:'rgba(255,255,255,0.12)', border:'none',
-            borderRadius:8, color:'#fff', cursor:'pointer', width:32, height:32,
+          <button onClick={onClose} style={{ background:'rgba(0,0,0,0.06)', border:'none',
+            borderRadius:8, color:'var(--text-secondary)', cursor:'pointer', width:32, height:32,
             display:'flex', alignItems:'center', justifyContent:'center', fontSize:16,
             transition:'background 0.15s' }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.2)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.12)'; }}>
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--border)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.06)'; }}>
             <FaTimes />
           </button>
         </div>
@@ -76,8 +76,8 @@ export function PrimaryButton({ onClick, disabled, loading, children, fullWidth 
   return (
     <button onClick={onClick} disabled={disabled || loading} style={{
       padding:'9px 20px',
-      background: disabled ? 'rgba(255,255,255,0.06)' : 'var(--accent)',
-      color: disabled ? 'var(--text-muted)' : '#0f172a',
+      background: disabled ? 'var(--border)' : 'var(--accent)',
+      color: disabled ? 'var(--text-muted)' : '#ffffff',
       border:'none', borderRadius:8, fontSize:13, fontWeight:700,
       cursor: disabled ? 'not-allowed' : 'pointer',
       opacity: loading ? 0.7 : 1,

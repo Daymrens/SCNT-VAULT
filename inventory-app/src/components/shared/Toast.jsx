@@ -80,7 +80,7 @@ function ToastItem({ id, message, type, onDone }) {
     <div onClick={onDone}
       style={{ background:bg, color, borderLeft:`4px solid ${border}`, borderRadius:10,
         padding:'12px 18px', display:'flex', alignItems:'center', gap:10, fontSize:13, fontWeight:600,
-        boxShadow:'0 8px 32px rgba(0,0,0,0.35)', cursor:'pointer', minWidth:200,
+        boxShadow:'0 8px 32px rgba(16,24,40,0.12)', cursor:'pointer', minWidth:200,
         animation:'toastSlideIn 0.25s ease' }}>
       {icon} <span style={{ flex:1 }}>{message}</span> <FaTimes style={{ fontSize:10, opacity:0.5 }} />
     </div>

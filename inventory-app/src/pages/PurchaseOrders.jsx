@@ -20,7 +20,7 @@ const STATUSES = ['Pending', 'Ordered', 'Received', 'Completed', 'Cancelled'];
 
 const STATUS_STYLE = {
   Pending:   { bg:'var(--warning-bg)', color:'var(--warning)', dot:'var(--warning)', icon:<FaClock /> },
-  Ordered:   { bg:'rgba(255,255,255,0.06)', color:'var(--text-secondary)', dot:'var(--text-muted)', icon:<FaTruck /> },
+  Ordered:   { bg:'var(--border)', color:'var(--text-secondary)', dot:'var(--text-muted)', icon:<FaTruck /> },
   Received:  { bg:'var(--success-bg)', color:'var(--accent)', dot:'var(--accent)', icon:<FaBoxes /> },
   Completed: { bg:'var(--success-bg)', color:'var(--accent)', dot:'var(--accent)', icon:<FaCheckCircle /> },
   Cancelled: { bg:'var(--danger-bg)', color:'var(--danger)', dot:'var(--danger)', icon:<FaTimesCircle /> },
@@ -433,12 +433,12 @@ export default function PurchaseOrders() {
               border:'1px solid var(--border)', borderRadius:8,
               fontSize:13, fontWeight:600, cursor:generating?'not-allowed':'pointer',
               transition:'all 0.15s', opacity:generating?0.7:1 }}
-              onMouseEnter={e => { if (!generating) { e.currentTarget.style.background='var(--bg-card-hover)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.1)'; } }}
+              onMouseEnter={e => { if (!generating) { e.currentTarget.style.background='var(--bg-card-hover)'; e.currentTarget.style.borderColor='rgba(0,0,0,0.06)'; } }}
               onMouseLeave={e => { e.currentTarget.style.background='var(--bg-card)'; e.currentTarget.style.borderColor='var(--border)'; }}
             ><FaMagic /> {generating?'Generating...':'Generate from Sales'}</button>
             <button onClick={openAdd} style={{
               display:'flex', alignItems:'center', gap:8, padding:'10px 18px',
-              background:'var(--accent)', color:'#0f172a', border:'none', borderRadius:8,
+              background:'var(--accent)', color:'#ffffff', border:'none', borderRadius:8,
               fontSize:13, fontWeight:600, cursor:'pointer',
               transition:'all 0.15s' }}
               onMouseEnter={e => e.currentTarget.style.opacity='0.9'}
@@ -501,7 +501,7 @@ export default function PurchaseOrders() {
                 </div>
                 <button onClick={handlePrefillPO} style={{
                   display:'flex', alignItems:'center', gap:8, padding:'10px 18px',
-                  background:'var(--accent)', color:'#0f172a', border:'none', borderRadius:8,
+                  background:'var(--accent)', color:'#ffffff', border:'none', borderRadius:8,
                   fontSize:13, fontWeight:600, cursor:'pointer', transition:'all 0.15s' }}
                   onMouseEnter={e => e.currentTarget.style.opacity='0.9'}
                   onMouseLeave={e => e.currentTarget.style.opacity='1'}>
@@ -609,7 +609,7 @@ export default function PurchaseOrders() {
             <button key={s} onClick={() => setFilterStatus(filterStatus===s?'all':s)} style={{
               padding:'10px 14px', border:'none', borderRight:'1px solid var(--border)', fontSize:12, fontWeight:600, cursor:'pointer',
               background:filterStatus===s?'var(--accent)':'var(--bg-card)',
-              color:filterStatus===s?'#0f172a':'var(--text-muted)', transition:'all 0.2s' }}>
+              color:filterStatus===s?'#ffffff':'var(--text-muted)', transition:'all 0.2s' }}>
               {s}
             </button>
           ))}

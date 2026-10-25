@@ -82,7 +82,7 @@ export default function BarcodeScanner({ isOpen, onClose, onScan }) {
         width: '90%',
         maxWidth: 400,
         overflow: 'hidden',
-        boxShadow: '0 16px 48px rgba(0,0,0,0.5)',
+        boxShadow: '0 16px 48px rgba(16,24,40,0.18)',
       }}>
         <div style={{
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
@@ -103,7 +103,7 @@ export default function BarcodeScanner({ isOpen, onClose, onScan }) {
             <button onClick={() => setMode('camera')} style={{
               flex: 1, padding: '8px 0',
               background: mode === 'camera' ? 'var(--accent)' : 'var(--bg-secondary)',
-              color: mode === 'camera' ? '#0f172a' : 'var(--text-muted)',
+              color: mode === 'camera' ? '#ffffff' : 'var(--text-muted)',
               border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 600,
               cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
             }}>
@@ -113,7 +113,7 @@ export default function BarcodeScanner({ isOpen, onClose, onScan }) {
               style={{
                 flex: 1, padding: '8px 0',
                 background: mode === 'keyboard' ? 'var(--accent)' : 'var(--bg-secondary)',
-                color: mode === 'keyboard' ? '#0f172a' : 'var(--text-muted)',
+                color: mode === 'keyboard' ? '#ffffff' : 'var(--text-muted)',
                 border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 600,
                 cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
               }}>
@@ -137,7 +137,7 @@ export default function BarcodeScanner({ isOpen, onClose, onScan }) {
                   </div>
                   <button onClick={() => { setMode('keyboard'); setError(''); }}
                     style={{
-                      padding: '8px 16px', background: 'var(--accent)', color: '#0f172a',
+                      padding: '8px 16px', background: 'var(--accent)', color: '#ffffff',
                       border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer',
                     }}>
                     Switch to Keyboard Mode

@@ -1,4 +1,4 @@
-ï»¿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { FaLock, FaEnvelope } from 'react-icons/fa';
@@ -84,7 +84,7 @@ const styles = {
     background: 'var(--bg-card)',
     borderRadius: 16,
     padding: '40px 36px',
-    boxShadow: '0 2px 16px rgba(0,0,0,0.3)',
+    boxShadow: '0 2px 16px rgba(16,24,40,0.10)',
     border: '1px solid var(--border)',
   },
   formTitle: {
@@ -138,7 +138,7 @@ const styles = {
     width: '100%',
     padding: '13px 20px',
     background: 'var(--accent)',
-    color: '#0f172a',
+    color: '#ffffff',
     border: 'none',
     borderRadius: 10,
     fontSize: 14,
@@ -159,8 +159,8 @@ const styles = {
   spinner: {
     width: 18,
     height: 18,
-    border: '2px solid rgba(15,23,42,0.3)',
-    borderTop: '2px solid #0f172a',
+    border: '2px solid rgba(255,255,255,0.35)',
+    borderTop: '2px solid #ffffff',
     borderRadius: '50%',
     animation: 'loginSpin 0.7s linear infinite',
   },
@@ -217,7 +217,7 @@ export default function Login() {
     try {
       await resetPassword(email);
       setResetSent(true);
-      showToast('Password reset email sent â€” check your inbox', 'success');
+      showToast('Password reset email sent — check your inbox', 'success');
     } catch (err) {
       showToast('Failed to send reset email', 'error');
     }
@@ -260,7 +260,7 @@ export default function Login() {
       <style>{keyframes}</style>
       <div style={styles.wrapper} className="login-wrapper">
 
-        {/* Left Panel â€” Branding */}
+        {/* Left Panel — Branding */}
         <div style={styles.leftPanel} className="login-left">
           <div style={styles.leftPanelOverlay} />
           <div style={styles.brandContent}>
@@ -288,12 +288,12 @@ export default function Login() {
             <div style={styles.brandDivider} />
 
             <div style={styles.brandTagline}>
-              Manage your perfumes, track stock, and handle orders â€” all in one place.
+              Manage your perfumes, track stock, and handle orders — all in one place.
             </div>
           </div>
         </div>
 
-        {/* Right Panel â€” Login Form */}
+        {/* Right Panel — Login Form */}
         <div style={styles.rightPanel} className="login-right">
           <div style={styles.formCard} className="login-card">
             <div style={styles.formTitle}>Welcome Back</div>
@@ -366,7 +366,7 @@ export default function Login() {
                   }}
                   disabled={resetSent}
                 >
-                  {resetSent ? 'Reset email sent âœ“' : 'Forgot Password?'}
+                  {resetSent ? 'Reset email sent ?' : 'Forgot Password?'}
                 </button>
               </div>
 

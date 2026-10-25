@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { Link } from 'react-router-dom';
 import {
@@ -11,18 +11,18 @@ import {
 } from 'react-icons/fa';
 import { StatusBadge } from '../components/shared';
 
-const COLORS = ['#2dd4bf', '#64748b', '#3b82f6', '#f59e0b', '#a78bfa'];
+const COLORS = ['#0d9488', '#94a3b8', '#3b82f6', '#f59e0b', '#8b5cf6'];
 
 const TOOLTIP_STYLE = {
-  background: '#1f232b',
-  border: '1px solid rgba(255,255,255,0.08)',
+  background: 'var(--bg-card)',
+  border: '1px solid var(--border)',
   borderRadius: 8,
   fontSize: 12,
-  boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+  boxShadow: '0 4px 12px rgba(16,24,40,0.10)',
 };
-const TOOLTIP_LABEL = { color: '#e2e8f0' };
-const TOOLTIP_ITEM = { color: '#94a3b8' };
-const AXIS_TICK = { fontSize: 11, fill: '#64748b' };
+const TOOLTIP_LABEL = { color: 'var(--text-primary)' };
+const TOOLTIP_ITEM = { color: 'var(--text-secondary)' };
+const AXIS_TICK = { fontSize: 11, fill: 'var(--text-muted)' };
 
 const RANGES = [
   { label:'Last 7 days',  days:7  },
@@ -170,7 +170,7 @@ export default function Dashboard() {
     };
   }, [products, sales, customers, resellers, filteredSales, purchaseOrders]);
 
-  // ── Loading skeleton (#11) ────────────────────────────────
+  // -- Loading skeleton (#11) --------------------------------
   if (loading) return (
     <div className="inventory-page">
       <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(180px, 1fr))', gap:16, marginBottom:24 }}>
@@ -187,10 +187,10 @@ export default function Dashboard() {
     </div>
   );
 
-  // ── Empty state CTA (#12) ─────────────────────────────────
+  // -- Empty state CTA (#12) ---------------------------------
   if (!data) return (
     <div className="inventory-page" style={{ background:'var(--bg-card)', border:'1px solid var(--border)', borderRadius:20, padding:'64px 32px', textAlign:'center',
-      boxShadow:'0 4px 20px rgba(0,0,0,0.3)' }}>
+      boxShadow:'0 4px 20px rgba(16,24,40,0.10)' }}>
       <div style={{ width:72, height:72, borderRadius:'50%', background:'var(--accent-dim)',
         display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 20px' }}>
         <FaBoxes style={{ fontSize:32, color:'var(--accent)' }} />
@@ -201,7 +201,7 @@ export default function Dashboard() {
       </p>
       <Link to="/inventory" style={{
         display:'inline-flex', alignItems:'center', gap:8, padding:'12px 24px',
-        background:'var(--accent-gradient)', color:'#0f172a',
+        background:'var(--accent-gradient)', color:'#ffffff',
         border:'none', borderRadius:12, fontSize:14, fontWeight:700,
         textDecoration:'none', boxShadow:'0 4px 20px rgba(45,212,191,0.25)',
         transition:'transform 0.15s' }}
@@ -231,7 +231,7 @@ export default function Dashboard() {
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:24, flexWrap:'wrap', gap:16 }}>
         <div>
           <h1 style={{ fontSize:24, fontWeight:800, color:'var(--text-primary)', marginBottom:4 }}>Dashboard</h1>
-          <p style={{ color:'var(--text-muted)', fontSize:13 }}>SCNT Vault — real-time business overview</p>
+          <p style={{ color:'var(--text-muted)', fontSize:13 }}>SCNT Vault � real-time business overview</p>
         </div>
         <div className="header-tabs">
           {RANGES.map(r => (
@@ -253,7 +253,7 @@ export default function Dashboard() {
         ].map(a => (
           <Link key={a.path} to={a.path} style={{
             display:'flex', alignItems:'center', gap:10, padding:'14px 18px',
-            background:a.bg, color:'#0f172a', borderRadius:14, textDecoration:'none',
+            background:a.bg, color:'#ffffff', borderRadius:14, textDecoration:'none',
             boxShadow:'0 4px 16px rgba(45,212,191,0.18)', transition:'transform 0.15s, box-shadow 0.15s' }}
             onMouseEnter={e => { e.currentTarget.style.transform='translateY(-2px)'; e.currentTarget.style.boxShadow='0 6px 24px rgba(45,212,191,0.25)'; }}
             onMouseLeave={e => { e.currentTarget.style.transform='none'; e.currentTarget.style.boxShadow='0 4px 16px rgba(45,212,191,0.18)'; }}>
@@ -276,28 +276,28 @@ export default function Dashboard() {
           <div className="stat-cashflow-icon" style={{background:'rgba(255,255,255,0.2)'}}>
             <FaArrowUp style={{ fontSize:18 }} />
           </div>
-          <div className="stat-cashflow-value" style={{color:'#0f172a'}}>{totalBottles}</div>
-          <div className="stat-cashflow-label" style={{color:'rgba(15,23,42,0.7)'}}>Bottles Sold</div>
+          <div className="stat-cashflow-value" style={{color:'#ffffff'}}>{totalBottles}</div>
+          <div className="stat-cashflow-label" style={{color:'rgba(255,255,255,0.9)'}}>Bottles Sold</div>
         </div>
         <div className="stat-cashflow stat-cashflow-dark">
           <div className="stat-cashflow-icon" style={{background:'rgba(255,255,255,0.2)'}}>
             <FaCashRegister style={{ fontSize:18 }} />
           </div>
-          <div className="stat-cashflow-value">₱{totalRevenue.toLocaleString('en-PH')}</div>
+          <div className="stat-cashflow-value">?{totalRevenue.toLocaleString('en-PH')}</div>
           <div className="stat-cashflow-label">Total Revenue</div>
         </div>
         <div className="stat-cashflow">
           <div className="stat-cashflow-icon" style={{background:'var(--accent-dim)'}}>
             <FaChartBar style={{ color:'var(--accent)', fontSize:18 }} />
           </div>
-          <div className="stat-cashflow-value" style={{color:'var(--accent)'}}>₱{profit.toLocaleString('en-PH')}</div>
+          <div className="stat-cashflow-value" style={{color:'var(--accent)'}}>?{profit.toLocaleString('en-PH')}</div>
           <div className="stat-cashflow-label">Net Profit</div>
         </div>
         <div className="stat-cashflow">
           <div className="stat-cashflow-icon" style={{background:'var(--accent-dim)'}}>
             <FaBoxes style={{ color:'var(--accent)', fontSize:18 }} />
           </div>
-          <div className="stat-cashflow-value">₱{inventoryValue.toLocaleString('en-PH')}</div>
+          <div className="stat-cashflow-value">?{inventoryValue.toLocaleString('en-PH')}</div>
           <div className="stat-cashflow-label">Inventory Value</div>
         </div>
       </div>
@@ -306,14 +306,14 @@ export default function Dashboard() {
       {trend !== null && (
         <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:16, padding:'10px 16px',
           background:'var(--bg-card)', border:'1px solid var(--border)', borderRadius:12,
-          boxShadow:'0 2px 12px rgba(0,0,0,0.2)', fontSize:13, fontWeight:600 }}>
+          boxShadow:'0 2px 12px rgba(16,24,40,0.07)', fontSize:13, fontWeight:600 }}>
           <span style={{ color:'var(--text-muted)' }}>Monthly trend:</span>
           <span style={{ color:trendColor, display:'flex', alignItems:'center', gap:4 }}>
             {TrendIcon && <TrendIcon style={{ fontSize:11 }} />}
             {trendText}
           </span>
           <span style={{ color:'var(--text-muted)', margin:'0 4px' }}>|</span>
-          <span style={{ color:'var(--text-muted)' }}>This month: <span style={{ color:'var(--text-primary)' }}>₱{data.thisMonthRev.toLocaleString()}</span></span>
+          <span style={{ color:'var(--text-muted)' }}>This month: <span style={{ color:'var(--text-primary)' }}>?{data.thisMonthRev.toLocaleString()}</span></span>
         </div>
       )}
 
@@ -325,18 +325,18 @@ export default function Dashboard() {
               <LineChart data={salesActivity}>
                 <defs>
                   <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#2dd4bf" stopOpacity={0.15}/>
-                    <stop offset="95%" stopColor="#2dd4bf" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#0d9488" stopOpacity={0.15}/>
+                    <stop offset="95%" stopColor="#0d9488" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--bg-secondary)" vertical={false} />
                 <XAxis dataKey="day" tick={AXIS_TICK} axisLine={false} tickLine={false} />
                 <YAxis tick={AXIS_TICK} axisLine={false} tickLine={false}
-                  tickFormatter={v => `₱${(v/1000).toFixed(0)}k`} />
-                <Tooltip formatter={v => [`₱${v.toLocaleString()}`, 'Revenue']}
+                  tickFormatter={v => `?${(v/1000).toFixed(0)}k`} />
+                <Tooltip formatter={v => [`?${v.toLocaleString()}`, 'Revenue']}
                   contentStyle={TOOLTIP_STYLE} labelStyle={TOOLTIP_LABEL} itemStyle={TOOLTIP_ITEM} />
-                <Line type="monotone" dataKey="revenue" stroke="#2dd4bf" strokeWidth={2.5}
-                  dot={{ r:4, fill:'#2dd4bf', strokeWidth:2, stroke:'#12141a' }} activeDot={{ r:6 }} />
+                <Line type="monotone" dataKey="revenue" stroke="#0d9488" strokeWidth={2.5}
+                  dot={{ r:4, fill:'#0d9488', strokeWidth:2, stroke:'#ffffff' }} activeDot={{ r:6 }} />
               </LineChart>
             </ResponsiveContainer>
           }
@@ -352,22 +352,22 @@ export default function Dashboard() {
                   ]}
                   cx="50%" cy="50%" innerRadius={42} outerRadius={60}
                   paddingAngle={4} dataKey="value" startAngle={90} endAngle={-270}>
-                  <Cell fill="#2dd4bf" />
-                  <Cell fill="#64748b" />
+                  <Cell fill="#0d9488" />
+                  <Cell fill="var(--text-muted)" />
                 </Pie>
-                <Tooltip formatter={v => `₱${v.toLocaleString()}`}
+                <Tooltip formatter={v => `?${v.toLocaleString()}`}
                   contentStyle={TOOLTIP_STYLE} labelStyle={TOOLTIP_LABEL} itemStyle={TOOLTIP_ITEM} />
               </PieChart>
             </ResponsiveContainer>
             <div style={{ display:'flex', flexDirection:'column', gap:5, marginTop:4 }}>
               {[
-                ['Revenue', `₱${totalRevenue.toLocaleString()}`, 'var(--text-secondary)'],
-                ['Cost',    `₱${totalCost.toLocaleString()}`,    'var(--danger)'],
-                ['Profit',  `₱${profit.toLocaleString()}`,       'var(--accent)'],
+                ['Revenue', `?${totalRevenue.toLocaleString()}`, 'var(--text-secondary)'],
+                ['Cost',    `?${totalCost.toLocaleString()}`,    'var(--danger)'],
+                ['Profit',  `?${profit.toLocaleString()}`,       'var(--accent)'],
                 ['Margin',  `${marginPct}%`,                     'var(--info)'],
               ].map(([l, v, c]) => (
                 <div key={l} style={{ display:'flex', justifyContent:'space-between',
-                  padding:'5px 10px', background:'rgba(255,255,255,0.04)', borderRadius:8 }}>
+                  padding:'5px 10px', background:'var(--bg-secondary)', borderRadius:8 }}>
                   <span style={{ fontSize:12, color:'var(--text-muted)' }}>{l}</span>
                   <span style={{ fontSize:13, fontWeight:700, color:c }}>{v}</span>
                 </div>
@@ -385,11 +385,11 @@ export default function Dashboard() {
               <BarChart data={topSelling} layout="vertical" margin={{ left:8, right:16 }}>
                 <defs>
                   <linearGradient id="barGradH" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%" stopColor="#2dd4bf"/>
+                    <stop offset="0%" stopColor="#0d9488"/>
                     <stop offset="100%" stopColor="#06b6d4"/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" horizontal={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--bg-secondary)" horizontal={false} />
                 <XAxis type="number" tick={AXIS_TICK} axisLine={false} tickLine={false} />
                 <YAxis type="category" dataKey="name" width={120} tick={AXIS_TICK} axisLine={false} tickLine={false} />
                 <Tooltip formatter={v => [`${v} bottles`, 'Sold']}
@@ -406,11 +406,11 @@ export default function Dashboard() {
               <BarChart data={categoryData}>
                 <defs>
                   <linearGradient id="barGradV" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#2dd4bf"/>
+                    <stop offset="0%" stopColor="#0d9488"/>
                     <stop offset="100%" stopColor="#06b6d4"/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--bg-secondary)" vertical={false} />
                 <XAxis dataKey="name" tick={AXIS_TICK} axisLine={false} tickLine={false} />
                 <YAxis tick={AXIS_TICK} axisLine={false} tickLine={false} />
                 <Tooltip formatter={v => [`${v} bottles`, 'Sold']}
@@ -445,7 +445,7 @@ export default function Dashboard() {
                 cols={['Reseller','Bottles','Total']}
                 rows={resellerPerf.map(r => [
                   r.name, r.items,
-                  <span key="t" style={{ color:'var(--accent)', fontWeight:700 }}>₱{r.total.toLocaleString()}</span>
+                  <span key="t" style={{ color:'var(--accent)', fontWeight:700 }}>?{r.total.toLocaleString()}</span>
                 ])}
               />
           }
@@ -458,7 +458,7 @@ export default function Dashboard() {
                 cols={['Customer','Total Spent']}
                 rows={topCustomers.map(c => [
                   c.name,
-                  <span key="t" style={{ color:'var(--accent)', fontWeight:700 }}>₱{c.total.toLocaleString()}</span>
+                  <span key="t" style={{ color:'var(--accent)', fontWeight:700 }}>?{c.total.toLocaleString()}</span>
                 ])}
               />
           }
@@ -469,7 +469,7 @@ export default function Dashboard() {
             {[
               ['Total Orders',    purchaseOrders.length,                    'var(--accent)'],
               ['Pending/Ordered', pendingPOCount,                            'var(--warning)'],
-              ['Total Spend',     `₱${totalPOSpend.toLocaleString('en-PH')}`, 'var(--info)'],
+              ['Total Spend',     `?${totalPOSpend.toLocaleString('en-PH')}`, 'var(--info)'],
             ].map(([l, v, c]) => (
               <div key={l} style={{ display:'flex', justifyContent:'space-between',
                 alignItems:'center', padding:'9px 12px', background:'var(--bg-secondary)', borderRadius:8, border:'1px solid var(--border)' }}>
@@ -488,7 +488,7 @@ export default function Dashboard() {
               ['Suppliers',     suppliers.length, '#a78bfa'],
               ['Total Sales',   allSalesCount,     'var(--warning)'],
               ['Total Bottles', totalBottles,      'var(--text-secondary)'],
-              ['Avg Sale',      allSalesCount > 0 ? `₱${(totalRevenue/allSalesCount).toFixed(0)}` : '₱0', 'var(--text-primary)'],
+              ['Avg Sale',      allSalesCount > 0 ? `?${(totalRevenue/allSalesCount).toFixed(0)}` : '?0', 'var(--text-primary)'],
             ].map(([l, v, c]) => (
               <div key={l} style={{ display:'flex', justifyContent:'space-between',
                 alignItems:'center', padding:'9px 12px', background:'var(--bg-secondary)', borderRadius:8, border:'1px solid var(--border)' }}>
@@ -536,7 +536,7 @@ export default function Dashboard() {
                           <div style={{ width:28, height:28, borderRadius:'50%',
                             background:'var(--accent-gradient)',
                             display:'flex', alignItems:'center', justifyContent:'center',
-                            color:'#0f172a', fontSize:11, fontWeight:700, flexShrink:0 }}>
+                            color:'#ffffff', fontSize:11, fontWeight:700, flexShrink:0 }}>
                             {(cust || 'W')[0].toUpperCase()}
                           </div>
                           <span style={{ fontSize:13, color:'var(--text-primary)' }}>{cust || 'Walk-in'}</span>
@@ -544,7 +544,7 @@ export default function Dashboard() {
                       </td>
                       <td style={td}>{itemCount}</td>
                       <td style={{ ...td, fontWeight:700, color:'var(--accent)' }}>
-                        ₱{(sale.Total||0).toLocaleString()}
+                        ?{(sale.Total||0).toLocaleString()}
                       </td>
                       <td style={td}>
                         <StatusBadge status={sale.PaymentMethod || 'Cash'} />
@@ -561,7 +561,7 @@ export default function Dashboard() {
   );
 }
 
-// ── Sub-components ──────────────────────────────────────────────
+// -- Sub-components ----------------------------------------------
 
 function Card({ title, subtitle, link, children }) {
   return (
@@ -573,7 +573,7 @@ function Card({ title, subtitle, link, children }) {
         </div>
         {link && (
           <Link to={link} style={{ fontSize:12, fontWeight:600, color:'var(--accent)', textDecoration:'none' }}>
-            View All →
+            View All ?
           </Link>
         )}
       </div>

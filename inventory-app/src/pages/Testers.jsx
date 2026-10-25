@@ -16,16 +16,16 @@ const STATUS_STYLE = {
   Damaged:   { background:'var(--danger-bg)',  color:'var(--danger)' },
 };
 
-const statusStyle = (s) => STATUS_STYLE[s] || { background:'rgba(255,255,255,0.06)', color:'var(--text-secondary)' };
+const statusStyle = (s) => STATUS_STYLE[s] || { background:'var(--border)', color:'var(--text-secondary)' };
 
 // Scent-family color system — maps the free-form Category field to a small
 // set of dark-friendly nose families so identical scents share one color.
 const SCENT_STYLE = {
-  citrus: { background:'rgba(249,115,22,0.12)',  color:'#fb923c' },
-  floral: { background:'rgba(236,72,153,0.12)',  color:'#f472b6' },
-  fresh:  { background:'rgba(45,212,191,0.12)',  color:'#2dd4bf' },
-  woody:  { background:'rgba(167,139,250,0.12)', color:'#a78bfa' },
-  amber:  { background:'rgba(245,158,11,0.12)',  color:'#f59e0b' },
+  citrus: { background:'rgba(249,115,22,0.12)',  color:'#c2410c' },
+  floral: { background:'rgba(236,72,153,0.12)',  color:'#be185d' },
+  fresh:  { background:'rgba(45,212,191,0.12)',  color:'#0d9488' },
+  woody:  { background:'rgba(167,139,250,0.12)', color:'#6d28d9' },
+  amber:  { background:'rgba(245,158,11,0.12)',  color:'#b45309' },
 };
 
 const SCENT_FAMILIES = [
@@ -39,7 +39,7 @@ const SCENT_FAMILIES = [
   { name:'sweet',    keys:['sweet','gourmand','vanilla','caramel','musk','fruity','berry','pear','chocolate','tonka','praline','candy'] },
 ];
 
-const DEFAULT_SCENT_STYLE = { background:'rgba(255,255,255,0.06)', color:'var(--text-muted)' };
+const DEFAULT_SCENT_STYLE = { background:'var(--border)', color:'var(--text-muted)' };
 
 function scentTagStyle(scent) {
   const raw = String(scent || '').toLowerCase();
@@ -174,13 +174,13 @@ export default function Testers() {
               </button>
             ))}
           </div>
-          <div style={{ display:'flex', background:'var(--bg-card)', border:'1px solid var(--border)', borderRadius:10, padding:'8px 12px', boxShadow:'0 2px 8px rgba(0,0,0,0.2)', alignItems:'center', gap:8, minWidth:200 }}>
+          <div style={{ display:'flex', background:'var(--bg-card)', border:'1px solid var(--border)', borderRadius:10, padding:'8px 12px', boxShadow:'0 2px 8px rgba(16,24,40,0.07)', alignItems:'center', gap:8, minWidth:200 }}>
             <FaSearch style={{ color:'var(--text-muted)', fontSize:13 }} />
             <input ref={searchRef} value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Search testers... (press /)"
               style={{ border:'none', outline:'none', fontSize:13, flex:1, background:'transparent', color:'var(--text-primary)' }} />
           </div>
-          <button onClick={openAdd} style={{ display:'flex', alignItems:'center', gap:8, padding:'10px 18px', background:'var(--accent)', color:'#0f172a', border:'none', borderRadius:10, fontSize:13, fontWeight:700, cursor:'pointer', transition:'all 0.2s' }}
+          <button onClick={openAdd} style={{ display:'flex', alignItems:'center', gap:8, padding:'10px 18px', background:'var(--accent)', color:'#ffffff', border:'none', borderRadius:10, fontSize:13, fontWeight:700, cursor:'pointer', transition:'all 0.2s' }}
             onMouseEnter={e => e.currentTarget.style.background='#5eead4'}
             onMouseLeave={e => e.currentTarget.style.background='var(--accent)'}>
             <FaPlus /> Add Tester
@@ -198,7 +198,7 @@ export default function Testers() {
           <div className="stat-cashflow-label">Total Testers</div>
         </div>
         <div className="stat-cashflow stat-cashflow-dark" style={{ border:'1px solid var(--border)', borderRadius:12 }}>
-          <div className="stat-cashflow-icon" style={{ background:'rgba(255,255,255,0.1)' }}>
+          <div className="stat-cashflow-icon" style={{ background:'rgba(0,0,0,0.06)' }}>
             <FaFlask />
           </div>
           <div className="stat-cashflow-value">{statusCounts['Available'] || 0}</div>
@@ -222,12 +222,12 @@ export default function Testers() {
 
       {/* Filter + View Toggle */}
       <div style={{ display:'flex', gap:12, marginBottom:20, flexWrap:'wrap' }}>
-        <div style={{ display:'flex', background:'var(--bg-card)', border:'1px solid var(--border)', borderRadius:10, overflow:'hidden', boxShadow:'0 1px 6px rgba(0,0,0,0.2)' }}>
+        <div style={{ display:'flex', background:'var(--bg-card)', border:'1px solid var(--border)', borderRadius:10, overflow:'hidden', boxShadow:'0 1px 6px rgba(16,24,40,0.07)' }}>
           {[['all','All'], ...STATUSES.map(s => [s, s])].map(([val, label]) => (
             <button key={val} onClick={() => setFilterStatus(val)} style={{
               padding:'7px 14px', border:'none', fontSize:12, fontWeight:600, cursor:'pointer',
               background: filterStatus === val ? 'var(--accent)' : 'transparent',
-              color: filterStatus === val ? '#0f172a' : 'var(--text-muted)', transition:'all 0.2s' }}>
+              color: filterStatus === val ? '#ffffff' : 'var(--text-muted)', transition:'all 0.2s' }}>
               {label}
             </button>
           ))}
@@ -237,7 +237,7 @@ export default function Testers() {
       {/* Content */}
       {filtered.length === 0 ? (
         <div style={{ background:'var(--bg-card)', border:'1px solid var(--border)', borderRadius:16, padding:'48px 20px', textAlign:'center',
-          boxShadow:'0 2px 16px rgba(0,0,0,0.2)' }}>
+          boxShadow:'0 2px 16px rgba(16,24,40,0.07)' }}>
           <div style={{ width:56, height:56, borderRadius:'50%', background:'var(--success-bg)', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 12px' }}>
             <FaFlask style={{ fontSize:24, color:'var(--accent)' }} />
           </div>
@@ -247,7 +247,7 @@ export default function Testers() {
           {!search && (
             <button onClick={openAdd} style={{
               marginTop:12, padding:'8px 18px', background:'var(--accent)',
-              color:'#0f172a', border:'none', borderRadius:8, fontSize:13, fontWeight:600, cursor:'pointer',
+              color:'#ffffff', border:'none', borderRadius:8, fontSize:13, fontWeight:600, cursor:'pointer',
               display:'inline-flex', alignItems:'center', gap:6 }}>
               <FaPlus /> Add Tester
             </button>
@@ -262,12 +262,12 @@ export default function Testers() {
             return (
               <div key={t.id} style={{
                 background:'var(--bg-card)', border:'1px solid var(--border)', borderRadius:12,
-                boxShadow:'0 4px 20px rgba(0,0,0,0.2)',
+                boxShadow:'0 4px 20px rgba(16,24,40,0.07)',
                 overflow:'hidden', transition:'transform 0.2s, box-shadow 0.2s',
                 cursor:'default',
               }}
-              onMouseEnter={e => { e.currentTarget.style.transform='translateY(-4px)'; e.currentTarget.style.boxShadow='0 8px 28px rgba(0,0,0,0.35)'; }}
-              onMouseLeave={e => { e.currentTarget.style.transform='none'; e.currentTarget.style.boxShadow='0 4px 20px rgba(0,0,0,0.2)'; }}
+              onMouseEnter={e => { e.currentTarget.style.transform='translateY(-4px)'; e.currentTarget.style.boxShadow='0 8px 28px rgba(16,24,40,0.12)'; }}
+              onMouseLeave={e => { e.currentTarget.style.transform='none'; e.currentTarget.style.boxShadow='0 4px 20px rgba(16,24,40,0.07)'; }}
               >
                 {/* Image placeholder */}
                 <div style={{
@@ -279,7 +279,7 @@ export default function Testers() {
                   {t.ImageUrl
                     ? <img src={t.ImageUrl} alt={t.Name}
                         style={{ width:'100%', height:'100%', objectFit:'cover', position:'absolute', inset:0 }} />
-                    : <FaFlask style={{ fontSize:48, color:'rgba(255,255,255,0.3)' }} />
+                    : <FaFlask style={{ fontSize:48, color:'var(--border)' }} />
                   }
                   {/* Status badge */}
                   <span style={{
@@ -343,7 +343,7 @@ export default function Testers() {
       ) : (
         /* Table View */
         <>
-        <div style={{ background:'var(--bg-card)', border:'1px solid var(--border)', borderRadius:16, overflow:'hidden', boxShadow:'0 4px 20px rgba(0,0,0,0.2)' }}>
+        <div style={{ background:'var(--bg-card)', border:'1px solid var(--border)', borderRadius:16, overflow:'hidden', boxShadow:'0 4px 20px rgba(16,24,40,0.07)' }}>
           <table style={{ width:'100%', borderCollapse:'collapse' }}>
             <thead>
               <tr>

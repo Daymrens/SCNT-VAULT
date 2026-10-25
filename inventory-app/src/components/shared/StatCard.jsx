@@ -12,7 +12,7 @@ export default function StatCard({ label, value, color, icon, sub }) {
       borderLeft: color ? `4px solid ${color}` : '1px solid var(--border)',
       borderRadius: 12,
       padding: '18px 22px',
-      boxShadow: '0 2px 12px rgba(0,0,0,0.2)',
+      boxShadow: '0 2px 12px rgba(16,24,40,0.07)',
       position: 'relative',
       overflow: 'hidden',
     }}>

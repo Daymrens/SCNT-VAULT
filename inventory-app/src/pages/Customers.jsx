@@ -24,9 +24,9 @@ function loyaltyTier(pts, tiers = {}) {
   const vip = tiers.VIP ?? 200;
   const gold = tiers.Gold ?? 100;
   const silver = tiers.Silver ?? 50;
-  if (pts >= vip)    return { label:'VIP',    color:'#2dd4bf', bg:'rgba(45,212,191,0.12)', icon:<FaCrown /> };
+  if (pts >= vip)    return { label:'VIP',    color:'#0d9488', bg:'rgba(45,212,191,0.12)', icon:<FaCrown /> };
   if (pts >= gold)   return { label:'Gold',   color:'#f59e0b', bg:'rgba(245,158,11,0.12)', icon:<FaMedal /> };
-  if (pts >= silver) return { label:'Silver', color:'#94a3b8', bg:'rgba(255,255,255,0.06)', icon:<FaAward /> };
+  if (pts >= silver) return { label:'Silver', color:'var(--text-secondary)', bg:'var(--border)', icon:<FaAward /> };
   return { label:'Member', color:'#3b82f6', bg:'rgba(59,130,246,0.12)', icon:<FaStar /> };
 }
 
@@ -193,18 +193,18 @@ export default function Customers() {
 
   if (!customers.length) return (
     <div className="inventory-page" style={{ background:'var(--bg-card)', borderRadius:16, padding:'64px 32px', textAlign:'center',
-      border:'1px solid rgba(255,255,255,0.06)' }}>
+      border:'1px solid var(--border)' }}>
       <div style={{ width:72, height:72, borderRadius:'50%', background:'rgba(45,212,191,0.12)',
         display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 20px' }}>
-        <FaUser style={{ fontSize:32, color:'#2dd4bf' }} />
+        <FaUser style={{ fontSize:32, color:'#0d9488' }} />
       </div>
-      <h2 style={{ fontSize:22, fontWeight:800, color:'#e2e8f0', marginBottom:8 }}>No customers yet</h2>
-      <p style={{ color:'#94a3b8', fontSize:14, marginBottom:24, maxWidth:360, margin:'0 auto 24px' }}>
+      <h2 style={{ fontSize:22, fontWeight:800, color:'var(--text-primary)', marginBottom:8 }}>No customers yet</h2>
+      <p style={{ color:'var(--text-secondary)', fontSize:14, marginBottom:24, maxWidth:360, margin:'0 auto 24px' }}>
         Add your first customer to start tracking orders, loyalty points, and purchase history.
       </p>
       <button onClick={openAdd} style={{
         display:'inline-flex', alignItems:'center', gap:8, padding:'12px 24px',
-        background:'#2dd4bf', color:'#0f172a',
+        background:'#0d9488', color:'#ffffff',
         border:'none', borderRadius:12, fontSize:14, fontWeight:700, cursor:'pointer',
         transition:'transform 0.15s' }}
         onMouseEnter={e => e.currentTarget.style.transform='translateY(-2px)'}
@@ -219,8 +219,8 @@ export default function Customers() {
       {/* Header */}
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:24, flexWrap:'wrap', gap:16 }}>
         <div>
-          <h1 style={{ fontSize:24, fontWeight:800, color:'#e2e8f0', marginBottom:4 }}>Customers</h1>
-          <p style={{ color:'#64748b', fontSize:13 }}>{filtered.length} of {customers.length} customer{customers.length !== 1 ? 's' : ''}</p>
+          <h1 style={{ fontSize:24, fontWeight:800, color:'var(--text-primary)', marginBottom:4 }}>Customers</h1>
+          <p style={{ color:'var(--text-muted)', fontSize:13 }}>{filtered.length} of {customers.length} customer{customers.length !== 1 ? 's' : ''}</p>
         </div>
         <div style={{ display:'flex', alignItems:'center', gap:12 }}>
           <div className="header-tabs">
@@ -232,15 +232,15 @@ export default function Customers() {
               </button>
             ))}
           </div>
-          <div style={{ display:'flex', background:'#1f232b', borderRadius:10, padding:'8px 12px', border:'1px solid rgba(255,255,255,0.06)', alignItems:'center', gap:8, minWidth:200 }}>
-            <FaSearch style={{ color:'#64748b', fontSize:13 }} />
+          <div style={{ display:'flex', background:'var(--bg-card)', borderRadius:10, padding:'8px 12px', border:'1px solid var(--border)', alignItems:'center', gap:8, minWidth:200 }}>
+            <FaSearch style={{ color:'var(--text-muted)', fontSize:13 }} />
             <input ref={searchRef} value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Search customers... (press /)"
-              style={{ border:'none', outline:'none', fontSize:13, flex:1, background:'transparent', color:'#e2e8f0' }} />
+              style={{ border:'none', outline:'none', fontSize:13, flex:1, background:'transparent', color:'var(--text-primary)' }} />
           </div>
-          <button onClick={openAdd} style={{ display:'flex', alignItems:'center', gap:8, padding:'10px 18px', background:'#2dd4bf', color:'#0f172a', border:'none', borderRadius:10, fontSize:13, fontWeight:700, cursor:'pointer', transition:'all 0.2s' }}
+          <button onClick={openAdd} style={{ display:'flex', alignItems:'center', gap:8, padding:'10px 18px', background:'#0d9488', color:'#ffffff', border:'none', borderRadius:10, fontSize:13, fontWeight:700, cursor:'pointer', transition:'all 0.2s' }}
             onMouseEnter={e => e.currentTarget.style.background='#25b8a5'}
-            onMouseLeave={e => e.currentTarget.style.background='#2dd4bf'}>
+            onMouseLeave={e => e.currentTarget.style.background='#0d9488'}>
             <FaPlus /> Add Customer
           </button>
         </div>
@@ -256,17 +256,17 @@ export default function Customers() {
           <div className="stat-cashflow-label">Total Customers</div>
         </div>
         <div className="stat-cashflow stat-cashflow-dark">
-          <div className="stat-cashflow-icon" style={{ background:'rgba(255,255,255,0.1)' }}>
+          <div className="stat-cashflow-icon" style={{ background:'rgba(0,0,0,0.06)' }}>
             <FaShoppingBag />
           </div>
           <div className="stat-cashflow-value">{sales.filter(s => s.CustomerId != null).length}</div>
           <div className="stat-cashflow-label">Total Purchases</div>
         </div>
         <div className="stat-cashflow">
-          <div className="stat-cashflow-icon" style={{ background:'rgba(45,212,191,0.12)', color:'#2dd4bf' }}>
+          <div className="stat-cashflow-icon" style={{ background:'rgba(45,212,191,0.12)', color:'#0d9488' }}>
             <FaStar />
           </div>
-          <div className="stat-cashflow-value" style={{ color:'#2dd4bf' }}>₱{totalRevenue.toLocaleString('en-PH')}</div>
+          <div className="stat-cashflow-value" style={{ color:'#0d9488' }}>₱{totalRevenue.toLocaleString('en-PH')}</div>
           <div className="stat-cashflow-label">Customer Revenue</div>
         </div>
         <div className="stat-cashflow">
@@ -280,14 +280,14 @@ export default function Customers() {
 
       {/* Sort pills */}
       <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:20, flexWrap:'wrap' }}>
-        <FaSort style={{ color:'#64748b', fontSize:13 }} />
-        <div style={{ display:'flex', background:'#1f232b', borderRadius:10, overflow:'hidden',
-          border:'1px solid rgba(255,255,255,0.06)' }}>
+        <FaSort style={{ color:'var(--text-muted)', fontSize:13 }} />
+        <div style={{ display:'flex', background:'var(--bg-card)', borderRadius:10, overflow:'hidden',
+          border:'1px solid var(--border)' }}>
           {SORT_OPTIONS.map(o => (
             <button key={o.value} onClick={() => setSortBy(o.value)} style={{
               padding:'7px 12px', border:'none', fontSize:11, fontWeight:600, cursor:'pointer',
-              background: sortBy === o.value ? '#2dd4bf' : 'transparent',
-              color: sortBy === o.value ? '#0f172a' : '#64748b',
+              background: sortBy === o.value ? '#0d9488' : 'transparent',
+              color: sortBy === o.value ? '#ffffff' : 'var(--text-muted)',
               transition:'all 0.2s', whiteSpace:'nowrap' }}>
               {o.label}
             </button>
@@ -297,8 +297,8 @@ export default function Customers() {
 
       {/* Customers: Grid or Table */}
       {filtered.length === 0 ? (
-        <div style={{ background:'#1f232b', borderRadius:16, padding:'48px 20px', textAlign:'center',
-          color:'#64748b', fontSize:14, border:'1px solid rgba(255,255,255,0.06)' }}>
+        <div style={{ background:'var(--bg-card)', borderRadius:16, padding:'48px 20px', textAlign:'center',
+          color:'var(--text-muted)', fontSize:14, border:'1px solid var(--border)' }}>
           {search ? 'No customers match your search' : 'No customers yet — add one to get started'}
         </div>
       ) : viewMode === 'grid' ? (
@@ -311,15 +311,15 @@ export default function Customers() {
             const tier   = loyaltyTier(c.LoyaltyPoints, settings.loyaltyTiers || 0);
             const isTop  = topCustomer?.id === c.id && stats.totalSpent > 0;
             return (
-              <div key={c.id} style={{ background:'#1f232b', borderRadius:12, overflow:'hidden',
-                border: isTop ? '1px solid #2dd4bf' : '1px solid rgba(255,255,255,0.06)',
+              <div key={c.id} style={{ background:'var(--bg-card)', borderRadius:12, overflow:'hidden',
+                border: isTop ? '1px solid #0d9488' : '1px solid var(--border)',
                 transition:'transform 0.2s', display:'flex', flexDirection:'column' }}
                 onMouseEnter={e => { e.currentTarget.style.transform='translateY(-3px)'; }}
                 onMouseLeave={e => { e.currentTarget.style.transform='none'; }}>
                 {/* Card Header */}
                 <div style={{ padding:'18px 18px 14px',
                   background:`linear-gradient(135deg, ${color}18, ${color}08)`,
-                  borderBottom:'1px solid rgba(255,255,255,0.06)' }}>
+                  borderBottom:'1px solid var(--border)' }}>
                   <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start' }}>
                     <div style={{ display:'flex', alignItems:'center', gap:12 }}>
                       <div style={{ width:48, height:48, borderRadius:14,
@@ -332,8 +332,8 @@ export default function Customers() {
                         )}
                       </div>
                       <div>
-                        <div style={{ fontSize:15, fontWeight:800, color:'#e2e8f0' }}>{c.Name}</div>
-                        <div style={{ fontSize:10, color:'#64748b', fontFamily:'monospace', marginTop:1 }}>#{c.id.slice(0,8)}</div>
+                        <div style={{ fontSize:15, fontWeight:800, color:'var(--text-primary)' }}>{c.Name}</div>
+                        <div style={{ fontSize:10, color:'var(--text-muted)', fontFamily:'monospace', marginTop:1 }}>#{c.id.slice(0,8)}</div>
                       </div>
                     </div>
                     <span style={{ display:'inline-flex', alignItems:'center', gap:4,
@@ -346,64 +346,64 @@ export default function Customers() {
 
                 {/* Contact */}
                 <div style={{ padding:'12px 18px', display:'flex', flexDirection:'column', gap:7,
-                  borderBottom:'1px solid rgba(255,255,255,0.06)' }}>
+                  borderBottom:'1px solid var(--border)' }}>
                   {c.Phone && (
                     <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-                      <div style={{ display:'flex', alignItems:'center', gap:7, fontSize:12, color:'#94a3b8' }}>
-                        <FaPhone style={{ color:'#64748b', fontSize:10 }} /> {c.Phone}
+                      <div style={{ display:'flex', alignItems:'center', gap:7, fontSize:12, color:'var(--text-secondary)' }}>
+                        <FaPhone style={{ color:'var(--text-muted)', fontSize:10 }} /> {c.Phone}
                       </div>
                       <button onClick={() => copy(c.Phone, c.id+'p')} style={{ background:'none', border:'none',
-                        cursor:'pointer', color: copied===c.id+'p' ? '#2dd4bf' : '#64748b', fontSize:11, padding:3 }}>
-                        {copied===c.id+'p' ? <span style={{color:'#2dd4bf'}}>&#10003;</span> : <span style={{fontSize:10}}>&#9776;</span>}
+                        cursor:'pointer', color: copied===c.id+'p' ? '#0d9488' : 'var(--text-muted)', fontSize:11, padding:3 }}>
+                        {copied===c.id+'p' ? <span style={{color:'#0d9488'}}>&#10003;</span> : <span style={{fontSize:10}}>&#9776;</span>}
                       </button>
                     </div>
                   )}
                   {c.Email && (
                     <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-                      <div style={{ display:'flex', alignItems:'center', gap:7, fontSize:12, color:'#94a3b8' }}>
-                        <FaEnvelope style={{ color:'#64748b', fontSize:10 }} />
+                      <div style={{ display:'flex', alignItems:'center', gap:7, fontSize:12, color:'var(--text-secondary)' }}>
+                        <FaEnvelope style={{ color:'var(--text-muted)', fontSize:10 }} />
                         <span style={{ overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', maxWidth:170 }}>{c.Email}</span>
                       </div>
                       <button onClick={() => copy(c.Email, c.id+'e')} style={{ background:'none', border:'none',
-                        cursor:'pointer', color: copied===c.id+'e' ? '#2dd4bf' : '#64748b', fontSize:11, padding:3 }}>
-                        {copied===c.id+'e' ? <span style={{color:'#2dd4bf'}}>&#10003;</span> : <span style={{fontSize:10}}>&#9776;</span>}
+                        cursor:'pointer', color: copied===c.id+'e' ? '#0d9488' : 'var(--text-muted)', fontSize:11, padding:3 }}>
+                        {copied===c.id+'e' ? <span style={{color:'#0d9488'}}>&#10003;</span> : <span style={{fontSize:10}}>&#9776;</span>}
                       </button>
                     </div>
                   )}
                   {c.Address && (
-                    <div style={{ display:'flex', alignItems:'flex-start', gap:7, fontSize:12, color:'#94a3b8' }}>
-                      <FaMapMarkerAlt style={{ color:'#64748b', fontSize:10, marginTop:2, flexShrink:0 }} />
+                    <div style={{ display:'flex', alignItems:'flex-start', gap:7, fontSize:12, color:'var(--text-secondary)' }}>
+                      <FaMapMarkerAlt style={{ color:'var(--text-muted)', fontSize:10, marginTop:2, flexShrink:0 }} />
                       <span style={{ lineHeight:1.4 }}>{c.Address}</span>
                     </div>
                   )}
                   {!c.Phone && !c.Email && !c.Address && (
-                    <div style={{ fontSize:11, color:'#64748b' }}>No contact info</div>
+                    <div style={{ fontSize:11, color:'var(--text-muted)' }}>No contact info</div>
                   )}
                 </div>
 
                 {/* Stats */}
-                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', borderBottom:'1px solid rgba(255,255,255,0.06)' }}>
+                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', borderBottom:'1px solid var(--border)' }}>
                   {[
                     { label:'Orders',  value: stats.count,                                    color:'#3b82f6' },
-                    { label:'Spent',   value: stats.totalSpent > 0 ? `₱${(stats.totalSpent/1000).toFixed(1)}k` : '₱0', color:'#2dd4bf' },
+                    { label:'Spent',   value: stats.totalSpent > 0 ? `₱${(stats.totalSpent/1000).toFixed(1)}k` : '₱0', color:'#0d9488' },
                     { label:'Loyalty', value: c.LoyaltyPoints||0,                             color:'#f59e0b' },
                   ].map(st => (
                     <div key={st.label} style={{ padding:'10px 6px', textAlign:'center' }}>
-                      <div style={{ fontSize:10, color:'#64748b', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.4px', marginBottom:3 }}>{st.label}</div>
+                      <div style={{ fontSize:10, color:'var(--text-muted)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.4px', marginBottom:3 }}>{st.label}</div>
                       <div style={{ fontSize:15, fontWeight:800, color:st.color }}>{st.value}</div>
                     </div>
                   ))}
                 </div>
 
                 {/* Top products + last visit */}
-                <div style={{ padding:'10px 18px', borderBottom:'1px solid rgba(255,255,255,0.06)', flex:1 }}>
+                <div style={{ padding:'10px 18px', borderBottom:'1px solid var(--border)', flex:1 }}>
                   {stats.topProducts.length > 0 ? (
                     <>
-                      <div style={{ fontSize:10, color:'#64748b', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.4px', marginBottom:6 }}>Favourite Scents</div>
+                      <div style={{ fontSize:10, color:'var(--text-muted)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.4px', marginBottom:6 }}>Favourite Scents</div>
                       <div style={{ display:'flex', flexWrap:'wrap', gap:4 }}>
                         {stats.topProducts.map(p => (
                           <span key={p} style={{ padding:'2px 8px', borderRadius:6, fontSize:10,
-                            fontWeight:600, background:'rgba(255,255,255,0.06)', color:'#94a3b8',
+                            fontWeight:600, background:'var(--border)', color:'var(--text-secondary)',
                             overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', maxWidth:120 }}>
                             {p}
                           </span>
@@ -411,10 +411,10 @@ export default function Customers() {
                       </div>
                     </>
                   ) : (
-                    <div style={{ fontSize:11, color:'#64748b' }}>No purchases yet</div>
+                    <div style={{ fontSize:11, color:'var(--text-muted)' }}>No purchases yet</div>
                   )}
                   {stats.lastOrder && (
-                    <div style={{ fontSize:10, color:'#64748b', marginTop:6 }}>
+                    <div style={{ fontSize:10, color:'var(--text-muted)', marginTop:6 }}>
                       Last visit: {stats.lastOrder.toLocaleDateString('en-PH', { month:'short', day:'numeric', year:'numeric' })}
                     </div>
                   )}
@@ -432,7 +432,7 @@ export default function Customers() {
                     <FaHistory style={{ fontSize:10 }} /> Orders
                   </button>
                   <button onClick={() => openEdit(c)} style={{
-                    flex:1, padding:'7px 0', background:'rgba(45,212,191,0.12)', color:'#2dd4bf',
+                    flex:1, padding:'7px 0', background:'rgba(45,212,191,0.12)', color:'#0d9488',
                     border:'none', borderRadius:10, fontSize:12, fontWeight:700,
                     cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:5,
                     transition:'background 0.15s' }}
@@ -465,16 +465,16 @@ export default function Customers() {
       ) : (
         /* ── Table View ── */
         <>
-        <div style={{ background:'#1f232b', borderRadius:12, overflow:'hidden',
-          border:'1px solid rgba(255,255,255,0.06)' }}>
+        <div style={{ background:'var(--bg-card)', borderRadius:12, overflow:'hidden',
+          border:'1px solid var(--border)' }}>
           <div style={{ overflowX:'auto' }}>
             <table style={{ width:'100%', borderCollapse:'collapse' }}>
               <thead>
                 <tr>
                   {['Customer','Phone','Email','Orders','Spent','Loyalty','Last Visit',''].map(h => (
                     <th key={h} style={{ padding:'12px 16px', textAlign: h === 'Orders' || h === 'Spent' || h === 'Loyalty' ? 'right' : 'left',
-                      fontSize:11, fontWeight:700, color:'#64748b', textTransform:'uppercase', letterSpacing:'0.5px',
-                      background:'#1a1d24', borderBottom:'1px solid rgba(255,255,255,0.06)' }}>{h}</th>
+                      fontSize:11, fontWeight:700, color:'var(--text-muted)', textTransform:'uppercase', letterSpacing:'0.5px',
+                      background:'var(--bg-secondary)', borderBottom:'1px solid var(--border)' }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -486,9 +486,9 @@ export default function Customers() {
                   const isTop = topCustomer?.id === c.id && stats.totalSpent > 0;
                   return (
                     <tr key={c.id}
-                      onMouseEnter={e => e.currentTarget.style.background='rgba(255,255,255,0.04)'}
+                      onMouseEnter={e => e.currentTarget.style.background='var(--bg-secondary)'}
                       onMouseLeave={e => e.currentTarget.style.background='transparent'}>
-                      <td style={{ padding:'12px 16px', borderBottom:'1px solid rgba(255,255,255,0.06)' }}>
+                      <td style={{ padding:'12px 16px', borderBottom:'1px solid var(--border)' }}>
                         <div style={{ display:'flex', alignItems:'center', gap:10 }}>
                           <div style={{ width:36, height:36, borderRadius:10,
                             background:`linear-gradient(135deg,${color},${color}cc)`,
@@ -500,7 +500,7 @@ export default function Customers() {
                             )}
                           </div>
                           <div>
-                            <div style={{ fontSize:13, fontWeight:700, color:'#e2e8f0' }}>{c.Name}</div>
+                            <div style={{ fontSize:13, fontWeight:700, color:'var(--text-primary)' }}>{c.Name}</div>
                             <span style={{ display:'inline-flex', alignItems:'center', gap:3,
                               padding:'1px 6px', borderRadius:10, fontSize:9, fontWeight:700, marginTop:2,
                               background: tier.bg, color: tier.color }}>
@@ -509,32 +509,32 @@ export default function Customers() {
                           </div>
                         </div>
                       </td>
-                      <td style={{ padding:'12px 16px', borderBottom:'1px solid rgba(255,255,255,0.06)', fontSize:13, color:'#94a3b8' }}>
+                      <td style={{ padding:'12px 16px', borderBottom:'1px solid var(--border)', fontSize:13, color:'var(--text-secondary)' }}>
                         {c.Phone || '—'}
                       </td>
-                      <td style={{ padding:'12px 16px', borderBottom:'1px solid rgba(255,255,255,0.06)', fontSize:13, color:'#94a3b8', maxWidth:160,
+                      <td style={{ padding:'12px 16px', borderBottom:'1px solid var(--border)', fontSize:13, color:'var(--text-secondary)', maxWidth:160,
                         overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
                         {c.Email || '—'}
                       </td>
-                      <td style={{ padding:'12px 16px', borderBottom:'1px solid rgba(255,255,255,0.06)', textAlign:'right' }}>
+                      <td style={{ padding:'12px 16px', borderBottom:'1px solid var(--border)', textAlign:'right' }}>
                         <span style={{ padding:'2px 8px', borderRadius:8, fontSize:12, fontWeight:700,
                           background:'rgba(59,130,246,0.12)', color:'#3b82f6' }}>
                           {stats.count}
                         </span>
                       </td>
-                      <td style={{ padding:'12px 16px', borderBottom:'1px solid rgba(255,255,255,0.06)', textAlign:'right', fontSize:13, fontWeight:700, color:'#2dd4bf' }}>
+                      <td style={{ padding:'12px 16px', borderBottom:'1px solid var(--border)', textAlign:'right', fontSize:13, fontWeight:700, color:'#0d9488' }}>
                         ₱{stats.totalSpent.toLocaleString('en-PH')}
                       </td>
-                      <td style={{ padding:'12px 16px', borderBottom:'1px solid rgba(255,255,255,0.06)', textAlign:'right' }}>
+                      <td style={{ padding:'12px 16px', borderBottom:'1px solid var(--border)', textAlign:'right' }}>
                         <span style={{ padding:'2px 8px', borderRadius:8, fontSize:12, fontWeight:700,
                           background: tier.bg, color: tier.color }}>
                           {c.LoyaltyPoints||0}
                         </span>
                       </td>
-                      <td style={{ padding:'12px 16px', borderBottom:'1px solid rgba(255,255,255,0.06)', fontSize:12, color:'#64748b' }}>
+                      <td style={{ padding:'12px 16px', borderBottom:'1px solid var(--border)', fontSize:12, color:'var(--text-muted)' }}>
                         {stats.lastOrder ? stats.lastOrder.toLocaleDateString('en-PH', { month:'short', day:'numeric', year:'numeric' }) : '—'}
                       </td>
-                      <td style={{ padding:'12px 16px', borderBottom:'1px solid rgba(255,255,255,0.06)' }}>
+                      <td style={{ padding:'12px 16px', borderBottom:'1px solid var(--border)' }}>
                         <div style={{ display:'flex', gap:6, justifyContent:'center' }}>
                           <button onClick={() => setViewOrders(c)} style={{
                             padding:'5px 8px', background:'rgba(59,130,246,0.12)', color:'#3b82f6',
@@ -545,7 +545,7 @@ export default function Customers() {
                             <FaHistory />
                           </button>
                           <button onClick={() => openEdit(c)} style={{
-                            padding:'5px 8px', background:'rgba(45,212,191,0.12)', color:'#2dd4bf',
+                            padding:'5px 8px', background:'rgba(45,212,191,0.12)', color:'#0d9488',
                             border:'none', borderRadius:7, cursor:'pointer', fontSize:12,
                             display:'inline-flex', alignItems:'center', justifyContent:'center' }}
                             onMouseEnter={e => e.currentTarget.style.background='rgba(45,212,191,0.2)'}
@@ -588,25 +588,25 @@ export default function Customers() {
         return (
           <Modal isOpen={true} onClose={() => setViewOrders(null)}
             title={viewOrders.Name} icon={<FaHistory />}
-            gradient="linear-gradient(135deg,#2dd4bf,#06b6d4)" maxWidth={700}>
+            gradient="linear-gradient(135deg,#0d9488,#06b6d4)" maxWidth={700}>
             <Modal.Body padding={0}>
               <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)',
-                borderBottom:'1px solid rgba(255,255,255,0.06)' }}>
+                borderBottom:'1px solid var(--border)' }}>
                 {[
                   { label:'Orders',       value: orders.length,                                                              color:'#3b82f6' },
-                  { label:'Total Spent',  value: `₱${totalSpent.toLocaleString('en-PH')}`,                                  color:'#2dd4bf' },
+                  { label:'Total Spent',  value: `₱${totalSpent.toLocaleString('en-PH')}`,                                  color:'#0d9488' },
                   { label:'Avg Order',    value: orders.length > 0 ? `₱${(totalSpent/orders.length).toFixed(0)}` : '₱0',   color:'#f59e0b' },
                   { label:'Loyalty Pts',  value: viewOrders.LoyaltyPoints||0,                                               color:'#ec4899' },
                 ].map(s => (
-                  <div key={s.label} style={{ padding:'12px 16px', textAlign:'center', borderRight:'1px solid rgba(255,255,255,0.06)' }}>
-                    <div style={{ fontSize:10, color:'#64748b', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:4 }}>{s.label}</div>
+                  <div key={s.label} style={{ padding:'12px 16px', textAlign:'center', borderRight:'1px solid var(--border)' }}>
+                    <div style={{ fontSize:10, color:'var(--text-muted)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:4 }}>{s.label}</div>
                     <div style={{ fontSize:18, fontWeight:800, color:s.color }}>{s.value}</div>
                   </div>
                 ))}
               </div>
               <div style={{ padding:'16px 24px' }}>
                 {orders.length === 0 ? (
-                  <div style={{ textAlign:'center', color:'#64748b', padding:'40px 0', fontSize:14 }}>No orders found</div>
+                  <div style={{ textAlign:'center', color:'var(--text-muted)', padding:'40px 0', fontSize:14 }}>No orders found</div>
                 ) : orders.map((order, idx) => {
                   const d = toDate(order.SaleDate);
                   const items = order.Items || [];
@@ -631,45 +631,45 @@ export default function Customers() {
               { key:'Email', label:'Email Address',icon:<FaEnvelope />, type:'email' },
             ].map(({ key, label, icon, type, required }) => (
               <div key={key} style={{ display:'flex', flexDirection:'column', gap:6 }}>
-                <label style={{ fontSize:12, fontWeight:600, color:'#64748b', textTransform:'uppercase', letterSpacing:'0.5px' }}>
+                <label style={{ fontSize:12, fontWeight:600, color:'var(--text-muted)', textTransform:'uppercase', letterSpacing:'0.5px' }}>
                   {label}{required && <span style={{ color:'#ef4444' }}> *</span>}
                 </label>
                 <div style={{ position:'relative' }}>
-                  <span style={{ position:'absolute', left:10, top:'50%', transform:'translateY(-50%)', color:'#64748b', fontSize:13 }}>{icon}</span>
+                  <span style={{ position:'absolute', left:10, top:'50%', transform:'translateY(-50%)', color:'var(--text-muted)', fontSize:13 }}>{icon}</span>
                   <input type={type} value={form[key]}
                     onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
-                    style={{ width:'100%', padding:'9px 10px 9px 32px', border:'1.5px solid rgba(255,255,255,0.06)',
+                    style={{ width:'100%', padding:'9px 10px 9px 32px', border:'1.5px solid var(--border)',
                       borderRadius:8, fontSize:13, outline:'none', boxSizing:'border-box', transition:'border-color 0.2s',
-                      background:'#1a1d24', color:'#e2e8f0' }}
-                    onFocus={e => e.target.style.borderColor='#2dd4bf'}
-                    onBlur={e => e.target.style.borderColor='rgba(255,255,255,0.06)'} />
+                      background:'var(--bg-secondary)', color:'var(--text-primary)' }}
+                    onFocus={e => e.target.style.borderColor='#0d9488'}
+                    onBlur={e => e.target.style.borderColor='var(--border)'} />
                 </div>
               </div>
             ))}
             <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
-              <label style={{ fontSize:12, fontWeight:600, color:'#64748b', textTransform:'uppercase', letterSpacing:'0.5px' }}>Address</label>
+              <label style={{ fontSize:12, fontWeight:600, color:'var(--text-muted)', textTransform:'uppercase', letterSpacing:'0.5px' }}>Address</label>
               <div style={{ position:'relative' }}>
-                <span style={{ position:'absolute', left:10, top:10, color:'#64748b', fontSize:13 }}><FaMapMarkerAlt /></span>
+                <span style={{ position:'absolute', left:10, top:10, color:'var(--text-muted)', fontSize:13 }}><FaMapMarkerAlt /></span>
                 <textarea value={form.Address} onChange={e => setForm(f => ({ ...f, Address: e.target.value }))} rows={2}
-                  style={{ width:'100%', padding:'9px 10px 9px 32px', border:'1.5px solid rgba(255,255,255,0.06)',
+                  style={{ width:'100%', padding:'9px 10px 9px 32px', border:'1.5px solid var(--border)',
                     borderRadius:8, fontSize:13, outline:'none', resize:'vertical', fontFamily:'inherit',
                     boxSizing:'border-box', transition:'border-color 0.2s',
-                    background:'#1a1d24', color:'#e2e8f0' }}
-                  onFocus={e => e.target.style.borderColor='#2dd4bf'}
-                  onBlur={e => e.target.style.borderColor='rgba(255,255,255,0.06)'} />
+                    background:'var(--bg-secondary)', color:'var(--text-primary)' }}
+                  onFocus={e => e.target.style.borderColor='#0d9488'}
+                  onBlur={e => e.target.style.borderColor='var(--border)'} />
               </div>
             </div>
             <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
-              <label style={{ fontSize:12, fontWeight:600, color:'#64748b', textTransform:'uppercase', letterSpacing:'0.5px' }}>Loyalty Points</label>
+              <label style={{ fontSize:12, fontWeight:600, color:'var(--text-muted)', textTransform:'uppercase', letterSpacing:'0.5px' }}>Loyalty Points</label>
               <div style={{ position:'relative' }}>
-                <span style={{ position:'absolute', left:10, top:'50%', transform:'translateY(-50%)', color:'#64748b', fontSize:13 }}><FaStar /></span>
+                <span style={{ position:'absolute', left:10, top:'50%', transform:'translateY(-50%)', color:'var(--text-muted)', fontSize:13 }}><FaStar /></span>
                 <input type="number" min={0} value={form.LoyaltyPoints}
                   onChange={e => setForm(f => ({ ...f, LoyaltyPoints: e.target.value }))}
-                  style={{ width:'100%', padding:'9px 10px 9px 32px', border:'1.5px solid rgba(255,255,255,0.06)',
+                  style={{ width:'100%', padding:'9px 10px 9px 32px', border:'1.5px solid var(--border)',
                     borderRadius:8, fontSize:13, outline:'none', boxSizing:'border-box', transition:'border-color 0.2s',
-                    background:'#1a1d24', color:'#e2e8f0' }}
-                  onFocus={e => e.target.style.borderColor='#2dd4bf'}
-                  onBlur={e => e.target.style.borderColor='rgba(255,255,255,0.06)'} />
+                    background:'var(--bg-secondary)', color:'var(--text-primary)' }}
+                  onFocus={e => e.target.style.borderColor='#0d9488'}
+                  onBlur={e => e.target.style.borderColor='var(--border)'} />
               </div>
             </div>
           </div>
@@ -688,7 +688,7 @@ export default function Customers() {
         onClose={() => setConfirmDelete(null)}
         onConfirm={() => handleDelete(confirmDelete.id)}
         title="Delete Customer?"
-        message={<span>Are you sure you want to delete <strong style={{color:'#2dd4bf'}}>{confirmDelete?.Name}</strong>? This cannot be undone.</span>}
+        message={<span>Are you sure you want to delete <strong style={{color:'#0d9488'}}>{confirmDelete?.Name}</strong>? This cannot be undone.</span>}
         confirmLabel="Yes, Delete" loading={saving}
       />
     </div>
@@ -698,22 +698,22 @@ export default function Customers() {
 function OrderRow({ order, d, items, bottleCount, idx }) {
   const [expanded, setExpanded] = useState(false);
   return (
-    <div style={{ marginBottom:10, border:'1px solid rgba(255,255,255,0.06)', borderRadius:12, overflow:'hidden' }}>
+    <div style={{ marginBottom:10, border:'1px solid var(--border)', borderRadius:12, overflow:'hidden' }}>
       <div onClick={() => setExpanded(e => !e)}
         style={{ display:'grid', gridTemplateColumns:'1.2fr 1fr 1fr 1fr auto',
           alignItems:'center', padding:'12px 16px', gap:8, cursor:'pointer',
-          background: idx%2===0 ? '#1f232b' : '#1a1d24', transition:'background 0.15s' }}
-        onMouseEnter={e => e.currentTarget.style.background='rgba(255,255,255,0.04)'}
-        onMouseLeave={e => e.currentTarget.style.background= idx%2===0 ? '#1f232b' : '#1a1d24'}
+          background: idx%2===0 ? 'var(--bg-card)' : 'var(--bg-secondary)', transition:'background 0.15s' }}
+        onMouseEnter={e => e.currentTarget.style.background='var(--bg-secondary)'}
+        onMouseLeave={e => e.currentTarget.style.background= idx%2===0 ? 'var(--bg-card)' : 'var(--bg-secondary)'}
       >
         <div>
-          <div style={{ fontSize:11, color:'#64748b', marginBottom:2 }}>Date</div>
-          <div style={{ fontSize:13, fontWeight:600, color:'#e2e8f0' }}>
+          <div style={{ fontSize:11, color:'var(--text-muted)', marginBottom:2 }}>Date</div>
+          <div style={{ fontSize:13, fontWeight:600, color:'var(--text-primary)' }}>
             {d.toLocaleDateString('en-PH', { year:'numeric', month:'short', day:'numeric' })}
           </div>
         </div>
         <div>
-          <div style={{ fontSize:11, color:'#64748b', marginBottom:2 }}>Items</div>
+          <div style={{ fontSize:11, color:'var(--text-muted)', marginBottom:2 }}>Items</div>
           <span style={{ display:'inline-flex', alignItems:'center', gap:4,
             padding:'2px 8px', borderRadius:20, fontSize:11, fontWeight:600,
             background:'rgba(59,130,246,0.12)', color:'#3b82f6' }}>
@@ -721,36 +721,36 @@ function OrderRow({ order, d, items, bottleCount, idx }) {
           </span>
         </div>
         <div>
-          <div style={{ fontSize:11, color:'#64748b', marginBottom:2 }}>Total</div>
-          <div style={{ fontSize:14, fontWeight:700, color:'#2dd4bf' }}>₱{(order.Total||0).toLocaleString('en-PH')}</div>
+          <div style={{ fontSize:11, color:'var(--text-muted)', marginBottom:2 }}>Total</div>
+          <div style={{ fontSize:14, fontWeight:700, color:'#0d9488' }}>₱{(order.Total||0).toLocaleString('en-PH')}</div>
         </div>
         <div>
-          <div style={{ fontSize:11, color:'#64748b', marginBottom:2 }}>Payment</div>
+          <div style={{ fontSize:11, color:'var(--text-muted)', marginBottom:2 }}>Payment</div>
           <span style={{ padding:'2px 10px', borderRadius:20, fontSize:11, fontWeight:600,
             background:'rgba(59,130,246,0.12)', color:'#3b82f6' }}>{order.PaymentMethod||'Cash'}</span>
         </div>
-        <div style={{ color:'#64748b', fontSize:12 }}>{expanded ? <FaChevronUp /> : <FaChevronDown />}</div>
+        <div style={{ color:'var(--text-muted)', fontSize:12 }}>{expanded ? <FaChevronUp /> : <FaChevronDown />}</div>
       </div>
       {expanded && (
-        <div style={{ borderTop:'1px solid rgba(255,255,255,0.06)', background:'#1a1d24', padding:'10px 16px' }}>
+        <div style={{ borderTop:'1px solid var(--border)', background:'var(--bg-secondary)', padding:'10px 16px' }}>
           {items.length === 0
-            ? <div style={{ fontSize:12, color:'#64748b', padding:'8px 0' }}>No item details</div>
+            ? <div style={{ fontSize:12, color:'var(--text-muted)', padding:'8px 0' }}>No item details</div>
             : <table style={{ width:'100%', borderCollapse:'collapse' }}>
                 <thead>
                   <tr>{['Product','Qty','Unit Price','Subtotal'].map(h => (
                     <th key={h} style={{ padding:'6px 10px', textAlign:'left', fontSize:10,
-                      fontWeight:700, color:'#64748b', textTransform:'uppercase', letterSpacing:'0.5px',
-                      borderBottom:'1px solid rgba(255,255,255,0.06)' }}>{h}</th>
+                      fontWeight:700, color:'var(--text-muted)', textTransform:'uppercase', letterSpacing:'0.5px',
+                      borderBottom:'1px solid var(--border)' }}>{h}</th>
                   ))}</tr>
                 </thead>
                 <tbody>
                   {items.map((item, i) => (
-                    <tr key={i} style={{ borderBottom:'1px solid rgba(255,255,255,0.03)' }}>
-                      <td style={{ padding:'7px 10px', fontSize:12, color:'#94a3b8', fontWeight:500 }}>
+                    <tr key={i} style={{ borderBottom:'1px solid var(--bg-secondary)' }}>
+                      <td style={{ padding:'7px 10px', fontSize:12, color:'var(--text-secondary)', fontWeight:500 }}>
                         {item.PerfumeName||item.ProductName||`Product #${item.PerfumeId}`}
                       </td>
-                      <td style={{ padding:'7px 10px', fontSize:12, color:'#94a3b8' }}>{item.Quantity}</td>
-                      <td style={{ padding:'7px 10px', fontSize:12, color:'#94a3b8' }}>₱{(item.UnitPrice||0).toLocaleString()}</td>
+                      <td style={{ padding:'7px 10px', fontSize:12, color:'var(--text-secondary)' }}>{item.Quantity}</td>
+                      <td style={{ padding:'7px 10px', fontSize:12, color:'var(--text-secondary)' }}>₱{(item.UnitPrice||0).toLocaleString()}</td>
                       <td style={{ padding:'7px 10px', fontSize:12, fontWeight:700, color:'#3b82f6' }}>₱{(item.Subtotal||0).toLocaleString()}</td>
                     </tr>
                   ))}

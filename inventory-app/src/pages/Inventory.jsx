@@ -63,18 +63,18 @@ function stockLabel(p) {
 
 function scentGradient(p) {
   const cat = String(p.Category || p.scent || p.ScentFamily || p.family || p.type || '').toLowerCase();
-  if (/citrus|orange/.test(cat))                    return 'linear-gradient(135deg,#2a2010,#4a3520)';
-  if (/fresh|aqua|marine|ocean|aquatic/.test(cat))  return 'linear-gradient(135deg,#134e3a,#0d3b2e)';
-  if (/floral|rose|jasmine|lavender/.test(cat))     return 'linear-gradient(135deg,#1e3a5f,#1a2744)';
-  if (/woody|oud|sandal|vetiver|patchouli/.test(cat)) return 'linear-gradient(135deg,#5b2d6e,#3d1f4e)';
-  if (/oriental|amber|vanilla|spice|gourmand/.test(cat)) return 'linear-gradient(135deg,#4a3520,#2a2010)';
-  return 'linear-gradient(135deg,#1f232b,#161820)';
+  if (/citrus|orange/.test(cat))                    return 'linear-gradient(135deg,#fef3e2,#fde8c8)';
+  if (/fresh|aqua|marine|ocean|aquatic/.test(cat))  return 'linear-gradient(135deg,#e6f7f2,#d2efe7)';
+  if (/floral|rose|jasmine|lavender/.test(cat))     return 'linear-gradient(135deg,#eef2fb,#dfe7f7)';
+  if (/woody|oud|sandal|vetiver|patchouli/.test(cat)) return 'linear-gradient(135deg,#f4ecfb,#e9ddf7)';
+  if (/oriental|amber|vanilla|spice|gourmand/.test(cat)) return 'linear-gradient(135deg,#fdf0e4,#f8e3cd)';
+  return 'linear-gradient(135deg,var(--bg-card),var(--bg-base))';
 }
 
 const ChartTooltip = ({ active, payload, label }) =>
   (active && payload && payload.length) ? (
     <div style={{ background:'var(--chart-tooltip-bg)', border:'1px solid var(--border)',
-      borderRadius:8, padding:'8px 12px', boxShadow:'0 8px 24px rgba(0,0,0,0.35)' }}>
+      borderRadius:8, padding:'8px 12px', boxShadow:'0 8px 24px rgba(16,24,40,0.12)' }}>
       <div style={{ fontSize:11, color:'var(--chart-tooltip-sub)', marginBottom:2 }}>{label}</div>
       <div style={{ fontSize:13, fontWeight:700, color:'var(--chart-tooltip-text)' }}>
         {payload[0].value} units
@@ -392,7 +392,7 @@ export default function Inventory() {
   // ── Empty state CTA (#7) ─────────────────────────────────
   if (!products.length) return (
     <div className="inventory-page" style={{ background:'var(--bg-card)', border:'1px solid var(--border)', borderRadius:16, padding:'64px 32px', textAlign:'center',
-      boxShadow:'0 2px 16px rgba(0,0,0,0.2)' }}>
+      boxShadow:'0 2px 16px rgba(16,24,40,0.07)' }}>
       <div style={{ width:72, height:72, borderRadius:'50%', background:'var(--accent-dim)',
         display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 20px' }}>
         <FaBoxes style={{ fontSize:32, color:'var(--accent)' }} />
@@ -403,7 +403,7 @@ export default function Inventory() {
       </p>
       <button onClick={openAdd} style={{
         display:'inline-flex', alignItems:'center', gap:8, padding:'12px 24px',
-        background:'var(--accent)', color:'#0f172a',
+        background:'var(--accent)', color:'#ffffff',
         border:'none', borderRadius:12, fontSize:14, fontWeight:700, cursor:'pointer',
         boxShadow:'0 4px 20px var(--accent-glow)', transition:'transform 0.15s' }}
         onMouseEnter={e => e.currentTarget.style.transform='translateY(-2px)'}
@@ -425,7 +425,7 @@ export default function Inventory() {
 
           <div style={{ display:'flex', background:'var(--bg-card)', borderRadius:10, padding:'8px 12px',
             border:`1.5px solid ${searchFocused ? 'var(--accent)' : 'var(--border)'}`,
-            boxShadow:'0 2px 8px rgba(0,0,0,0.2)', alignItems:'center', gap:8, minWidth:200,
+            boxShadow:'0 2px 8px rgba(16,24,40,0.07)', alignItems:'center', gap:8, minWidth:200,
             transition:'border-color 0.15s' }}>
             <FaSearch style={{ color:'var(--text-muted)', fontSize:13 }} />
             <input ref={searchRef} value={search} onChange={e => setSearch(e.target.value)}
@@ -436,14 +436,14 @@ export default function Inventory() {
                 color:'var(--text-primary)', caretColor:'var(--accent)' }} />
           </div>
           <button onClick={() => openScanner('search')} style={{ display:'flex', alignItems:'center', gap:8, padding:'10px 18px',
-            background:'rgba(255,255,255,0.06)', color:'var(--text-secondary)',
+            background:'var(--border)', color:'var(--text-secondary)',
             border:'1px solid var(--border)', borderRadius:10, fontSize:13, fontWeight:700,
             cursor:'pointer', transition:'all 0.2s' }}
-            onMouseEnter={e => e.currentTarget.style.background='rgba(255,255,255,0.12)'}
-            onMouseLeave={e => e.currentTarget.style.background='rgba(255,255,255,0.06)'}>
+            onMouseEnter={e => e.currentTarget.style.background='rgba(0,0,0,0.06)'}
+            onMouseLeave={e => e.currentTarget.style.background='var(--border)'}>
             <FaBarcode /> Scan
           </button>
-          <button onClick={openAdd} style={{ display:'flex', alignItems:'center', gap:8, padding:'10px 18px', background:'var(--accent)', color:'#0f172a', border:'none', borderRadius:10, fontSize:13, fontWeight:700, cursor:'pointer', transition:'all 0.2s' }}
+          <button onClick={openAdd} style={{ display:'flex', alignItems:'center', gap:8, padding:'10px 18px', background:'var(--accent)', color:'#ffffff', border:'none', borderRadius:10, fontSize:13, fontWeight:700, cursor:'pointer', transition:'all 0.2s' }}
             onMouseEnter={e => e.currentTarget.style.background='rgba(45,212,191,0.85)'}
             onMouseLeave={e => e.currentTarget.style.background='var(--accent)'}>
             <FaPlus /> Add Product
@@ -451,20 +451,20 @@ export default function Inventory() {
           <input type="file" ref={fileInputRef} accept=".csv" onChange={handleFileSelect} style={{ display:'none' }} />
           <button onClick={() => { setImportType('products'); fileInputRef.current?.click(); }}
             style={{ display:'flex', alignItems:'center', gap:8, padding:'10px 18px', 
-              background:'rgba(255,255,255,0.06)', color:'var(--text-secondary)', 
+              background:'var(--border)', color:'var(--text-secondary)', 
               border:'1px solid var(--border)', borderRadius:10, fontSize:13, fontWeight:700, 
               cursor:'pointer', transition:'all 0.2s' }}
-            onMouseEnter={e => e.currentTarget.style.background='rgba(255,255,255,0.12)'}
-            onMouseLeave={e => e.currentTarget.style.background='rgba(255,255,255,0.06)'}>
+            onMouseEnter={e => e.currentTarget.style.background='rgba(0,0,0,0.06)'}
+            onMouseLeave={e => e.currentTarget.style.background='var(--border)'}>
             <FaFileImport /> Import CSV
           </button>
           <button onClick={() => { setImportType('adjustments'); fileInputRef.current?.click(); }}
             style={{ display:'flex', alignItems:'center', gap:8, padding:'10px 18px', 
-              background:'rgba(255,255,255,0.06)', color:'var(--text-secondary)', 
+              background:'var(--border)', color:'var(--text-secondary)', 
               border:'1px solid var(--border)', borderRadius:10, fontSize:13, fontWeight:700, 
               cursor:'pointer', transition:'all 0.2s' }}
-            onMouseEnter={e => e.currentTarget.style.background='rgba(255,255,255,0.12)'}
-            onMouseLeave={e => e.currentTarget.style.background='rgba(255,255,255,0.06)'}>
+            onMouseEnter={e => e.currentTarget.style.background='rgba(0,0,0,0.06)'}
+            onMouseLeave={e => e.currentTarget.style.background='var(--border)'}>
             <FaUpload /> Import Adjustments
           </button>
         </div>
@@ -480,7 +480,7 @@ export default function Inventory() {
           <div className="stat-cashflow-label">Stock Value</div>
         </div>
         <div className="stat-cashflow" style={{ background:'var(--bg-card)', border:'1px solid var(--border)', borderRadius:12 }}>
-          <div className="stat-cashflow-icon" style={{ background:'rgba(255,255,255,0.06)', color:'var(--text-secondary)' }}>
+          <div className="stat-cashflow-icon" style={{ background:'var(--border)', color:'var(--text-secondary)' }}>
             <FaBoxes />
           </div>
           <div className="stat-cashflow-value">{products.length}</div>
@@ -508,11 +508,11 @@ export default function Inventory() {
           <h3 style={{ fontSize:14, fontWeight:700, color:'var(--text-primary)', marginBottom:16 }}>Stock by Category</h3>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={categoryData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-              <XAxis dataKey="name" tick={{ fontSize:11, fill:'#94a3b8' }} stroke="rgba(255,255,255,0.08)" />
-              <YAxis tick={{ fontSize:11, fill:'#94a3b8' }} stroke="rgba(255,255,255,0.08)" />
-              <Tooltip content={<ChartTooltip />} cursor={{ fill:'rgba(255,255,255,0.04)' }} />
-              <Bar dataKey="value" fill="#2dd4bf" radius={[4,4,0,0]} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--bg-secondary)" />
+              <XAxis dataKey="name" tick={{ fontSize:11, fill:'var(--text-secondary)' }} stroke="var(--border)" />
+              <YAxis tick={{ fontSize:11, fill:'var(--text-secondary)' }} stroke="var(--border)" />
+              <Tooltip content={<ChartTooltip />} cursor={{ fill:'var(--bg-secondary)' }} />
+              <Bar dataKey="value" fill="#0d9488" radius={[4,4,0,0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -547,11 +547,11 @@ export default function Inventory() {
           style={{ padding:'8px 12px', border:'1.5px solid var(--border)', borderRadius:10, fontSize:12, fontWeight:600, cursor:'pointer', background:'var(--bg-input)', color:'var(--text-primary)', outline:'none' }}>
           {brands.map(b => <option key={b} value={b}>{b === 'All' ? 'All Brands' : b}</option>)}
         </select>
-        <div style={{ display:'flex', background:'var(--bg-card)', border:'1px solid var(--border)', borderRadius:10, overflow:'hidden', boxShadow:'0 2px 8px rgba(0,0,0,0.2)', marginLeft:'auto' }}>
-          <button onClick={() => setViewMode('grid')} style={{ padding:'8px 10px', border:'none', cursor:'pointer', fontSize:13, background: viewMode === 'grid' ? 'var(--accent)' : 'transparent', color: viewMode === 'grid' ? '#0f172a' : 'var(--text-muted)', transition:'background 0.15s, color 0.15s' }}>
+        <div style={{ display:'flex', background:'var(--bg-card)', border:'1px solid var(--border)', borderRadius:10, overflow:'hidden', boxShadow:'0 2px 8px rgba(16,24,40,0.07)', marginLeft:'auto' }}>
+          <button onClick={() => setViewMode('grid')} style={{ padding:'8px 10px', border:'none', cursor:'pointer', fontSize:13, background: viewMode === 'grid' ? 'var(--accent)' : 'transparent', color: viewMode === 'grid' ? '#ffffff' : 'var(--text-muted)', transition:'background 0.15s, color 0.15s' }}>
             <FaTh />
           </button>
-          <button onClick={() => setViewMode('table')} style={{ padding:'8px 10px', border:'none', cursor:'pointer', fontSize:13, background: viewMode === 'table' ? 'var(--accent)' : 'transparent', color: viewMode === 'table' ? '#0f172a' : 'var(--text-muted)', transition:'background 0.15s, color 0.15s' }}>
+          <button onClick={() => setViewMode('table')} style={{ padding:'8px 10px', border:'none', cursor:'pointer', fontSize:13, background: viewMode === 'table' ? 'var(--accent)' : 'transparent', color: viewMode === 'table' ? '#ffffff' : 'var(--text-muted)', transition:'background 0.15s, color 0.15s' }}>
             <FaList />
           </button>
         </div>
@@ -561,12 +561,12 @@ export default function Inventory() {
       <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:20, flexWrap:'wrap' }}>
         <FaSort style={{ color:'var(--text-muted)', fontSize:13 }} />
         <div style={{ display:'flex', background:'var(--bg-card)', border:'1px solid var(--border)', borderRadius:10, overflow:'hidden',
-          boxShadow:'0 1px 6px rgba(0,0,0,0.2)' }}>
+          boxShadow:'0 1px 6px rgba(16,24,40,0.07)' }}>
           {SORT_OPTIONS.slice(0,4).map(o => (
             <button key={o.value} onClick={() => setSortBy(o.value)} style={{
               padding:'7px 12px', border:'none', fontSize:11, fontWeight:600, cursor:'pointer',
               background: sortBy === o.value ? 'var(--accent)' : 'transparent',
-              color: sortBy === o.value ? '#0f172a' : 'var(--text-secondary)',
+              color: sortBy === o.value ? '#ffffff' : 'var(--text-secondary)',
               transition:'all 0.2s', whiteSpace:'nowrap' }}>
               {o.label}
             </button>
@@ -574,7 +574,7 @@ export default function Inventory() {
           {sortBy.includes('stock') && (
             <button style={{
               padding:'7px 12px', border:'none', fontSize:11, fontWeight:600, cursor:'pointer',
-              background:'var(--accent)', color:'#0f172a', whiteSpace:'nowrap' }}>
+              background:'var(--accent)', color:'#ffffff', whiteSpace:'nowrap' }}>
               {sortBy === 'stock-asc' ? 'Stock ↑' : 'Stock ↓'}
             </button>
           )}
@@ -584,7 +584,7 @@ export default function Inventory() {
       {/* Products: Grid or Table */}
       {filtered.length === 0 ? (
         <div style={{ background:'var(--bg-card)', border:'1px solid var(--border)', borderRadius:16, padding:'48px 20px', textAlign:'center',
-          color:'var(--text-muted)', fontSize:14, boxShadow:'0 2px 16px rgba(0,0,0,0.2)' }}>
+          color:'var(--text-muted)', fontSize:14, boxShadow:'0 2px 16px rgba(16,24,40,0.07)' }}>
           {search || categoryFilter !== 'All' || brandFilter !== 'All'
             ? 'No products match your filters'
             : 'No products yet — add one to get started'}
@@ -604,7 +604,7 @@ export default function Inventory() {
               : 'https://scnt-vault.web.app/images/scnt_default.png';
             return (
               <div key={p.id} style={{ background:'var(--bg-card)', border:'1px solid var(--border)', borderRadius:12, overflow:'hidden',
-                boxShadow: isLow ? '0 0 0 2px var(--warning), 0 4px 20px rgba(245,158,11,0.15)' : '0 2px 12px rgba(0,0,0,0.2)',
+                boxShadow: isLow ? '0 0 0 2px var(--warning), 0 4px 20px rgba(245,158,11,0.15)' : '0 1px 3px rgba(16,24,40,0.06)',
                 transition:'transform 0.2s, box-shadow 0.2s', display:'flex', flexDirection:'column' }}
                 onMouseEnter={e => { e.currentTarget.style.transform='translateY(-3px)'; }}
                 onMouseLeave={e => { e.currentTarget.style.transform='none'; }}>
@@ -671,12 +671,12 @@ export default function Inventory() {
                     <FaFlask style={{ fontSize:10 }} />
                   </button>
                   <button onClick={() => openEdit(p)} style={{
-                    flex:1, padding:'7px 0', background:'rgba(255,255,255,0.06)', color:'var(--text-secondary)',
+                    flex:1, padding:'7px 0', background:'var(--border)', color:'var(--text-secondary)',
                     border:'none', borderRadius:10, fontSize:12, fontWeight:700,
                     cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:5,
                     transition:'background 0.15s' }}
-                    onMouseEnter={e => e.currentTarget.style.background='rgba(255,255,255,0.12)'}
-                    onMouseLeave={e => e.currentTarget.style.background='rgba(255,255,255,0.06)'}>
+                    onMouseEnter={e => e.currentTarget.style.background='rgba(0,0,0,0.06)'}
+                    onMouseLeave={e => e.currentTarget.style.background='var(--border)'}>
                     <FaEdit /> Edit
                   </button>
                   <button onClick={() => setConfirmDelete(p)} style={{
@@ -705,7 +705,7 @@ export default function Inventory() {
         /* ── Table View (#6) ── */
         <>
         <div style={{ background:'var(--bg-card)', border:'1px solid var(--border)', borderRadius:12, overflow:'hidden',
-          boxShadow:'0 2px 12px rgba(0,0,0,0.2)' }}>
+          boxShadow:'0 1px 3px rgba(16,24,40,0.06)' }}>
           <div style={{ overflowX:'auto' }}>
             <table className="data-table" style={{ width:'100%', borderCollapse:'collapse' }}>
               <thead>

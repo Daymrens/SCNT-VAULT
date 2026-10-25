@@ -147,7 +147,7 @@ export default function POS() {
 
   const loadOrderIntoCart = useCallback((order) => {
     const items = Array.isArray(order.items) ? order.items
-      : (Array.isArray(order.order_items) ? order.order_items : []);
+      : (Array.isArray(order.order_items) ? order.order_items : (Array.isArray(order.Items) ? order.Items : []));
     const newCart = items.map((it, idx) => {
       const name = it.name || it.Name || it.perfumeName || it.ProductName || `Item ${idx + 1}`;
       const brand = it.brand || it.Brand || '';
@@ -167,13 +167,16 @@ export default function POS() {
     setCart(newCart);
     setActiveOrder({
       id: order.id,
-      OrderNumber: order.OrderNumber || '',
-      customerName: order.customerName || order.fullName || order.name || '',
-      phone: order.phone || '',
-      email: order.email || '',
-      address: [order.address, order.city, order.province, order.zipCode].filter(Boolean).join(', '),
+      OrderNumber: order.OrderNumber || order.orderNumber || '',
+      customerName: order.customerName || order.CustomerName || order.customer?.name || order.fullName || order.name || '',
+      phone: order.phone || order.customerPhone || order.CustomerPhone || order.customer?.phone || '',
+      email: order.email || order.customerEmail || order.CustomerEmail || order.customer?.email || '',
+      address: order.customerAddress || order.CustomerAddress || order.customer?.address || [order.address, order.city, order.province, order.zipCode].filter(Boolean).join(', '),
       notes: order.notes || '',
     });
+    setSelectedCustomer(null);
+    setSelectedReseller(null);
+    setHasDraft(false);
     setCustomerType('retail');
     setDiscount(0);
     setShippingFee('');
@@ -188,6 +191,8 @@ export default function POS() {
         if (cancelled) return;
         if (!order) {
           showToast('Order not found');
+        } else if (order.posHandled === true || order.fulfilled === true || ['cancelled', 'delivered', 'shipped'].includes(order.status)) {
+          showToast('This order is no longer available for POS completion', 'error');
         } else {
           loadOrderIntoCart(order);
           showToast(`Order ${order.OrderNumber || order.id.slice(0, 8)} loaded`, 'success');
@@ -450,7 +455,7 @@ export default function POS() {
 
         {/* Products Panel */}
         <div style={{ background:'var(--bg-card)', borderRadius:20, padding:20,
-          display:'flex', flexDirection:'column', boxShadow:'0 2px 16px rgba(0,0,0,0.2)', overflow:'hidden',
+          display:'flex', flexDirection:'column', boxShadow:'0 2px 16px rgba(16,24,40,0.07)', overflow:'hidden',
           height:'calc(100vh - 160px)' }}>
           {/* Search */}
           <div style={{ background:'var(--bg-secondary)', borderRadius:12, padding:'10px 16px',
@@ -477,19 +482,19 @@ export default function POS() {
             {/* Tester Kit card — always visible, pinned at top */}
             <div onClick={openTesterKitDialog}
               style={{ minHeight:260, borderRadius:16, cursor:'pointer', position:'relative',
-                background:'linear-gradient(135deg,#2dd4bf,#06b6d4)',
+                background:'linear-gradient(135deg,#0d9488,#06b6d4)',
                 display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
-                gap:10, padding:16, boxShadow:'0 2px 12px rgba(0,0,0,0.2)',
+                gap:10, padding:16, boxShadow:'0 2px 12px rgba(16,24,40,0.07)',
                 transition:'transform 0.15s, box-shadow 0.15s' }}
               onMouseEnter={e => { e.currentTarget.style.transform='translateY(-3px)'; e.currentTarget.style.boxShadow='0 6px 20px rgba(45,212,191,0.25)'; }}
-              onMouseLeave={e => { e.currentTarget.style.transform='none'; e.currentTarget.style.boxShadow='0 2px 12px rgba(0,0,0,0.2)'; }}>
-              <FaFlask style={{ fontSize:30, color:'#0f172a' }} />
-              <div style={{ fontSize:15, fontWeight:800, color:'#0f172a' }}>Tester Kit</div>
-              <div style={{ fontSize:12, color:'rgba(15,23,42,0.7)' }}>Package — set pcs &amp; price</div>
+              onMouseLeave={e => { e.currentTarget.style.transform='none'; e.currentTarget.style.boxShadow='0 2px 12px rgba(16,24,40,0.07)'; }}>
+              <FaFlask style={{ fontSize:30, color:'#ffffff' }} />
+              <div style={{ fontSize:15, fontWeight:800, color:'#ffffff' }}>Tester Kit</div>
+              <div style={{ fontSize:12, color:'rgba(255,255,255,0.85)' }}>Package — set pcs &amp; price</div>
               {kitInCart && (
                 <div style={{ position:'absolute', top:8, right:8, padding:'3px 10px', borderRadius:20,
-                  background:'#0f172a', color:'#2dd4bf', fontSize:11, fontWeight:800,
-                  boxShadow:'0 2px 8px rgba(0,0,0,0.3)' }}>
+                  background:'#ffffff', color:'#0d9488', fontSize:11, fontWeight:800,
+                  boxShadow:'0 2px 8px rgba(16,24,40,0.10)' }}>
                   {kitInCart.pcs} pcs
                 </div>
               )}
@@ -538,14 +543,14 @@ export default function POS() {
                         ₱{price.toLocaleString()}
                       </span>
                       <span style={{ fontSize:11, fontWeight:600, padding:'2px 7px', borderRadius:10,
-                        background:'rgba(255,255,255,0.06)', color: (product.Stock || 0) > 10 ? 'var(--text-muted)' : 'var(--danger)' }}>
+                        background:'var(--border)', color: (product.Stock || 0) > 10 ? 'var(--text-muted)' : 'var(--danger)' }}>
                         {product.Stock || 0} left
                       </span>
                     </div>
                   </div>
                   {inCart && (
                     <div style={{ position:'absolute', top:8, right:8, width:22, height:22,
-                      borderRadius:'50%', background:'var(--accent)', color:'#0f172a',
+                      borderRadius:'50%', background:'var(--accent)', color:'#ffffff',
                       fontSize:11, fontWeight:800, display:'flex', alignItems:'center', justifyContent:'center',
                       boxShadow:'0 2px 8px rgba(45,212,191,0.4)' }}>
                       {inCart.quantity}
@@ -559,7 +564,7 @@ export default function POS() {
 
         {/* Cart Panel */}
         <div style={{ background:'var(--bg-card)', borderRadius:20, padding:20,
-          display:'flex', flexDirection:'column', boxShadow:'0 2px 16px rgba(0,0,0,0.2)', overflow:'hidden',
+          display:'flex', flexDirection:'column', boxShadow:'0 2px 16px rgba(16,24,40,0.07)', overflow:'hidden',
           height:'calc(100vh - 160px)' }}>
 
           {/* Cart header */}
@@ -590,10 +595,10 @@ export default function POS() {
               )}
               {cart.length > 0 && (
                 <button onClick={() => setClearConfirm(true)}
-                  style={{ padding:'6px 12px', background:'rgba(255,255,255,0.06)', color:'var(--text-muted)', border:'none',
+                  style={{ padding:'6px 12px', background:'var(--border)', color:'var(--text-muted)', border:'none',
                     borderRadius:8, fontSize:11, fontWeight:600, cursor:'pointer', transition:'background 0.15s' }}
-                  onMouseEnter={e => e.currentTarget.style.background='rgba(255,255,255,0.1)'}
-                  onMouseLeave={e => e.currentTarget.style.background='rgba(255,255,255,0.06)'}>
+                  onMouseEnter={e => e.currentTarget.style.background='rgba(0,0,0,0.06)'}
+                  onMouseLeave={e => e.currentTarget.style.background='var(--border)'}>
                   Clear
                 </button>
               )}
@@ -778,8 +783,8 @@ export default function POS() {
               {/* Checkout button */}
               <button ref={checkoutRef} onClick={handleCheckout} disabled={processing}
                 style={{ width:'100%', padding:'12px 0', marginTop:8,
-                  background: processing ? 'rgba(255,255,255,0.08)' : 'var(--accent)',
-                  color: processing ? 'var(--text-muted)' : '#0f172a',
+                  background: processing ? 'var(--border)' : 'var(--accent)',
+                  color: processing ? 'var(--text-muted)' : '#ffffff',
                   border:'none', borderRadius:10, fontSize:14, fontWeight:700,
                   cursor: processing ? 'not-allowed' : 'pointer',
                   display:'flex', alignItems:'center', justifyContent:'center', gap:8 }}>
@@ -836,15 +841,15 @@ export default function POS() {
           <div style={{ display: 'flex', gap: 10, justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap' }}>
             <CancelButton onClick={() => setSuccessSale(null)} label="Done" />
             <button onClick={downloadInvoice} disabled={downloading}
-              style={{ padding: '9px 20px', background: downloading ? 'rgba(255,255,255,0.08)' : 'var(--accent)',
-                color: downloading ? 'var(--text-muted)' : '#0f172a', border: 'none', borderRadius: 8,
+              style={{ padding: '9px 20px', background: downloading ? 'var(--border)' : 'var(--accent)',
+                color: downloading ? 'var(--text-muted)' : '#ffffff', border: 'none', borderRadius: 8,
                 fontSize: 13, fontWeight: 700, cursor: downloading ? 'not-allowed' : 'pointer',
                 display: 'flex', alignItems: 'center', gap: 8 }}>
               <FaFilePdf style={{ fontSize: 13 }} />
               {downloading ? 'Generating...' : 'Download Invoice (PDF)'}
             </button>
             <button onClick={printReceipt}
-              style={{ padding: '9px 20px', background: 'rgba(255,255,255,0.08)',
+              style={{ padding: '9px 20px', background: 'var(--border)',
                 color: 'var(--text-secondary)', border: 'none', borderRadius: 8,
                 fontSize: 13, fontWeight: 700, cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 8 }}>

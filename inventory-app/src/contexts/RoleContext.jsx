@@ -7,7 +7,7 @@ const OWNER_UID = '6aOu6pgtNuOWfxbKGMP4UMUCcb';
 
 const ROLE_PERMISSIONS = {
   owner: {
-    pages: ['/', '/inventory', '/suppliers', '/customers', '/resellers', '/sales', '/purchase-orders', '/testers', '/reports', '/pos'],
+    pages: ['/', '/inventory', '/suppliers', '/customers', '/resellers', '/sales', '/purchase-orders', '/testers', '/reports', '/pos', '/pending-orders'],
     canDeleteProducts: true,
     canEditProducts: true,
     canProcessOrders: true,
@@ -18,7 +18,7 @@ const ROLE_PERMISSIONS = {
     canManageStock: true,
   },
   manager: {
-    pages: ['/', '/inventory', '/suppliers', '/customers', '/resellers', '/sales', '/purchase-orders', '/testers', '/pos'],
+    pages: ['/', '/inventory', '/suppliers', '/customers', '/resellers', '/sales', '/purchase-orders', '/testers', '/pos', '/pending-orders'],
     canDeleteProducts: false,
     canEditProducts: true,
     canProcessOrders: true,
@@ -29,7 +29,7 @@ const ROLE_PERMISSIONS = {
     canManageStock: true,
   },
   employee: {
-    pages: ['/', '/pos', '/inventory', '/customers'],
+    pages: ['/', '/pos', '/pending-orders', '/inventory', '/customers'],
     canDeleteProducts: false,
     canEditProducts: false,
     canProcessOrders: true,

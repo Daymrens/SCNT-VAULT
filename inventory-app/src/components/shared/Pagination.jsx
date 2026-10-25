@@ -86,7 +86,7 @@ export default function Pagination({
                 height: 32,
                 padding: '0 8px',
                 background: currentPage === page ? 'var(--accent)' : 'var(--bg-card)',
-                color: currentPage === page ? '#0f172a' : 'var(--text-primary)',
+                color: currentPage === page ? '#ffffff' : 'var(--text-primary)',
                 border: `1px solid ${currentPage === page ? 'var(--accent)' : 'var(--border)'}`,
                 borderRadius: 6,
                 cursor: 'pointer',

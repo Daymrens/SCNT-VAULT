@@ -21,13 +21,14 @@ const menuItems = [
   { path: '/testers',        icon: <FaFlask />,       label: 'Testers' },
   { path: '/reports',        icon: <FaChartBar />,    label: 'Reports' },
   { path: '/pos',            icon: <FaCashRegister />,label: 'POS' },
+  { path: '/pending-orders', icon: <FaFileInvoice />, label: 'Pending Orders' },
 ];
 
 const pageLabels = {
   '/': 'Dashboard', '/inventory': 'Inventory', '/suppliers': 'Suppliers',
   '/customers': 'Customers', '/resellers': 'Resellers', '/sales': 'Sales',
   '/purchase-orders': 'Purchase Orders', '/testers': 'Testers',
-  '/reports': 'Reports', '/pos': 'Point of Sale',
+  '/reports': 'Reports', '/pos': 'Point of Sale', '/pending-orders': 'Pending Orders',
 };
 
 function useIsMobile(breakpoint = 768) {
@@ -119,8 +120,8 @@ export default function Layout() {
         transition: isMobile ? 'transform 0.25s ease' : 'width 0.25s ease, min-width 0.25s ease',
         overflow: 'hidden',
         boxShadow: isMobile
-          ? mobileOpen ? '4px 0 24px rgba(0,0,0,0.3)' : 'none'
-          : '4px 0 24px rgba(0,0,0,0.3)',
+          ? mobileOpen ? '4px 0 24px rgba(16,24,40,0.10)' : 'none'
+          : '4px 0 24px rgba(16,24,40,0.10)',
         transform: isMobile
           ? mobileOpen ? 'translateX(0)' : 'translateX(-100%)'
           : 'translateX(0)',
@@ -154,7 +155,7 @@ export default function Layout() {
           )}
           {isMobile && (
             <button onClick={() => setMobileOpen(false)}
-              style={{ background:'rgba(255,255,255,0.07)', border:'none', borderRadius:8,
+              style={{ background:'var(--bg-secondary)', border:'none', borderRadius:8,
                 color:'var(--text-muted)', cursor:'pointer', width:32, height:32,
                 display:'flex', alignItems:'center', justifyContent:'center' }}>
               <FaTimes />
@@ -181,7 +182,7 @@ export default function Layout() {
                   transition:'all 0.2s', whiteSpace:'nowrap',
                   borderLeft: active ? '3px solid var(--accent)' : '3px solid transparent',
                 }}
-                onMouseEnter={e => { if (!active) e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; }}
+                onMouseEnter={e => { if (!active) e.currentTarget.style.background = 'var(--bg-secondary)'; }}
                 onMouseLeave={e => { if (!active) e.currentTarget.style.background = 'transparent'; }}
               >
                 <span style={{ fontSize:15, flexShrink:0 }}>{item.icon}</span>
@@ -194,13 +195,13 @@ export default function Layout() {
         {/* Collapse toggle (desktop only) */}
         {!isMobile && (
           <button onClick={() => setCollapsed(c => !c)} style={{
-            margin:'12px 8px', padding:10, background:'rgba(255,255,255,0.07)',
+            margin:'12px 8px', padding:10, background:'var(--bg-secondary)',
             border:'none', borderRadius:10, color:'var(--text-muted)',
             cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center',
             gap:8, fontSize:13, transition:'background 0.2s',
           }}
-          onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.12)'}
-          onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.07)'}
+          onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,0,0,0.06)'}
+          onMouseLeave={e => e.currentTarget.style.background = 'var(--bg-secondary)'}
           >
             <FaChevronLeft style={{ transform: collapsed ? 'rotate(180deg)' : 'none', transition:'transform 0.25s' }} />
             {!collapsed && <span>Collapse</span>}
@@ -267,7 +268,7 @@ export default function Layout() {
           height: 64, background: 'var(--bg-sidebar)',
           display: 'flex', justifyContent: 'space-around', alignItems: 'center',
           zIndex: 90, borderTop: '1px solid var(--border)',
-          boxShadow: '0 -2px 12px rgba(0,0,0,0.3)',
+          boxShadow: '0 -2px 12px rgba(16,24,40,0.10)',
         }}>
           {[
             { path: '/', icon: <FaHome />, label: 'Dashboard' },

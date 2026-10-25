@@ -33,7 +33,7 @@ function sortSuppliers(arr, sortBy, poBySupplier, productsBySupplier) {
   }
 }
 
-const AVATAR_COLORS = ['#5b8def','#2dd4bf','#f59e0b','#f472b6','#a78bfa','#38bdf8','#fb923c'];
+const AVATAR_COLORS = ['#5b8def','#0d9488','#f59e0b','#f472b6','#a78bfa','#38bdf8','#fb923c'];
 
 export default function Suppliers() {
   const { suppliers, products, purchaseOrders, loading, addSupplier, updateSupplier, deleteSupplier, loadPurchaseOrders } = useData();
@@ -167,7 +167,7 @@ export default function Suppliers() {
 
   if (!suppliers.length) return (
     <div className="inventory-page" style={{ background:'var(--bg-card)', border:'1px solid var(--border)',
-      borderRadius:16, padding:'64px 32px', textAlign:'center', boxShadow:'0 2px 16px rgba(0,0,0,0.2)' }}>
+      borderRadius:16, padding:'64px 32px', textAlign:'center', boxShadow:'0 2px 16px rgba(16,24,40,0.07)' }}>
       <div style={{ width:72, height:72, borderRadius:'50%', background:'var(--success-bg)',
         display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 20px' }}>
         <FaTruck style={{ fontSize:32, color:'var(--accent)' }} />
@@ -178,7 +178,7 @@ export default function Suppliers() {
       </p>
       <button onClick={openAdd} style={{
         display:'inline-flex', alignItems:'center', gap:8, padding:'12px 24px',
-        background:'var(--accent)', color:'#0f172a',
+        background:'var(--accent)', color:'#ffffff',
         border:'none', borderRadius:12, fontSize:14, fontWeight:700, cursor:'pointer',
         boxShadow:'0 4px 20px var(--accent-glow)', transition:'transform 0.15s' }}
         onMouseEnter={e => e.currentTarget.style.transform='translateY(-2px)'}
@@ -206,13 +206,13 @@ export default function Suppliers() {
               </button>
             ))}
           </div>
-          <div style={{ display:'flex', background:'var(--bg-card)', border:'1px solid var(--border)', borderRadius:10, padding:'8px 12px', boxShadow:'0 2px 8px rgba(0,0,0,0.2)', alignItems:'center', gap:8, minWidth:200 }}>
+          <div style={{ display:'flex', background:'var(--bg-card)', border:'1px solid var(--border)', borderRadius:10, padding:'8px 12px', boxShadow:'0 2px 8px rgba(16,24,40,0.07)', alignItems:'center', gap:8, minWidth:200 }}>
             <FaSearch style={{ color:'var(--text-muted)', fontSize:13 }} />
             <input ref={searchRef} value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Search suppliers... (press /)"
               style={{ border:'none', outline:'none', fontSize:13, flex:1, background:'transparent', color:'var(--text-primary)' }} />
           </div>
-          <button onClick={openAdd} style={{ display:'flex', alignItems:'center', gap:8, padding:'10px 18px', background:'var(--accent)', color:'#0f172a', border:'none', borderRadius:10, fontSize:13, fontWeight:700, cursor:'pointer', transition:'all 0.2s' }}
+          <button onClick={openAdd} style={{ display:'flex', alignItems:'center', gap:8, padding:'10px 18px', background:'var(--accent)', color:'#ffffff', border:'none', borderRadius:10, fontSize:13, fontWeight:700, cursor:'pointer', transition:'all 0.2s' }}
             onMouseEnter={e => e.currentTarget.style.background='#5eead4'}
             onMouseLeave={e => e.currentTarget.style.background='var(--accent)'}>
             <FaPlus /> Add Supplier
@@ -230,7 +230,7 @@ export default function Suppliers() {
           <div className="stat-cashflow-label">Total Suppliers</div>
         </div>
         <div className="stat-cashflow stat-cashflow-dark" style={{ border:'1px solid var(--border)', borderRadius:12 }}>
-          <div className="stat-cashflow-icon" style={{ background:'rgba(255,255,255,0.1)' }}>
+          <div className="stat-cashflow-icon" style={{ background:'rgba(0,0,0,0.06)' }}>
             <FaEye />
           </div>
           <div className="stat-cashflow-value">{products.length}</div>
@@ -256,12 +256,12 @@ export default function Suppliers() {
       <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:20, flexWrap:'wrap' }}>
         <FaSort style={{ color:'var(--text-muted)', fontSize:13 }} />
         <div style={{ display:'flex', background:'var(--bg-card)', border:'1px solid var(--border)', borderRadius:10, overflow:'hidden',
-          boxShadow:'0 1px 6px rgba(0,0,0,0.2)' }}>
+          boxShadow:'0 1px 6px rgba(16,24,40,0.07)' }}>
           {SORT_OPTIONS.map(o => (
             <button key={o.value} onClick={() => setSortBy(o.value)} style={{
               padding:'7px 12px', border:'none', fontSize:11, fontWeight:600, cursor:'pointer',
               background: sortBy === o.value ? 'var(--accent)' : 'transparent',
-              color: sortBy === o.value ? '#0f172a' : 'var(--text-muted)',
+              color: sortBy === o.value ? '#ffffff' : 'var(--text-muted)',
               transition:'all 0.2s', whiteSpace:'nowrap' }}>
               {o.label}
             </button>
@@ -272,7 +272,7 @@ export default function Suppliers() {
       {/* Suppliers: Grid or Table */}
       {filtered.length === 0 ? (
         <div style={{ background:'var(--bg-card)', border:'1px solid var(--border)', borderRadius:16, padding:'48px 20px', textAlign:'center',
-          color:'var(--text-secondary)', fontSize:14, boxShadow:'0 2px 16px rgba(0,0,0,0.2)' }}>
+          color:'var(--text-secondary)', fontSize:14, boxShadow:'0 2px 16px rgba(16,24,40,0.07)' }}>
           {search ? 'No suppliers match your search' : 'No suppliers yet — add one to get started'}
         </div>
       ) : viewMode === 'grid' ? (
@@ -285,10 +285,10 @@ export default function Suppliers() {
             const poStats  = poBySupplier[s.id] || { count: 0, total: 0 };
             return (
               <div key={s.id} style={{ background:'var(--bg-card)', border:'1px solid var(--border)', borderRadius:12,
-                boxShadow:'0 4px 20px rgba(0,0,0,0.2)', overflow:'hidden',
+                boxShadow:'0 4px 20px rgba(16,24,40,0.07)', overflow:'hidden',
                 transition:'transform 0.2s, box-shadow 0.2s' }}
-                onMouseEnter={e => { e.currentTarget.style.transform='translateY(-3px)'; e.currentTarget.style.boxShadow='0 8px 32px rgba(0,0,0,0.35)'; }}
-                onMouseLeave={e => { e.currentTarget.style.transform='none'; e.currentTarget.style.boxShadow='0 4px 20px rgba(0,0,0,0.2)'; }}>
+                onMouseEnter={e => { e.currentTarget.style.transform='translateY(-3px)'; e.currentTarget.style.boxShadow='0 8px 32px rgba(16,24,40,0.12)'; }}
+                onMouseLeave={e => { e.currentTarget.style.transform='none'; e.currentTarget.style.boxShadow='0 4px 20px rgba(16,24,40,0.07)'; }}>
                 {/* Card Header */}
                 <div style={{ padding:'20px 20px 16px',
                   background:`linear-gradient(135deg, ${color}22, ${color}08)`,
@@ -433,7 +433,7 @@ export default function Suppliers() {
         /* ── Table View ── */
         <>
         <div style={{ background:'var(--bg-card)', border:'1px solid var(--border)', borderRadius:16, overflow:'hidden',
-          boxShadow:'0 4px 20px rgba(0,0,0,0.2)' }}>
+          boxShadow:'0 4px 20px rgba(16,24,40,0.07)' }}>
           <div style={{ overflowX:'auto' }}>
             <table style={{ width:'100%', borderCollapse:'collapse' }}>
               <thead>

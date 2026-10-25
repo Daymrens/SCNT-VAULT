@@ -19,7 +19,7 @@ export default function SearchBar({ value, onChange, placeholder = 'Search...', 
     <div style={{ background:'var(--bg-card)', borderRadius:12, padding:'10px 16px',
       display:'flex', alignItems:'center', gap:10, marginBottom:20,
       border:`1.5px solid ${focused ? 'var(--accent)' : 'var(--border)'}`,
-      boxShadow:'0 2px 12px rgba(0,0,0,0.2)', transition:'border-color 0.15s' }}>
+      boxShadow:'0 2px 12px rgba(16,24,40,0.07)', transition:'border-color 0.15s' }}>
       <FaSearch style={{ color:'var(--text-muted)', fontSize:14 }} />
       <input ref={inputRef} value={value} onChange={e => onChange(e.target.value)}
         placeholder={placeholder}

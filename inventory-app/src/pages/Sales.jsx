@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import {
   FaEye, FaTrash, FaFileExport,
@@ -36,8 +36,8 @@ function toDate(v) {
 const typeStyle = (type) => ({
   retail:   { bg:'var(--info-bg)',    color:'var(--info)',    label:'Retail' },
   reseller: { bg:'var(--warning-bg)', color:'var(--warning)', label:'Reseller' },
-  walkin:   { bg:'rgba(255,255,255,0.06)', color:'var(--text-secondary)', label:'Walk-in' },
-}[type] || { bg:'rgba(255,255,255,0.06)', color:'var(--text-secondary)', label:'Unknown' });
+  walkin:   { bg:'var(--border)', color:'var(--text-secondary)', label:'Walk-in' },
+}[type] || { bg:'var(--border)', color:'var(--text-secondary)', label:'Unknown' });
 
 const paymentIcon = (method) => {
   if (!method) return <FaMoneyBillWave />;
@@ -162,7 +162,7 @@ export default function Sales() {
         const prod = productMap[pid];
         if (prod) await adjustStock(pid, +qty);
       }
-      showToast('Sale deleted — stock restored', 'success');
+      showToast('Sale deleted � stock restored', 'success');
     } catch (e) {
       console.error(e);
       showToast('Failed to delete sale', 'error');
@@ -219,14 +219,14 @@ export default function Sales() {
       {/* Stats - Cash Flow Style */}
       <div className="stat-cashflow-grid">
         <div className="stat-cashflow stat-cashflow-green">
-          <div className="stat-cashflow-icon" style={{ background:'rgba(255,255,255,0.2)', color:'#0f172a' }}>
+          <div className="stat-cashflow-icon" style={{ background:'rgba(255,255,255,0.2)', color:'#ffffff' }}>
             <FaMoneyBillWave />
           </div>
-          <div className="stat-cashflow-value">₱{stats.revenue.toLocaleString('en-PH')}</div>
+          <div className="stat-cashflow-value">?{stats.revenue.toLocaleString('en-PH')}</div>
           <div className="stat-cashflow-label">Revenue</div>
         </div>
         <div className="stat-cashflow stat-cashflow-dark">
-          <div className="stat-cashflow-icon" style={{ background:'rgba(255,255,255,0.15)', color:'var(--text-primary)' }}>
+          <div className="stat-cashflow-icon" style={{ background:'rgba(0,0,0,0.06)', color:'var(--text-primary)' }}>
             <FaShoppingCart />
           </div>
           <div className="stat-cashflow-value">{stats.count}</div>
@@ -236,7 +236,7 @@ export default function Sales() {
           <div className="stat-cashflow-icon" style={{ background:'var(--accent-dim)', color:'var(--accent)' }}>
             <FaUser />
           </div>
-          <div className="stat-cashflow-value">₱{Math.round(stats.avg).toLocaleString('en-PH')}</div>
+          <div className="stat-cashflow-value">?{Math.round(stats.avg).toLocaleString('en-PH')}</div>
           <div className="stat-cashflow-label">Avg per Sale</div>
         </div>
         <div className="stat-cashflow">
@@ -267,12 +267,12 @@ export default function Sales() {
               <YAxis
                 tick={{ fontSize:10, fill:'var(--chart-text)' }}
                 tickLine={false} axisLine={false}
-                tickFormatter={v => v >= 1000 ? `₱${(v/1000).toFixed(0)}k` : `₱${v}`}
+                tickFormatter={v => v >= 1000 ? `?${(v/1000).toFixed(0)}k` : `?${v}`}
                 width={48}
               />
               <Tooltip
-                formatter={(v) => [`₱${v.toLocaleString('en-PH')}`, 'Revenue']}
-                contentStyle={{ borderRadius:10, border:'none', background:'var(--chart-tooltip-bg)', color:'var(--chart-tooltip-text)', boxShadow:'0 4px 20px rgba(0,0,0,0.3)', fontSize:12 }}
+                formatter={(v) => [`?${v.toLocaleString('en-PH')}`, 'Revenue']}
+                contentStyle={{ borderRadius:10, border:'none', background:'var(--chart-tooltip-bg)', color:'var(--chart-tooltip-text)', boxShadow:'0 4px 20px rgba(16,24,40,0.10)', fontSize:12 }}
                 cursor={{ fill:'var(--accent-dim)' }}
               />
               <Bar dataKey="revenue" radius={[5,5,0,0]} minPointSize={3}>
@@ -297,7 +297,7 @@ export default function Sales() {
               <div key={b.label}>
                 <div style={{ display:'flex', justifyContent:'space-between', fontSize:11, marginBottom:4 }}>
                   <span style={{ color:'var(--text-muted)', fontWeight:600 }}>{b.label}</span>
-                  <span style={{ color:b.color, fontWeight:700 }}>₱{b.value.toLocaleString('en-PH')}</span>
+                  <span style={{ color:b.color, fontWeight:700 }}>?{b.value.toLocaleString('en-PH')}</span>
                 </div>
                 <div style={{ height:6, borderRadius:3, background:'var(--bg-secondary)', overflow:'hidden' }}>
                   <div style={{ height:'100%', width:`${pct}%`, background:b.color, borderRadius:3, transition:'width 0.5s' }} />
@@ -380,13 +380,13 @@ export default function Sales() {
                       {bottles} bottle{bottles!==1?'s':''}
                     </td>
                     <td>
-                      ₱{(sale.Subtotal||0).toLocaleString('en-PH')}
+                      ?{(sale.Subtotal||0).toLocaleString('en-PH')}
                     </td>
                     <td style={{ color:'var(--danger)' }}>
-                      {sale.Discount > 0 ? `-₱${sale.Discount.toLocaleString('en-PH')}` : '—'}
+                      {sale.Discount > 0 ? `-?${sale.Discount.toLocaleString('en-PH')}` : '�'}
                     </td>
                     <td style={{ fontWeight:800, color:'var(--accent)' }}>
-                      ₱{(sale.Total||0).toLocaleString('en-PH')}
+                      ?{(sale.Total||0).toLocaleString('en-PH')}
                     </td>
                     <td>
                       <span style={{ display:'inline-flex', alignItems:'center', gap:5,
@@ -465,11 +465,11 @@ export default function Sales() {
                             {item.PerfumeName||item.ProductName||`Product #${pid}`}
                           </div>
                           <div style={{ fontSize:11, color:'var(--text-muted)', marginTop:2 }}>
-                            ₱{(item.UnitPrice||0).toLocaleString('en-PH')} × {item.Quantity}
+                            ?{(item.UnitPrice||0).toLocaleString('en-PH')} � {item.Quantity}
                           </div>
                         </div>
                         <div style={{ fontSize:14, fontWeight:800, color:'var(--text-primary)' }}>
-                          ₱{(item.Subtotal||0).toLocaleString('en-PH')}
+                          ?{(item.Subtotal||0).toLocaleString('en-PH')}
                         </div>
                       </div>
                     );
@@ -479,9 +479,9 @@ export default function Sales() {
               {/* Totals footer */}
               <div className="payment-summary" style={{ display:'flex', flexDirection:'column', gap:6 }}>
                 {[
-                  { label:'Subtotal', value:`₱${(viewSale.Subtotal||0).toLocaleString('en-PH')}`, color:'var(--text-secondary)' },
-                  { label:'Discount', value:`-₱${(viewSale.Discount||0).toLocaleString('en-PH')}`, color:'var(--danger)' },
-                  { label:'Total',    value:`₱${(viewSale.Total||0).toLocaleString('en-PH')}`,    color:'var(--accent)', bold:true },
+                  { label:'Subtotal', value:`?${(viewSale.Subtotal||0).toLocaleString('en-PH')}`, color:'var(--text-secondary)' },
+                  { label:'Discount', value:`-?${(viewSale.Discount||0).toLocaleString('en-PH')}`, color:'var(--danger)' },
+                  { label:'Total',    value:`?${(viewSale.Total||0).toLocaleString('en-PH')}`,    color:'var(--accent)', bold:true },
                 ].map(r => (
                   <div key={r.label} className={`summary-row ${r.bold ? 'total' : ''}`} style={{ color:r.color }}>
                     <span>{r.label}</span><span>{r.value}</span>
