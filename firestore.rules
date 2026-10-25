@@ -83,6 +83,16 @@ service cloud.firestore {
     match /counters/{counterId} {
       allow read: if isAuth();
       allow write: if isManager();
+      // Guest checkout may only allocate the next order number with a new order.
+      allow get: if counterId.matches('order-[0-9]{4}');
+      allow create, update: if counterId.matches('order-[0-9]{4}')
+        && request.resource.data.keys().hasOnly(['seq', 'orderId'])
+        && request.resource.data.seq is int
+        && request.resource.data.seq == (exists(/databases/$(database)/documents/counters/$(counterId)) ? resource.data.seq + 1 : 1)
+        && request.resource.data.orderId is string
+        && !exists(/databases/$(database)/documents/orders/$(request.resource.data.orderId))
+        && getAfter(/databases/$(database)/documents/orders/$(request.resource.data.orderId)).data.counterId == counterId
+        && getAfter(/databases/$(database)/documents/orders/$(request.resource.data.orderId)).data.orderSequence == request.resource.data.seq;
     }
     
     // Settings Collection
@@ -129,7 +139,27 @@ service cloud.firestore {
     // Orders Collection (website orders)
     match /orders/{orderId} {
       allow read: if isAuth();
-      allow create: if isAuth();
+      // Staff may create an order directly; website guests must match the strict shape below.
+      allow create: if isManager();
+      allow create: if request.resource.data.keys().hasOnly([
+          'customerName', 'email', 'phone', 'address', 'city', 'province', 'zipCode',
+          'notes', 'items', 'subtotal', 'total', 'OrderNumber', 'counterId',
+          'orderSequence', 'status', 'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.status == 'pending'
+        && request.resource.data.customerName is string
+        && request.resource.data.customerName.size() > 0
+        && request.resource.data.phone is string
+        && request.resource.data.items is list
+        && request.resource.data.items.size() > 0
+        && request.resource.data.items.size() <= 100
+        && request.resource.data.total is number
+        && request.resource.data.total >= 0
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.counterId.matches('order-[0-9]{4}')
+        && getAfter(/databases/$(database)/documents/counters/$(request.resource.data.counterId)).data.orderId == orderId
+        && getAfter(/databases/$(database)/documents/counters/$(request.resource.data.counterId)).data.seq == request.resource.data.orderSequence;
       allow update: if isManager();
       allow delete: if isOwner();
     }
