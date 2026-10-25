@@ -5,7 +5,8 @@
     <link rel="icon" type="image/svg+xml" href="/admin/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SCNT Vault Admin</title>
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com; base-uri 'self'; form-action 'self';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com; base-uri 'self'; form-action 'self';">
+    <style>html{background:#f6f7f9}body{margin:0}#boot{color:#6b7280;flex-direction:column;justify-content:center;align-items:center;gap:14px;min-height:100vh;font:500 14px/1.4 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,system-ui,Noto Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif;display:flex}#boot i{border:2px solid #e6e8ec;border-top-color:#0d9488;border-radius:50%;width:22px;height:22px;animation:.7s linear infinite boot-spin}@keyframes boot-spin{to{transform:rotate(360deg)}}@media (prefers-reduced-motion:reduce){#boot i{animation-duration:2s}}</style>
     <script type="module" crossorigin src="/admin/assets/index-BiLB7CaR.js"></script>
     <link rel="modulepreload" crossorigin href="/admin/assets/rolldown-runtime-CbXtAM7H.js">
     <link rel="modulepreload" crossorigin href="/admin/assets/react-Cppwi8wa.js">
@@ -15,6 +16,6 @@
     <link rel="stylesheet" crossorigin href="/admin/assets/index-WpYBz-5r.css">
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root"><div id="boot"><i></i><span>Loading SCNT Admin…</span></div></div>
   </body>
 </html>
