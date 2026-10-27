@@ -177,7 +177,7 @@ export default function Reports() {
     return products
       .filter(p => {
         const totalSold = salesByProduct[p.id] || 0;
-        const weeklyVelocity = totalSold / 4; // 30 days ˜ 4 weeks
+        const weeklyVelocity = totalSold / 4; // 30 days -> 4 weeks
         return weeklyVelocity < 1 && p.Stock > 0;
       })
       .map(p => {
@@ -600,7 +600,7 @@ export default function Reports() {
                   <Pill key="o" bg="var(--info-bg)" color="var(--info)">{r.count}</Pill>,
                   <span key="t" style={{ fontWeight:700, color:'var(--accent)' }}>?{r.total.toLocaleString()}</span>,
                   `?${(r.total / r.count).toFixed(0)}`,
-                  res?.DiscountRate ? `${res.DiscountRate}%` : '·'
+                  res?.DiscountRate ? `${res.DiscountRate}%` : 'Â·'
                 ];
               })}
             />

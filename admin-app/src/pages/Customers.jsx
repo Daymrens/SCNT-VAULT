@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
 import {
@@ -10,28 +10,28 @@ const ITEMS_PER_PAGE = 25;
 
 const inputStyle = {
   width: '100%', padding: '10px 12px', borderRadius: 8,
-  border: '1px solid #e6e8ec', background: '#f6f7f9', color: '#14181f',
+  border: '1px solid #e4e5dc', background: '#f3f5ef', color: '#14181f',
   fontSize: 13, outline: 'none', transition: 'border-color 0.2s',
 };
 
 const btnPrimary = {
   display: 'inline-flex', alignItems: 'center', gap: 6,
-  background: 'rgba(13,148,136,0.15)', color: '#0d9488',
-  border: '1px solid rgba(13,148,136,0.3)', borderRadius: 8,
+  background: 'rgba(184,102,70,0.12)', color: '#b86646',
+  border: '1px solid rgba(184,102,70,0.3)', borderRadius: 8,
   padding: '8px 16px', fontSize: 13, fontWeight: 600, cursor: 'pointer',
   transition: 'all 0.2s',
 };
 
 const btnGhost = {
-  background: 'transparent', border: '1px solid #e6e8ec', borderRadius: 8,
+  background: 'transparent', border: '1px solid #e4e5dc', borderRadius: 8,
   padding: '6px 10px', color: '#6b7280', cursor: 'pointer',
   display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12,
   fontWeight: 600, transition: 'all 0.2s',
 };
 
 const btnGhostActive = {
-  ...btnGhost, background: 'rgba(13,148,136,0.15)',
-  color: '#0d9488', border: '1px solid rgba(13,148,136,0.3)',
+  ...btnGhost, background: 'rgba(184,102,70,0.12)',
+  color: '#b86646', border: '1px solid rgba(184,102,70,0.3)',
 };
 
 const modalOverlay = {
@@ -41,7 +41,7 @@ const modalOverlay = {
 };
 
 const modalBox = {
-  background: '#ffffff', border: '1px solid #e6e8ec', borderRadius: 16,
+  background: '#ffffff', border: '1px solid #e4e5dc', borderRadius: 16,
   width: '90%', maxWidth: 780, maxHeight: '85vh', overflow: 'auto',
   boxShadow: '0 24px 48px rgba(16,24,40,0.12)',
 };
@@ -133,11 +133,11 @@ function CustomerDetail({ customer, onClose }) {
   });
 
   return (
-    <div style={modalOverlay} onClick={onClose}>
-      <div style={{ ...modalBox, maxWidth: 780 }} onClick={e => e.stopPropagation()}>
+    <div className="admin-modal-scrim" style={modalOverlay} onClick={onClose}>
+      <div className="admin-modal-panel" style={{ ...modalBox, maxWidth: 780 }} onClick={e => e.stopPropagation()}>
         <div style={{
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          padding: '16px 20px', borderBottom: '1px solid #e6e8ec',
+          padding: '16px 20px', borderBottom: '1px solid #e4e5dc',
         }}>
           <div>
             <h2 style={{ color: '#14181f', fontSize: 16, fontWeight: 700 }}>
@@ -155,7 +155,7 @@ function CustomerDetail({ customer, onClose }) {
         <div style={{ padding: 20 }}>
           {/* Customer Info + Stats */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
-            <div style={{ background: '#f6f7f9', border: '1px solid #e6e8ec', borderRadius: 10, padding: 16 }}>
+            <div style={{ background: '#f3f5ef', border: '1px solid #e4e5dc', borderRadius: 10, padding: 16 }}>
               <h3 style={{ color: '#6b7280', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>
                 Customer Information
               </h3>
@@ -175,7 +175,7 @@ function CustomerDetail({ customer, onClose }) {
               </div>
             </div>
 
-            <div style={{ background: '#f6f7f9', border: '1px solid #e6e8ec', borderRadius: 10, padding: 16 }}>
+            <div style={{ background: '#f3f5ef', border: '1px solid #e4e5dc', borderRadius: 10, padding: 16 }}>
               <h3 style={{ color: '#6b7280', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>
                 Purchase Summary
               </h3>
@@ -186,7 +186,7 @@ function CustomerDetail({ customer, onClose }) {
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: '#6b7280', fontSize: 12 }}>Total Spent</span>
-                  <span style={{ color: '#0d9488', fontSize: 14, fontWeight: 800 }}>{formatPrice(customer.totalSpent)}</span>
+                  <span style={{ color: '#b86646', fontSize: 14, fontWeight: 800 }}>{formatPrice(customer.totalSpent)}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: '#6b7280', fontSize: 12 }}>Last Order</span>
@@ -202,12 +202,12 @@ function CustomerDetail({ customer, onClose }) {
               Order History
             </h3>
             <div style={{
-              background: '#f6f7f9', border: '1px solid #e6e8ec', borderRadius: 10,
+              background: '#f3f5ef', border: '1px solid #e4e5dc', borderRadius: 10,
               overflow: 'hidden',
             }}>
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
-                  <tr style={{ borderBottom: '1px solid #e6e8ec' }}>
+                  <tr style={{ borderBottom: '1px solid #e4e5dc' }}>
                     {['Order No', 'Date', 'Total', 'Status'].map(h => (
                       <th key={h} style={{
                         color: '#6b7280', fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
@@ -313,13 +313,13 @@ export default function Customers() {
         `}</style>
         <h1 style={{ color: '#14181f', fontWeight: 800, fontSize: 24, marginBottom: 20 }}>Customers</h1>
         <div style={{
-          background: '#ffffff', border: '1px solid #e6e8ec', borderRadius: 12,
+          background: '#ffffff', border: '1px solid #e4e5dc', borderRadius: 12,
           padding: 20, overflow: 'hidden',
         }}>
           {Array.from({ length: 5 }).map((_, i) => (
             <div key={i} style={{
               display: 'flex', gap: 16, padding: '12px 0',
-              borderBottom: i < 4 ? '1px solid #e6e8ec' : 'none',
+              borderBottom: i < 4 ? '1px solid #e4e5dc' : 'none',
             }}>
               {['120px', '140px', '80px', '60px', '100px', '80px', '60px'].map((w, j) => (
                 <div key={j} style={{
@@ -356,7 +356,7 @@ export default function Customers() {
       <style>{`
         .cust-row:hover { background: rgba(13,148,136,0.04) !important; }
         .cust-btn:hover { opacity: 0.8; }
-        .cust-input:focus { border-color: #0d9488 !important; }
+        .cust-input:focus { border-color: #b86646 !important; }
       `}</style>
 
       <h1 style={{ color: '#14181f', fontWeight: 800, fontSize: 24, marginBottom: 20 }}>Customers</h1>
@@ -383,21 +383,21 @@ export default function Customers() {
 
       {filtered.length === 0 ? (
         <div style={{
-          background: '#ffffff', border: '1px solid #e6e8ec', borderRadius: 12,
+          background: '#ffffff', border: '1px solid #e4e5dc', borderRadius: 12,
           padding: 48, textAlign: 'center',
         }}>
-          <FaUsers style={{ fontSize: 40, color: '#e6e8ec', marginBottom: 12 }} />
+          <FaUsers style={{ fontSize: 40, color: '#e4e5dc', marginBottom: 12 }} />
           <p style={{ color: '#6b7280', fontSize: 14 }}>No customers found</p>
         </div>
       ) : (
         <div style={{
-          background: '#ffffff', border: '1px solid #e6e8ec', borderRadius: 12,
+          background: '#ffffff', border: '1px solid #e4e5dc', borderRadius: 12,
           overflow: 'hidden', marginBottom: 20,
         }}>
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 900 }}>
               <thead>
-                <tr style={{ borderBottom: '1px solid #e6e8ec' }}>
+                <tr style={{ borderBottom: '1px solid #e4e5dc' }}>
                   {['Name', 'Email', 'Phone', 'Orders', 'Total Spent', 'Last Order', 'Actions'].map(h => (
                     <th key={h} style={{
                       color: '#6b7280', fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
@@ -424,7 +424,7 @@ export default function Customers() {
                     <td style={{ padding: '12px', fontSize: 13, color: '#14181f', fontWeight: 700, textAlign: 'center' }}>
                       {c.orders.length}
                     </td>
-                    <td style={{ padding: '12px', fontSize: 13, color: '#0d9488', fontWeight: 800 }}>
+                    <td style={{ padding: '12px', fontSize: 13, color: '#b86646', fontWeight: 800 }}>
                       {formatPrice(c.totalSpent)}
                     </td>
                     <td style={{ padding: '12px', fontSize: 12, color: '#6b7280', whiteSpace: 'nowrap' }}>
@@ -432,7 +432,7 @@ export default function Customers() {
                     </td>
                     <td style={{ padding: '12px' }}>
                       <button onClick={() => setSelectedCustomer(c)} className="cust-btn" style={{
-                        background: 'rgba(13,148,136,0.1)', color: '#0d9488',
+                        background: 'rgba(13,148,136,0.1)', color: '#b86646',
                         border: 'none', borderRadius: 6, padding: '5px 10px', cursor: 'pointer',
                         fontSize: 12, transition: 'opacity 0.2s', display: 'inline-flex', alignItems: 'center', gap: 4,
                       }} title="View Details">

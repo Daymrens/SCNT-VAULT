@@ -11,6 +11,10 @@ const Orders = lazy(() => import('./pages/Orders'));
 const Contacts = lazy(() => import('./pages/Contacts'));
 const Customers = lazy(() => import('./pages/Customers'));
 const Settings = lazy(() => import('./pages/Settings'));
+const Purchasing = lazy(() => import('./pages/Purchasing'));
+const Reports = lazy(() => import('./pages/Reports'));
+const SupplyRecords = lazy(() => import('./pages/SupplyRecords'));
+const Batches = lazy(() => import('./pages/Batches'));
 
 function PageLoader() {
   return (
@@ -40,6 +44,11 @@ export default function App() {
             <Route path="orders" element={<Lazy><Orders /></Lazy>} />
             <Route path="contacts" element={<Lazy><Contacts /></Lazy>} />
             <Route path="customers" element={<Lazy><Customers /></Lazy>} />
+            <Route path="purchasing" element={<Lazy><Purchasing /></Lazy>} />
+            <Route path="reports" element={<Lazy><Reports /></Lazy>} />
+            <Route path="materials" element={<Lazy><SupplyRecords /></Lazy>} />
+            <Route path="warehouses" element={<Lazy><SupplyRecords /></Lazy>} />
+            <Route path="batches" element={<Lazy><Batches /></Lazy>} />
             <Route path="settings" element={<Lazy><Settings /></Lazy>} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />

@@ -3,17 +3,31 @@ import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import {
   FaHome, FaBoxes, FaShoppingCart, FaAddressBook, FaUsers,
-  FaCog, FaSignOutAlt, FaBars, FaChevronLeft, FaTimes, FaShieldAlt
+  FaCog, FaSignOutAlt, FaBars, FaChevronLeft, FaTimes, FaShieldAlt, FaTruck, FaChartLine, FaMapMarkedAlt, FaMoon, FaSun, FaClipboardList
 } from 'react-icons/fa';
 
-const menuItems = [
-  { path: '/', icon: <FaHome />, label: 'Dashboard' },
-  { path: '/products', icon: <FaBoxes />, label: 'Products' },
-  { path: '/orders', icon: <FaShoppingCart />, label: 'Orders' },
-  { path: '/contacts', icon: <FaAddressBook />, label: 'Contacts' },
-  { path: '/customers', icon: <FaUsers />, label: 'Customers' },
-  { path: '/settings', icon: <FaCog />, label: 'Settings' },
+const menuSections = [
+  { label: 'Workspace', items: [
+    { path: '/', icon: <FaHome />, label: 'Overview' },
+    { path: '/products', icon: <FaBoxes />, label: 'Products' },
+    { path: '/orders', icon: <FaShoppingCart />, label: 'Orders' },
+  ] },
+  { label: 'Relationships', items: [
+    { path: '/customers', icon: <FaUsers />, label: 'Customers' },
+    { path: '/contacts', icon: <FaAddressBook />, label: 'Messages' },
+  ] },
+  { label: 'Supply & insights', items: [
+    { path: '/materials', icon: <FaBoxes />, label: 'Raw materials' },
+    { path: '/batches', icon: <FaClipboardList />, label: 'Production batches' },
+    { path: '/warehouses', icon: <FaMapMarkedAlt />, label: 'Storage map' },
+    { path: '/purchasing', icon: <FaTruck />, label: 'Purchasing' },
+    { path: '/reports', icon: <FaChartLine />, label: 'Reports' },
+  ] },
+  { label: 'Administration', items: [
+    { path: '/settings', icon: <FaCog />, label: 'Settings' },
+  ] },
 ];
+const menuItems = menuSections.flatMap(section => section.items);
 
 function useIsMobile(breakpoint = 768) {
   const [mobile, setMobile] = useState(() => window.innerWidth <= breakpoint);
@@ -28,19 +42,24 @@ function useIsMobile(breakpoint = 768) {
 export default function Layout() {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [theme, setTheme] = useState(() => window.localStorage.getItem('scnt-admin-theme') || 'light');
   const isMobile = useIsMobile();
   const { currentUser, userRole, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => { setMobileOpen(false); }, [location.pathname]);
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    window.localStorage.setItem('scnt-admin-theme', theme);
+  }, [theme]);
 
   const handleLogout = async () => {
     try { await signOut(); navigate('/login'); }
     catch (e) { console.error(e); }
   };
 
-  const sideW = collapsed ? 68 : 236;
+  const sideW = collapsed ? 72 : 252;
   const pageLabel = menuItems.find(m => m.path === location.pathname)?.label
     || location.pathname.replace('/', '').replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
     || 'Dashboard';
@@ -48,7 +67,7 @@ export default function Layout() {
   const Brand = ({ showText }) => (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
       <div style={{
-        width: 30, height: 30, borderRadius: 8, background: '#0d9488',
+        width: 30, height: 30, borderRadius: 9, background: '#b86646',
         display: 'grid', placeItems: 'center', color: '#fff',
         fontWeight: 800, fontSize: 11, letterSpacing: '.5px', flexShrink: 0,
       }}>SC</div>
@@ -62,9 +81,9 @@ export default function Layout() {
   );
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#f6f7f9' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', background: '#f3f5ef' }}>
       <style>{`
-        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif; background: #f6f7f9; color: #14181f; }
+        body { margin: 0; font-family: 'Urbanist', 'Avenir Next', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f3f5ef; color: #252720; }
       `}</style>
 
       {isMobile && mobileOpen && (
@@ -73,9 +92,9 @@ export default function Layout() {
       )}
 
       {/* Sidebar */}
-      <aside style={{
-        width: isMobile ? 236 : sideW,
-        minWidth: isMobile ? 236 : sideW,
+      <aside className={`admin-sidebar${mobileOpen ? ' is-open' : ''}`} style={{
+        width: isMobile ? 252 : sideW,
+        minWidth: isMobile ? 252 : sideW,
         background: '#ffffff',
         display: 'flex', flexDirection: 'column',
         position: 'fixed', height: '100vh', zIndex: isMobile ? 200 : 100,
@@ -89,7 +108,7 @@ export default function Layout() {
       }}>
         {/* Logo */}
         <div style={{
-          padding: collapsed && !isMobile ? '18px 0' : '16px 18px',
+          padding: collapsed && !isMobile ? '18px 0' : '18px 18px',
           display: 'flex', alignItems: 'center',
           justifyContent: collapsed && !isMobile ? 'center' : 'space-between',
           borderBottom: '1px solid #eff1f4',
@@ -107,31 +126,43 @@ export default function Layout() {
         </div>
 
         {/* Nav */}
-        <nav style={{ flex: 1, padding: '10px 8px', overflowY: 'auto', overflowX: 'hidden' }}>
-          {menuItems.map(item => {
-            const active = location.pathname === item.path;
-            return (
-              <Link key={item.path} to={item.path}
-                title={collapsed && !isMobile ? item.label : undefined} style={{
+        <nav className="admin-navigation" aria-label="Main navigation" style={{ flex: 1, padding: '12px 10px', overflowY: 'auto', overflowX: 'hidden' }}>
+          {menuSections.map(section => (
+            <div className="admin-nav-section" key={section.label}>
+              {(!collapsed || isMobile) && <p className="admin-nav-heading">{section.label}</p>}
+              {section.items.map(item => {
+                const active = location.pathname === item.path;
+                return (
+                  <Link key={item.path} to={item.path}
+                title={collapsed && !isMobile ? item.label : undefined} className={`admin-nav-link${active ? ' is-active' : ''}`} style={{
                   display: 'flex', alignItems: 'center',
                   gap: collapsed && !isMobile ? 0 : 11,
                   justifyContent: collapsed && !isMobile ? 'center' : 'flex-start',
                   padding: collapsed && !isMobile ? '11px 0' : '9px 12px',
                   borderRadius: 8, marginBottom: 2, textDecoration: 'none',
-                  color: active ? '#0f766e' : '#6b7280',
-                  background: active ? '#e8f6f4' : 'transparent',
+                  color: active ? '#975238' : '#6b7068',
+                  background: active ? '#f7ece7' : 'transparent',
                   fontWeight: active ? 600 : 500, fontSize: 13,
                   transition: 'background 0.15s, color 0.15s', whiteSpace: 'nowrap',
                 }}
-                onMouseEnter={e => { if (!active) { e.currentTarget.style.background = '#f5f6f8'; e.currentTarget.style.color = '#14181f'; } }}
-                onMouseLeave={e => { if (!active) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#6b7280'; } }}
+                onMouseEnter={e => { if (!active) { e.currentTarget.style.background = '#f6f6f1'; e.currentTarget.style.color = '#252720'; } }}
+                onMouseLeave={e => { if (!active) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#6b7068'; } }}
               >
                 <span style={{ fontSize: 15, flexShrink: 0 }}>{item.icon}</span>
-                {!collapsed || isMobile ? <span>{item.label}</span> : null}
-              </Link>
-            );
-          })}
+                    {!collapsed || isMobile ? <span>{item.label}</span> : null}
+                  </Link>
+                );
+              })}
+            </div>
+          ))}
         </nav>
+
+        {!collapsed && !isMobile && (
+          <div className="admin-sidebar-note">
+            <span className="admin-sidebar-note-mark"><FaShieldAlt /></span>
+            <div><strong>SCNT Vault</strong><small>Store operations</small></div>
+          </div>
+        )}
 
         {/* Collapse toggle */}
         {!isMobile && (
@@ -151,7 +182,7 @@ export default function Layout() {
       </aside>
 
       {/* Main */}
-      <div style={{ flex: 1, marginLeft: isMobile ? 0 : sideW, transition: 'margin-left 0.25s ease', display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      <div className="admin-main-column" style={{ flex: 1, marginLeft: isMobile ? 0 : sideW, transition: 'margin-left 0.25s ease', display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         {/* Header */}
         <header style={{
           background: 'rgba(255,255,255,0.88)', backdropFilter: 'blur(8px)', padding: '0 20px', height: 58,
@@ -172,10 +203,13 @@ export default function Layout() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+            <button className="theme-toggle" onClick={() => setTheme(value => value === 'light' ? 'dark' : 'light')} aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`} title={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}>
+              {theme === 'light' ? <FaMoon /> : <FaSun />}
+            </button>
             <span style={{
               display: 'inline-flex', alignItems: 'center', gap: 5, padding: '3px 10px',
               borderRadius: 20, fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
-              background: '#e8f6f4', color: '#0f766e',
+              background: '#f7ece7', color: '#975238',
             }}>
               <FaShieldAlt style={{ fontSize: 10 }} /> {userRole || 'user'}
             </span>
@@ -196,11 +230,13 @@ export default function Layout() {
         </header>
 
         {/* Page */}
-        <main style={{
+        <main className="admin-main" style={{
           flex: 1, padding: isMobile ? '18px 14px 72px' : '24px 24px 72px',
-          background: '#f6f7f9', minHeight: 'calc(100vh - 58px)',
+          background: '#f3f5ef', minHeight: 'calc(100vh - 58px)',
         }}>
-          <Outlet />
+          <div className="admin-route" key={location.pathname}>
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>

@@ -10,11 +10,12 @@ import {
   where,
   getDoc,
   Timestamp,
-  increment
+  increment,
+  runTransaction
 } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
 import { useAuth } from './AuthContext';
-import { isQuotaError, getLocalSaleId, enqueuePendingWrite, readPendingWrites, removePendingWrite } from '../utils/offlineQueue';
+import { isQuotaError, isOfflineError, enqueuePendingWrite, readPendingWrites, removePendingWrite } from '../utils/offlineQueue';
 import { toastBus } from '../components/shared/Toast';
 
 const DataContext = createContext();
@@ -99,40 +100,98 @@ export function DataProvider({ children }) {
   const retryCountsRef = React.useRef(new Map());
 
   useEffect(() => {
+    if (!currentUser) return undefined;
     const flush = async () => {
-      const pending = readPendingWrites().filter((w) => w.type === 'sale');
+      const pending = readPendingWrites().filter((w) => w.type === 'sale' && (!w.ownerUid || w.ownerUid === currentUser.uid));
       for (const w of pending) {
         try {
           const { _localId, stockDeltas, ...data } = w.data;
-          await addDoc(collection(db, 'sales'), data);
-          if (Array.isArray(stockDeltas) && stockDeltas.length) {
-            for (const d of stockDeltas) {
-              if (!d || !d.productId) continue;
-              await updateDoc(doc(db, 'products', d.productId), { Stock: increment(Number(d.delta) || 0) });
-            }
-          }
-          removePendingWrite(w.ts);
-          retryCountsRef.current.delete(w.ts);
+          await persistSale(_localId, data, stockDeltas);
+          removePendingWrite(w.id ?? w.ts);
+          retryCountsRef.current.delete(w.id ?? w.ts);
         } catch (err) {
           if (isQuotaError(err)) {
             continue;
           }
-          const attempts = (retryCountsRef.current.get(w.ts) || 0) + 1;
-          retryCountsRef.current.set(w.ts, attempts);
-          if (attempts >= 5) {
-            console.error('[flush] permanently dropping pending sale after 5 failed attempts:', w.ts, err);
-            removePendingWrite(w.ts);
-            retryCountsRef.current.delete(w.ts);
-          } else {
-            console.warn(`[flush] retrying pending sale (attempt ${attempts}/5):`, w.ts, err);
-          }
+          const retryKey = w.id ?? w.ts;
+          const attempts = (retryCountsRef.current.get(retryKey) || 0) + 1;
+          retryCountsRef.current.set(retryKey, attempts);
+          console.warn(`[flush] retaining pending sale after failed sync (attempt ${attempts}):`, w.ts, err);
         }
       }
     };
     flush();
     const flushTimer = setInterval(flush, 60000);
     return () => clearInterval(flushTimer);
-  }, []);
+  }, [currentUser]);
+
+  const persistSale = async (saleId, payload, stockDeltas = []) => {
+    const saleRef = doc(db, 'sales', saleId);
+    const deltasByProduct = new Map();
+    for (const item of Array.isArray(stockDeltas) ? stockDeltas : []) {
+      if (!item?.productId) continue;
+      deltasByProduct.set(item.productId, (deltasByProduct.get(item.productId) || 0) + (Number(item.delta) || 0));
+    }
+    const movements = [...deltasByProduct.entries()].filter(([, delta]) => delta !== 0).map(([productId, delta]) => {
+      const movementId = `sale_${encodeURIComponent(saleId)}_${encodeURIComponent(productId)}`;
+      return {
+        productId,
+        delta,
+        movementRef: doc(db, 'stockMovements', movementId),
+        productRef: doc(db, 'products', productId),
+      };
+    });
+
+    await runTransaction(db, async (transaction) => {
+      const saleSnapshot = await transaction.get(saleRef);
+      const snapshots = await Promise.all(movements.map(async (movement) => ({
+        movement,
+        marker: await transaction.get(movement.movementRef),
+        product: await transaction.get(movement.productRef),
+      })));
+
+      if (!saleSnapshot.exists()) transaction.set(saleRef, payload);
+      for (const { movement, marker, product } of snapshots) {
+        if (marker.exists()) continue;
+        if (!product.exists()) throw new Error(`Cannot apply sale stock change: product ${movement.productRef.id} does not exist`);
+        transaction.update(movement.productRef, { Stock: increment(movement.delta) });
+        transaction.set(movement.movementRef, {
+          ProductId: movement.productRef.id,
+          Type: 'Sale',
+          ReferenceId: saleId,
+          Quantity: Math.abs(movement.delta),
+          Delta: movement.delta,
+          createdAt: Timestamp.now(),
+        });
+      }
+    });
+  };
+
+  const applyStockDeltaOnce = async (productId, delta, operationId, type = 'Purchase Order', options = {}) => {
+    const markerId = `${encodeURIComponent(operationId)}_${encodeURIComponent(productId)}`;
+    const markerRef = doc(db, 'stockMovements', markerId);
+    const productRef = doc(db, 'products', productId);
+    await runTransaction(db, async (transaction) => {
+      const marker = await transaction.get(markerRef);
+      if (marker.exists()) return;
+      const product = await transaction.get(productRef);
+      if (!product.exists()) throw new Error(`Product ${productId} does not exist`);
+      const requestedDelta = Number(delta) || 0;
+      const currentStock = Number(product.data().Stock) || 0;
+      const actualDelta = options.clampAtZero && requestedDelta < 0
+        ? -Math.min(Math.abs(requestedDelta), Math.max(0, currentStock))
+        : requestedDelta;
+      if (actualDelta !== 0) transaction.update(productRef, { Stock: increment(actualDelta) });
+      transaction.set(markerRef, {
+        ProductId: productId,
+        Type: type,
+        ReferenceId: operationId,
+        Quantity: Math.abs(actualDelta),
+        Delta: actualDelta,
+        createdAt: Timestamp.now(),
+      });
+    });
+  };
 
   const loadSales = () => {
     if (salesLoadedRef.current) return;
@@ -182,10 +241,8 @@ export function DataProvider({ children }) {
         updatedAt: Timestamp.now()
       });
     } catch (err) {
-      if (isQuotaError(err)) {
-        console.warn('[quota] product stock update skipped (offline):', id);
-        toastBus.fire('Saved locally — will sync when back online', 'info');
-        return;
+      if (isQuotaError(err) || isOfflineError(err)) {
+        toastBus.fire('Could not save product changes. Check your connection and retry.', 'error');
       }
       throw err;
     }
@@ -200,10 +257,8 @@ export function DataProvider({ children }) {
     try {
       await updateDoc(docRef, { Stock: increment(delta) });
     } catch (err) {
-      if (isQuotaError(err)) {
-        console.warn('[quota] stock adjustment skipped (offline):', productId, delta);
-        toastBus.fire('Saved locally — will sync when back online', 'info');
-        return;
+      if (isQuotaError(err) || isOfflineError(err)) {
+        toastBus.fire('Could not update stock. Check your connection and retry.', 'error');
       }
       throw err;
     }
@@ -267,20 +322,22 @@ export function DataProvider({ children }) {
   // Sale CRUD operations
   const addSale = async (sale, opts = {}) => {
     const payload = { ...sale, SaleDate: sale.SaleDate || Timestamp.now(), createdAt: Timestamp.now() };
+    const saleId = doc(collection(db, 'sales')).id;
     try {
-      const docRef = await addDoc(collection(db, 'sales'), payload);
-      return docRef.id;
+      await persistSale(saleId, payload, opts.stockDeltas);
+      return saleId;
     } catch (err) {
-      if (isQuotaError(err)) {
-        const localId = getLocalSaleId();
-        const queued = { ...payload, _localId: localId };
+      if (isQuotaError(err) || isOfflineError(err)) {
+        const queued = { ...payload, _localId: saleId };
         if (Array.isArray(opts.stockDeltas) && opts.stockDeltas.length) {
           queued.stockDeltas = opts.stockDeltas;
         }
-        enqueuePendingWrite('sale', queued);
-        console.warn('[quota] sale saved locally; will sync later:', localId);
+        if (!enqueuePendingWrite('sale', queued, currentUser?.uid || null)) {
+          throw new Error('Sale could not be saved locally. Keep this checkout open and retry when storage is available.');
+        }
+        console.warn('[quota] sale saved locally; will sync later:', saleId);
         toastBus.fire('Saved locally — will sync when back online', 'info');
-        return localId;
+        return saleId;
       }
       throw err;
     }
@@ -403,6 +460,7 @@ export function DataProvider({ children }) {
     updateProduct,
     deleteProduct,
     adjustStock,
+    applyStockDeltaOnce,
     addSupplier,
     updateSupplier,
     deleteSupplier,

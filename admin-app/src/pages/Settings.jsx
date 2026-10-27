@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   doc, getDoc, setDoc, collection, getDocs, updateDoc, orderBy, query
 } from 'firebase/firestore';
@@ -30,7 +30,7 @@ const DEFAULT_SETTINGS = {
 
 const inputStyle = {
   width: '100%', padding: '10px 12px', borderRadius: 8,
-  border: '1px solid #e6e8ec', background: '#f6f7f9', color: '#14181f',
+  border: '1px solid #e4e5dc', background: '#f3f5ef', color: '#14181f',
   fontSize: 13, outline: 'none', transition: 'border-color 0.2s',
 };
 
@@ -41,8 +41,8 @@ const labelStyle = {
 
 const btnPrimary = {
   display: 'inline-flex', alignItems: 'center', gap: 6,
-  background: 'rgba(13,148,136,0.15)', color: '#0d9488',
-  border: '1px solid rgba(13,148,136,0.3)', borderRadius: 8,
+  background: 'rgba(184,102,70,0.12)', color: '#b86646',
+  border: '1px solid rgba(184,102,70,0.3)', borderRadius: 8,
   padding: '8px 16px', fontSize: 13, fontWeight: 600, cursor: 'pointer',
   transition: 'all 0.2s',
 };
@@ -53,7 +53,7 @@ const btnDanger = {
 };
 
 const btnGhost = {
-  background: 'transparent', border: '1px solid #e6e8ec', borderRadius: 8,
+  background: 'transparent', border: '1px solid #e4e5dc', borderRadius: 8,
   padding: '6px 10px', color: '#6b7280', cursor: 'pointer',
   display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12,
   fontWeight: 600, transition: 'all 0.2s',
@@ -74,14 +74,14 @@ const ROLE_STYLES = {
 function Section({ title, icon, children }) {
   return (
     <div style={{
-      background: '#ffffff', border: '1px solid #e6e8ec', borderRadius: 12,
+      background: '#ffffff', border: '1px solid #e4e5dc', borderRadius: 12,
       marginBottom: 20, overflow: 'hidden',
     }}>
       <div style={{
-        padding: '14px 20px', borderBottom: '1px solid #e6e8ec',
+        padding: '14px 20px', borderBottom: '1px solid #e4e5dc',
         display: 'flex', alignItems: 'center', gap: 8,
       }}>
-        <span style={{ color: '#0d9488', fontSize: 14 }}>{icon}</span>
+        <span style={{ color: '#b86646', fontSize: 14 }}>{icon}</span>
         <span style={{ color: '#14181f', fontWeight: 700, fontSize: 14 }}>{title}</span>
       </div>
       <div style={{ padding: 20 }}>{children}</div>
@@ -350,15 +350,15 @@ function UserManagement({ currentUserUid, userRole }) {
       {toast && <Toast {...toast} onClose={() => setToast(null)} />}
 
       <div style={{
-        background: '#ffffff', border: '1px solid #e6e8ec', borderRadius: 12,
+        background: '#ffffff', border: '1px solid #e4e5dc', borderRadius: 12,
         overflow: 'hidden',
       }}>
         <div style={{
-          padding: '14px 20px', borderBottom: '1px solid #e6e8ec',
+          padding: '14px 20px', borderBottom: '1px solid #e4e5dc',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ color: '#0d9488', fontSize: 14 }}><FaUsers /></span>
+            <span style={{ color: '#b86646', fontSize: 14 }}><FaUsers /></span>
             <span style={{ color: '#14181f', fontWeight: 700, fontSize: 14 }}>Team Members</span>
           </div>
           <span style={{ color: '#6b7280', fontSize: 12 }}>{users.length} users</span>
@@ -367,7 +367,7 @@ function UserManagement({ currentUserUid, userRole }) {
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
             <thead>
-              <tr style={{ borderBottom: '1px solid #e6e8ec' }}>
+              <tr style={{ borderBottom: '1px solid #e4e5dc' }}>
                 {['Name', 'Email', 'Role', 'Status', ...(isOwner ? ['Actions'] : [])].map(h => (
                   <th key={h} style={{
                     padding: '12px 16px', textAlign: 'left', color: '#6b7280',
@@ -381,7 +381,7 @@ function UserManagement({ currentUserUid, userRole }) {
                 const role = ROLE_STYLES[user.role] || ROLE_STYLES.employee;
                 return (
                   <tr key={user.uid} style={{ borderBottom: '1px solid #eff1f4' }}
-                    onMouseEnter={e => e.currentTarget.style.background = '#f6f7f9'}
+                    onMouseEnter={e => e.currentTarget.style.background = '#f3f5ef'}
                     onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                     <td style={{ padding: '12px 16px', color: '#14181f', fontWeight: 600 }}>
                       {user.name || user.displayName || 'â€”'}
@@ -428,9 +428,9 @@ function UserManagement({ currentUserUid, userRole }) {
 
       {/* Role Picker Modal */}
       {roleModal && (
-        <div style={modalOverlay} onClick={() => setRoleModal(null)}>
+        <div className="admin-modal-scrim" style={modalOverlay} onClick={() => setRoleModal(null)}>
           <div style={{
-            background: '#ffffff', border: '1px solid #e6e8ec', borderRadius: 12,
+            background: '#ffffff', border: '1px solid #e4e5dc', borderRadius: 12,
             padding: 24, width: 380, maxWidth: '90vw',
           }} onClick={e => e.stopPropagation()}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
@@ -450,7 +450,7 @@ function UserManagement({ currentUserUid, userRole }) {
                   <button key={r} onClick={() => handleRoleChange(roleModal.uid, r)}
                     style={{
                       display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px',
-                      borderRadius: 8, border: isActive ? rs.border : '1px solid #e6e8ec',
+                      borderRadius: 8, border: isActive ? rs.border : '1px solid #e4e5dc',
                       background: isActive ? rs.bg : 'transparent', cursor: 'pointer',
                       transition: 'all 0.2s',
                     }}>
@@ -508,15 +508,15 @@ function AuditLog() {
 
   return (
     <div style={{
-      background: '#ffffff', border: '1px solid #e6e8ec', borderRadius: 12,
+      background: '#ffffff', border: '1px solid #e4e5dc', borderRadius: 12,
       overflow: 'hidden',
     }}>
       <div style={{
-        padding: '14px 20px', borderBottom: '1px solid #e6e8ec',
+        padding: '14px 20px', borderBottom: '1px solid #e4e5dc',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ color: '#0d9488', fontSize: 14 }}><FaClipboardList /></span>
+          <span style={{ color: '#b86646', fontSize: 14 }}><FaClipboardList /></span>
           <span style={{ color: '#14181f', fontWeight: 700, fontSize: 14 }}>Audit Log</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -536,7 +536,7 @@ function AuditLog() {
       <div style={{ overflowX: 'auto' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
           <thead>
-            <tr style={{ borderBottom: '1px solid #e6e8ec' }}>
+            <tr style={{ borderBottom: '1px solid #e4e5dc' }}>
               {['Action', 'Details', 'Timestamp'].map(h => (
                 <th key={h} style={{
                   padding: '12px 16px', textAlign: 'left', color: '#6b7280',
@@ -548,14 +548,14 @@ function AuditLog() {
           <tbody>
             {filtered.map(log => (
               <tr key={log.id} style={{ borderBottom: '1px solid #eff1f4' }}
-                onMouseEnter={e => e.currentTarget.style.background = '#f6f7f9'}
+                onMouseEnter={e => e.currentTarget.style.background = '#f3f5ef'}
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                 <td style={{ padding: '12px 16px' }}>
                   <span style={{
                     display: 'inline-block', padding: '3px 10px', borderRadius: 20,
                     fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
-                    background: 'rgba(13,148,136,0.1)', color: '#0d9488',
-                    border: '1px solid rgba(13,148,136,0.3)',
+                    background: 'rgba(13,148,136,0.1)', color: '#b86646',
+                    border: '1px solid rgba(184,102,70,0.3)',
                   }}>{log.action}</span>
                 </td>
                 <td style={{ padding: '12px 16px', color: '#6b7280', maxWidth: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -587,7 +587,7 @@ export default function Settings() {
   if (!canAccess) {
     return (
       <div style={{ textAlign: 'center', padding: 60 }}>
-        <FaShieldAlt style={{ fontSize: 48, color: '#e6e8ec', marginBottom: 16 }} />
+        <FaShieldAlt style={{ fontSize: 48, color: '#e4e5dc', marginBottom: 16 }} />
         <h2 style={{ color: '#14181f', fontWeight: 700, marginBottom: 8 }}>Access Denied</h2>
         <p style={{ color: '#6b7280', fontSize: 14 }}>Only owners and managers can access settings.</p>
       </div>
@@ -608,15 +608,15 @@ export default function Settings() {
       <div style={{
         display: 'flex', gap: 4, marginBottom: 24,
         background: '#ffffff', borderRadius: 10, padding: 4,
-        border: '1px solid #e6e8ec', overflowX: 'auto',
+        border: '1px solid #e4e5dc', overflowX: 'auto',
       }}>
         {tabs.map(tab => (
           <button key={tab.id} onClick={() => setActiveTab(tab.id)}
             style={{
               display: 'flex', alignItems: 'center', gap: 6,
               padding: '8px 16px', borderRadius: 8, border: 'none',
-              background: activeTab === tab.id ? 'rgba(13,148,136,0.15)' : 'transparent',
-              color: activeTab === tab.id ? '#0d9488' : '#6b7280',
+              background: activeTab === tab.id ? 'rgba(184,102,70,0.12)' : 'transparent',
+              color: activeTab === tab.id ? '#b86646' : '#6b7280',
               fontWeight: activeTab === tab.id ? 700 : 500, fontSize: 13,
               cursor: 'pointer', transition: 'all 0.2s', whiteSpace: 'nowrap',
             }}>

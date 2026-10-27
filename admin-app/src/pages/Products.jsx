@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
 import {
@@ -39,7 +39,7 @@ const STOCK_STATUSES = ['All', 'In Stock', 'Low Stock', 'Out of Stock'];
 
 const inputStyle = {
   width: '100%', padding: '10px 12px', borderRadius: 8,
-  border: '1px solid #e6e8ec', background: '#f6f7f9', color: '#14181f',
+  border: '1px solid #e4e5dc', background: '#f3f5ef', color: '#14181f',
   fontSize: 13, outline: 'none', transition: 'border-color 0.2s',
 };
 
@@ -50,8 +50,8 @@ const labelStyle = {
 
 const btnPrimary = {
   display: 'inline-flex', alignItems: 'center', gap: 6,
-  background: 'rgba(13,148,136,0.15)', color: '#0d9488',
-  border: '1px solid rgba(13,148,136,0.3)', borderRadius: 8,
+  background: 'rgba(184,102,70,0.12)', color: '#b86646',
+  border: '1px solid rgba(184,102,70,0.3)', borderRadius: 8,
   padding: '8px 16px', fontSize: 13, fontWeight: 600, cursor: 'pointer',
   transition: 'all 0.2s',
 };
@@ -62,15 +62,15 @@ const btnDanger = {
 };
 
 const btnGhost = {
-  background: 'transparent', border: '1px solid #e6e8ec', borderRadius: 8,
+  background: 'transparent', border: '1px solid #e4e5dc', borderRadius: 8,
   padding: '6px 10px', color: '#6b7280', cursor: 'pointer',
   display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12,
   fontWeight: 600, transition: 'all 0.2s',
 };
 
 const btnGhostActive = {
-  ...btnGhost, background: 'rgba(13,148,136,0.15)',
-  color: '#0d9488', border: '1px solid rgba(13,148,136,0.3)',
+  ...btnGhost, background: 'rgba(184,102,70,0.12)',
+  color: '#b86646', border: '1px solid rgba(184,102,70,0.3)',
 };
 
 const modalOverlay = {
@@ -80,7 +80,7 @@ const modalOverlay = {
 };
 
 const modalBox = {
-  background: '#ffffff', border: '1px solid #e6e8ec', borderRadius: 16,
+  background: '#ffffff', border: '1px solid #e4e5dc', borderRadius: 16,
   width: '90%', maxWidth: 640, maxHeight: '85vh', overflow: 'auto',
   boxShadow: '0 24px 48px rgba(16,24,40,0.12)',
 };
@@ -166,7 +166,7 @@ function ProductForm({ product, onSave, onCancel }) {
         onChange={e => set(key, e.target.value)}
         style={{
           ...inputStyle,
-          borderColor: errors[key] ? '#dc2626' : '#e6e8ec',
+          borderColor: errors[key] ? '#dc2626' : '#e4e5dc',
         }}
       />
       {errors[key] && <p style={{ color: '#dc2626', fontSize: 11, marginTop: 2 }}>{errors[key]}</p>}
@@ -174,11 +174,11 @@ function ProductForm({ product, onSave, onCancel }) {
   );
 
   return (
-    <div style={modalOverlay} onClick={onCancel}>
-      <div style={modalBox} onClick={e => e.stopPropagation()}>
+    <div className="admin-modal-scrim" style={modalOverlay} onClick={onCancel}>
+      <div className="admin-modal-panel" style={modalBox} onClick={e => e.stopPropagation()}>
         <div style={{
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          padding: '16px 20px', borderBottom: '1px solid #e6e8ec',
+          padding: '16px 20px', borderBottom: '1px solid #e4e5dc',
         }}>
           <h2 style={{ color: '#14181f', fontSize: 16, fontWeight: 700 }}>
             {product?.id ? 'Edit Product' : 'Add Product'}
@@ -230,7 +230,7 @@ function ProductForm({ product, onSave, onCancel }) {
               placeholder="https://..."
             />
           </div>
-          <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 8, paddingTop: 16, borderTop: '1px solid #e6e8ec' }}>
+          <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 8, paddingTop: 16, borderTop: '1px solid #e4e5dc' }}>
             <button type="button" onClick={onCancel} style={btnGhost}>Cancel</button>
             <button type="submit" style={btnPrimary}>{product?.id ? 'Save Changes' : 'Add Product'}</button>
           </div>
@@ -242,8 +242,8 @@ function ProductForm({ product, onSave, onCancel }) {
 
 function DeleteConfirm({ product, onConfirm, onCancel }) {
   return (
-    <div style={modalOverlay} onClick={onCancel}>
-      <div style={{ ...modalBox, maxWidth: 400 }} onClick={e => e.stopPropagation()}>
+    <div className="admin-modal-scrim" style={modalOverlay} onClick={onCancel}>
+      <div className="admin-modal-panel" style={{ ...modalBox, maxWidth: 400 }} onClick={e => e.stopPropagation()}>
         <div style={{ padding: 24, textAlign: 'center' }}>
           <div style={{
             width: 56, height: 56, borderRadius: '50%', background: '#fdf2f2',
@@ -399,13 +399,13 @@ export default function Products() {
         `}</style>
         <h1 style={{ color: '#14181f', fontWeight: 800, fontSize: 24, marginBottom: 20 }}>Products</h1>
         <div style={{
-          background: '#ffffff', border: '1px solid #e6e8ec', borderRadius: 12,
+          background: '#ffffff', border: '1px solid #e4e5dc', borderRadius: 12,
           padding: 20, overflow: 'hidden',
         }}>
           {Array.from({ length: 5 }).map((_, i) => (
             <div key={i} style={{
               display: 'flex', gap: 16, padding: '12px 0',
-              borderBottom: i < 4 ? '1px solid #e6e8ec' : 'none',
+              borderBottom: i < 4 ? '1px solid #e4e5dc' : 'none',
             }}>
               {['80px', '120px', '100px', '80px', '60px', '80px'].map((w, j) => (
                 <div key={j} style={{
@@ -443,8 +443,8 @@ export default function Products() {
         .prod-row:hover { background: rgba(13,148,136,0.04) !important; }
         .prod-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(16,24,40,0.10); }
         .prod-btn:hover { opacity: 0.8; }
-        .prod-input:focus { border-color: #0d9488 !important; }
-        .prod-select:focus { border-color: #0d9488 !important; outline: none; }
+        .prod-input:focus { border-color: #b86646 !important; }
+        .prod-select:focus { border-color: #b86646 !important; outline: none; }
       `}</style>
 
       <h1 style={{ color: '#14181f', fontWeight: 800, fontSize: 24, marginBottom: 20 }}>Products</h1>
@@ -515,22 +515,22 @@ export default function Products() {
 
       {filtered.length === 0 ? (
         <div style={{
-          background: '#ffffff', border: '1px solid #e6e8ec', borderRadius: 12,
+          background: '#ffffff', border: '1px solid #e4e5dc', borderRadius: 12,
           padding: 48, textAlign: 'center',
         }}>
-          <FaBoxOpen style={{ fontSize: 40, color: '#e6e8ec', marginBottom: 12 }} />
+          <FaBoxOpen style={{ fontSize: 40, color: '#e4e5dc', marginBottom: 12 }} />
           <p style={{ color: '#6b7280', fontSize: 14 }}>No products found</p>
         </div>
       ) : viewMode === 'table' ? (
         /* Table View */
         <div style={{
-          background: '#ffffff', border: '1px solid #e6e8ec', borderRadius: 12,
+          background: '#ffffff', border: '1px solid #e4e5dc', borderRadius: 12,
           overflow: 'hidden', marginBottom: 20,
         }}>
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 900 }}>
               <thead>
-                <tr style={{ borderBottom: '1px solid #e6e8ec' }}>
+                <tr style={{ borderBottom: '1px solid #e4e5dc' }}>
                   {['Product', 'SKU', 'Category', 'Brand', 'Cost', 'Price', 'Stock', 'Status', 'Actions'].map(h => (
                     <th key={h} style={{
                       color: '#6b7280', fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
@@ -553,13 +553,13 @@ export default function Products() {
                           {p.ImageUrl ? (
                             <img src={p.ImageUrl} alt="" style={{
                               width: 36, height: 36, borderRadius: 8, objectFit: 'cover',
-                              border: '1px solid #e6e8ec',
+                              border: '1px solid #e4e5dc',
                             }} />
                           ) : (
                             <div style={{
-                              width: 36, height: 36, borderRadius: 8, background: '#f6f7f9',
-                              border: '1px solid #e6e8ec', display: 'flex', alignItems: 'center',
-                              justifyContent: 'center', color: '#e6e8ec', fontSize: 14,
+                              width: 36, height: 36, borderRadius: 8, background: '#f3f5ef',
+                              border: '1px solid #e4e5dc', display: 'flex', alignItems: 'center',
+                              justifyContent: 'center', color: '#e4e5dc', fontSize: 14,
                             }}>
                               <FaBoxOpen />
                             </div>
@@ -599,7 +599,7 @@ export default function Products() {
                       <td style={{ padding: '12px' }}>
                         <div style={{ display: 'flex', gap: 6 }}>
                           <button onClick={() => openEdit(p)} className="prod-btn" style={{
-                            background: 'rgba(13,148,136,0.1)', color: '#0d9488',
+                            background: 'rgba(13,148,136,0.1)', color: '#b86646',
                             border: 'none', borderRadius: 6, padding: '5px 8px', cursor: 'pointer',
                             fontSize: 12, transition: 'opacity 0.2s',
                           }} title="Edit">
@@ -632,19 +632,19 @@ export default function Products() {
             const sc = stockBadge(status);
             return (
               <div key={p.id} className="prod-card" style={{
-                background: '#ffffff', border: '1px solid #e6e8ec', borderRadius: 12,
+                background: '#ffffff', border: '1px solid #e4e5dc', borderRadius: 12,
                 overflow: 'hidden', transition: 'transform 0.2s, box-shadow 0.2s',
               }}>
                 {p.ImageUrl ? (
                   <img src={p.ImageUrl} alt="" style={{
                     width: '100%', height: 140, objectFit: 'cover',
-                    borderBottom: '1px solid #e6e8ec',
+                    borderBottom: '1px solid #e4e5dc',
                   }} />
                 ) : (
                   <div style={{
-                    width: '100%', height: 140, background: '#f6f7f9',
+                    width: '100%', height: 140, background: '#f3f5ef',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    color: '#e6e8ec', fontSize: 32, borderBottom: '1px solid #e6e8ec',
+                    color: '#e4e5dc', fontSize: 32, borderBottom: '1px solid #e4e5dc',
                   }}>
                     <FaBoxOpen />
                   </div>
@@ -668,7 +668,7 @@ export default function Products() {
                     {p.Category || p.category || 'No Category'} Â· {p.Brand || p.brand || 'No Brand'}
                   </p>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 12, paddingTop: 12, borderTop: '1px solid #eff1f4' }}>
-                    <span style={{ fontSize: 16, fontWeight: 800, color: '#0d9488' }}>
+                    <span style={{ fontSize: 16, fontWeight: 800, color: '#b86646' }}>
                       {formatPrice(p.SellingPrice || p.sellingPrice)}
                     </span>
                     <span style={{
@@ -680,7 +680,7 @@ export default function Products() {
                   </div>
                   <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
                     <button onClick={() => openEdit(p)} className="prod-btn" style={{
-                      ...btnGhost, flex: 1, justifyContent: 'center', color: '#0d9488',
+                      ...btnGhost, flex: 1, justifyContent: 'center', color: '#b86646',
                     }}>
                       <FaEdit /> Edit
                     </button>

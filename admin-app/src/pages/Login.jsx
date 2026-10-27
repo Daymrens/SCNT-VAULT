@@ -7,7 +7,7 @@ const styles = {
     display: 'flex',
     minHeight: '100vh',
     width: '100%',
-    background: '#f6f7f9',
+    background: '#f3f5ef',
   },
   leftPanel: {
     flex: '1 1 50%',
@@ -19,7 +19,7 @@ const styles = {
     padding: '60px 40px',
     position: 'relative',
     overflow: 'hidden',
-    borderRight: '1px solid #e6e8ec',
+    borderRight: '1px solid #e4e5dc',
   },
   leftPanelOverlay: {
     position: 'absolute',
@@ -36,7 +36,7 @@ const styles = {
     width: 56,
     height: 56,
     borderRadius: 14,
-    background: '#0d9488',
+    background: '#b86646',
     display: 'grid',
     placeItems: 'center',
     color: '#fff',
@@ -63,7 +63,7 @@ const styles = {
   brandDivider: {
     width: 48,
     height: 2,
-    background: '#e6e8ec',
+    background: '#e4e5dc',
     margin: '26px auto',
     borderRadius: 1,
   },
@@ -76,7 +76,7 @@ const styles = {
   },
   rightPanel: {
     flex: '1 1 50%',
-    background: '#f6f7f9',
+    background: '#f3f5ef',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -89,7 +89,7 @@ const styles = {
     borderRadius: 14,
     padding: '36px 32px',
     boxShadow: '0 1px 2px rgba(16,24,40,0.05)',
-    border: '1px solid #e6e8ec',
+    border: '1px solid #e4e5dc',
   },
   formTitle: {
     fontSize: 22,
@@ -118,7 +118,7 @@ const styles = {
   input: {
     width: '100%',
     padding: '11px 13px',
-    border: '1.5px solid #e6e8ec',
+    border: '1.5px solid #e4e5dc',
     borderRadius: 9,
     fontSize: 14,
     fontFamily: 'inherit',
@@ -130,7 +130,7 @@ const styles = {
   submitButton: {
     width: '100%',
     padding: '12px 20px',
-    background: '#0d9488',
+    background: '#b86646',
     color: '#ffffff',
     border: 'none',
     borderRadius: 9,
@@ -272,8 +272,8 @@ export default function Login() {
                   required
                   placeholder="your@email.com"
                   autoFocus
-                  onFocus={(e) => { e.target.style.borderColor = '#0d9488'; e.target.style.boxShadow = '0 0 0 3px rgba(13,148,136,0.12)'; }}
-                  onBlur={(e) => { e.target.style.borderColor = '#e6e8ec'; e.target.style.boxShadow = 'none'; }}
+                  onFocus={(e) => { e.target.style.borderColor = '#b86646'; e.target.style.boxShadow = '0 0 0 3px rgba(13,148,136,0.12)'; }}
+                  onBlur={(e) => { e.target.style.borderColor = '#e4e5dc'; e.target.style.boxShadow = 'none'; }}
                 />
               </div>
 
@@ -286,8 +286,8 @@ export default function Login() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   placeholder="Enter password"
-                  onFocus={(e) => { e.target.style.borderColor = '#0d9488'; e.target.style.boxShadow = '0 0 0 3px rgba(13,148,136,0.12)'; }}
-                  onBlur={(e) => { e.target.style.borderColor = '#e6e8ec'; e.target.style.boxShadow = 'none'; }}
+                  onFocus={(e) => { e.target.style.borderColor = '#b86646'; e.target.style.boxShadow = '0 0 0 3px rgba(13,148,136,0.12)'; }}
+                  onBlur={(e) => { e.target.style.borderColor = '#e4e5dc'; e.target.style.boxShadow = 'none'; }}
                 />
               </div>
 
@@ -300,7 +300,7 @@ export default function Login() {
                     cursor: 'pointer',
                     fontSize: 12,
                     fontWeight: 600,
-                    color: resetSent ? '#0f766e' : '#6b7280',
+                    color: resetSent ? '#975238' : '#6b7280',
                   }}
                   disabled={resetSent}
                 >
@@ -315,8 +315,8 @@ export default function Login() {
                   ...(loading ? styles.submitButtonDisabled : {}),
                 }}
                 disabled={loading}
-                onMouseEnter={(e) => { if (!loading) e.currentTarget.style.background = '#0f766e'; }}
-                onMouseLeave={(e) => { if (!loading) e.currentTarget.style.background = '#0d9488'; }}
+                onMouseEnter={(e) => { if (!loading) e.currentTarget.style.background = '#975238'; }}
+                onMouseLeave={(e) => { if (!loading) e.currentTarget.style.background = '#b86646'; }}
               >
                 {loading ? (
                   <>

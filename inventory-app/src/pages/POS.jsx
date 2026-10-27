@@ -287,14 +287,6 @@ export default function POS() {
         .filter(item => !item.isTesterKit && products.some(p => p.id === item.id))
         .map(item => ({ productId: item.id, delta: -item.quantity }));
       const saleId = await addSale(saleData, { stockDeltas });
-      const saleQueuedOffline = typeof saleId === 'string' && saleId.startsWith('SCNT-LOCAL-SALE');
-      if (saleQueuedOffline) {
-        showToast('Saved locally — invoice generated; will sync when quota resets', 'info');
-      } else {
-        for (const d of stockDeltas) {
-          await adjustStock(d.productId, d.delta);
-        }
-      }
       const orderForSale = activeOrder;
       const customerInfo = orderForSale
         ? { Name: orderForSale.customerName || 'Walk-in Customer', Phone: orderForSale.phone || '', Address: orderForSale.address || '', Notes: orderForSale.notes || '' }

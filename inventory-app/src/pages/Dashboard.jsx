@@ -231,7 +231,7 @@ export default function Dashboard() {
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:24, flexWrap:'wrap', gap:16 }}>
         <div>
           <h1 style={{ fontSize:24, fontWeight:800, color:'var(--text-primary)', marginBottom:4 }}>Dashboard</h1>
-          <p style={{ color:'var(--text-muted)', fontSize:13 }}>SCNT Vault — real-time business overview</p>
+          <p style={{ color:'var(--text-muted)', fontSize:13 }}>SCNT Vault - real-time business overview</p>
         </div>
         <div className="header-tabs">
           {RANGES.map(r => (

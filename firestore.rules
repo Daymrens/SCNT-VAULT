@@ -2,7 +2,7 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    
+
     // Helper: check if user is authenticated
     function isAuth() {
       return request.auth != null;
@@ -10,9 +10,7 @@ service cloud.firestore {
     
     // Helper: check if user is owner
     function isOwner() {
-      return isAuth() && 
-        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'owner';
+      return isAuth() && request.auth.uid == '6aOu6pgtNuOWfxbKGMP4UMUCcb';
     }
     
     // Helper: check if user is manager or above
@@ -25,6 +23,19 @@ service cloud.firestore {
 
     // Products Collection — authenticated read, manager+ write
     match /products/{productId} {
+      allow read: if isAuth();
+      allow create, update: if isManager();
+      allow delete: if isOwner();
+    }
+
+    // Supply records used by the Vessa-inspired admin workspace.
+    match /rawMaterials/{materialId} {
+      allow read: if isAuth();
+      allow create, update: if isManager();
+      allow delete: if isOwner();
+    }
+
+    match /storageLocations/{locationId} {
       allow read: if isAuth();
       allow create, update: if isManager();
       allow delete: if isOwner();
@@ -101,32 +112,55 @@ service cloud.firestore {
       allow write: if isOwner();
     }
     
-    // Users Collection — can only read others, can ONLY update own name (not role)
+    // Roles can only be self-provisioned at the least-privileged level, except
+    // for the two explicitly provisioned staff accounts.
     match /users/{userId} {
-      allow read: if isAuth();
-      allow create: if isAuth();
-      // Users can only update their own doc, and NEVER the role field
-      allow update: if isAuth() && request.auth.uid == userId 
-                    && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role']);
-      // Only owner can delete users
+      allow read: if isAuth() && (request.auth.uid == userId || isOwner());
+      allow create: if isAuth()
+        && request.auth.uid == userId
+        && request.resource.data.keys().hasOnly(['role', 'email', 'createdAt', 'name', 'displayName'])
+        && ((request.auth.uid == '6aOu6pgtNuOWfxbKGMP4UMUCcb' && request.resource.data.role == 'owner')
+          || (request.auth.uid == 'qS5tyNyVFehRVleY7Y4HHScqKPu1' && request.resource.data.role == 'manager')
+          || request.resource.data.role == 'employee');
+      allow update: if (isAuth() && request.auth.uid == userId
+          && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role']))
+        || (isOwner() && request.resource.data.role in ['employee', 'manager', 'owner']);
       allow delete: if isOwner();
     }
     
     // Analytics Collection (page/product view tracking)
+    // Guests may create a view event; only staff may read the numbers.
     match /analytics/{docId} {
       allow read: if isAuth();
-      allow write: if isAuth();
+      allow create: if request.resource.data.keys().hasOnly(['timestamp', 'page'])
+                    && request.resource.data.page is string
+                    && request.resource.data.page.size() <= 100;
+      allow update, delete: if isAuth();
+    }
+
+    // Analytics sub-collection (real path: analytics/pageViews/{id})
+    match /analytics/{docId}/{subId} {
+      allow read: if isAuth();
+      allow create: if request.resource.data.keys().hasOnly(['timestamp', 'page'])
+                    && request.resource.data.page is string
+                    && request.resource.data.page.size() <= 100;
+      allow update, delete: if isAuth();
     }
     
     // Newsletter Collection
+    // Guests may subscribe; only staff may read the list.
     match /newsletter/{docId} {
       allow read: if isAuth();
-      allow write: if isAuth();
+      allow create: if request.resource.data.keys().hasOnly(['email', 'timestamp', 'source'])
+                    && request.resource.data.email is string
+                    && request.resource.data.email.size() <= 120;
+      allow update, delete: if isAuth();
     }
     
     // Test Collection (connection checks)
     match /test/{docId} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if false;
     }
 
     // Contacts Collection

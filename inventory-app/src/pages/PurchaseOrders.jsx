@@ -39,7 +39,7 @@ const avatarColor = (name) => {
 
 export default function PurchaseOrders() {
   const { purchaseOrders, suppliers, products, sales, loading,
-          addPurchaseOrder, updatePurchaseOrder, deletePurchaseOrder, adjustStock,
+          addPurchaseOrder, updatePurchaseOrder, deletePurchaseOrder, applyStockDeltaOnce,
           loadSales, loadPurchaseOrders } = useData();
   const { settings } = useSettings();
 
@@ -301,13 +301,17 @@ export default function PurchaseOrders() {
     setStockingId(po.id);
     setProcessingAction(po.id);
     try {
+      const quantities = new Map();
       for (const item of (po.Items||[])) {
         const pid = String(item.PerfumeId); const qty = Number(item.OrderedQuantity)||0;
         if (!pid || qty<=0) continue;
         const prod = resolveProduct(pid);
-        if (prod) await adjustStock(prod.id, +qty);
+        if (prod) quantities.set(prod.id, (quantities.get(prod.id) || 0) + qty);
       }
-      await updatePurchaseOrder(po.id, { ...po, Status:'Completed', _stockAdded:true });
+      for (const [productId, qty] of quantities) {
+        await applyStockDeltaOnce(productId, qty, `po_${po.id}_receive`, 'Purchase Order Receipt');
+      }
+      await updatePurchaseOrder(po.id, { Status:'Completed', _stockAdded:true });
       showToast('Stock added to inventory', 'success');
     } catch(e) {
       console.error(e);
@@ -322,16 +326,17 @@ export default function PurchaseOrders() {
     setReleasingId(po.id);
     setProcessingAction(po.id);
     try {
+      const quantities = new Map();
       for (const item of (po.Items||[])) {
         const pid = String(item.PerfumeId); const qty = Number(item.OrderedQuantity)||0;
         if (!pid || qty<=0) continue;
         const prod = resolveProduct(pid);
-        if (prod) {
-          const release = Math.min(qty, Math.max(0, prod.Stock || 0));
-          if (release > 0) await adjustStock(prod.id, -release);
-        }
+        if (prod) quantities.set(prod.id, (quantities.get(prod.id) || 0) + qty);
       }
-      await updatePurchaseOrder(po.id, { ...po, Status:'Received', _stockAdded:false });
+      for (const [productId, qty] of quantities) {
+        await applyStockDeltaOnce(productId, -qty, `po_${po.id}_release`, 'Purchase Order Release', { clampAtZero: true });
+      }
+      await updatePurchaseOrder(po.id, { Status:'Received', _stockAdded:false });
       showToast('Stock released', 'success');
     } catch(e) {
       console.error(e);

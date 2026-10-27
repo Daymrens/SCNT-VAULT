@@ -5,17 +5,17 @@
 }
 
 :root {
-  --canvas: #f6f7f9;
+  --canvas: #f3f5ef;
   --panel: #ffffff;
-  --panel-2: #f5f6f8;
-  --line: #e6e8ec;
+  --panel-2: #f6f6f1;
+  --line: #e4e5dc;
   --line-soft: #eff1f4;
   --text: #14181f;
   --muted: #6b7280;
   --dim: #9aa3af;
-  --brand: #0d9488;
-  --brand-dark: #0f766e;
-  --brand-soft: #e8f6f4;
+  --brand: #b86646;
+  --brand-dark: #975238;
+  --brand-soft: #f7ece7;
   --danger: #dc2626;
   --success: #15803d;
   --warning: #b45309;
@@ -25,7 +25,7 @@
 }
 
 html, body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
+  font-family: 'Urbanist', 'Avenir Next', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background: var(--canvas);
   color: var(--text);
   -webkit-font-smoothing: antialiased;

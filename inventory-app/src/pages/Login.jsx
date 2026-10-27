@@ -12,7 +12,7 @@ const styles = {
   },
   leftPanel: {
     flex: '1 1 50%',
-    background: 'var(--bg-base)',
+    background: 'linear-gradient(145deg, #edf0e9 0%, #f7f8f2 100%)',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -24,7 +24,7 @@ const styles = {
   leftPanelOverlay: {
     position: 'absolute',
     inset: 0,
-    background: 'radial-gradient(ellipse at 30% 20%, rgba(139,115,85,0.15) 0%, transparent 60%)',
+    background: 'radial-gradient(ellipse at 30% 20%, rgba(169,76,32,0.12) 0%, transparent 60%)',
     pointerEvents: 'none',
   },
   brandContent: {
@@ -43,7 +43,7 @@ const styles = {
   brandName: {
     fontSize: 32,
     fontWeight: 800,
-    color: '#e8e4dc',
+    color: '#1d2521',
     letterSpacing: 6,
     textTransform: 'uppercase',
     marginBottom: 8,
@@ -51,21 +51,21 @@ const styles = {
   },
   brandSubtitle: {
     fontSize: 13,
-    color: 'rgba(232,228,220,0.4)',
+    color: '#69746d',
     letterSpacing: 2,
     textTransform: 'uppercase',
-    fontWeight: 500,
+    fontWeight: 650,
   },
   brandDivider: {
     width: 48,
     height: 2,
-    background: 'linear-gradient(90deg, transparent, #8b7355, transparent)',
+    background: 'linear-gradient(90deg, transparent, #a94c20, transparent)',
     margin: '28px auto',
     borderRadius: 1,
   },
   brandTagline: {
     fontSize: 14,
-    color: 'rgba(232,228,220,0.35)',
+    color: '#5d6861',
     lineHeight: 1.6,
     maxWidth: 260,
     margin: '0 auto',
@@ -217,13 +217,13 @@ export default function Login() {
     try {
       await resetPassword(email);
       setResetSent(true);
-      showToast('Password reset email sent — check your inbox', 'success');
+      showToast('Password reset email sent - check your inbox', 'success');
     } catch (err) {
       showToast('Failed to send reset email', 'error');
     }
   }
 
-  async function getPasswordStrength(pw) {
+  function getPasswordStrength(pw) {
     let score = 0;
     if (pw.length >= 8) score++;
     if (pw.length >= 12) score++;
@@ -260,25 +260,25 @@ export default function Login() {
       <style>{keyframes}</style>
       <div style={styles.wrapper} className="login-wrapper">
 
-        {/* Left Panel — Branding */}
+        {/* Left Panel - Branding */}
         <div style={styles.leftPanel} className="login-left">
           <div style={styles.leftPanelOverlay} />
           <div style={styles.brandContent}>
             <div style={styles.logoContainer}>
               <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" width="80" height="80">
                 {/* Outer ring */}
-                <circle cx="40" cy="40" r="38" stroke="rgba(232,228,220,0.15)" strokeWidth="1.5" />
-                <circle cx="40" cy="40" r="32" stroke="rgba(139,115,85,0.3)" strokeWidth="1" />
+                <circle cx="40" cy="40" r="38" stroke="rgba(89,100,92,0.22)" strokeWidth="1.5" />
+                <circle cx="40" cy="40" r="32" stroke="rgba(169,76,32,0.34)" strokeWidth="1" />
                 {/* Bottle body */}
-                <rect x="28" y="28" width="24" height="30" rx="4" fill="rgba(232,228,220,0.12)" stroke="#e8e4dc" strokeWidth="1.5" />
+                <rect x="28" y="28" width="24" height="30" rx="4" fill="rgba(255,255,255,0.72)" stroke="#a94c20" strokeWidth="1.5" />
                 {/* Bottle neck */}
-                <rect x="35" y="20" width="10" height="10" rx="2" fill="rgba(232,228,220,0.08)" stroke="#e8e4dc" strokeWidth="1.5" />
+                <rect x="35" y="20" width="10" height="10" rx="2" fill="rgba(255,255,255,0.72)" stroke="#a94c20" strokeWidth="1.5" />
                 {/* Cap */}
-                <rect x="33" y="16" width="14" height="6" rx="3" fill="rgba(139,115,85,0.3)" stroke="#8b7355" strokeWidth="1.5" />
+                <rect x="33" y="16" width="14" height="6" rx="3" fill="rgba(169,76,32,0.18)" stroke="#a94c20" strokeWidth="1.5" />
                 {/* Liquid level */}
-                <rect x="30" y="40" width="20" height="16" rx="2" fill="rgba(139,115,85,0.2)" />
+                <rect x="30" y="40" width="20" height="16" rx="2" fill="rgba(169,76,32,0.2)" />
                 {/* Spray line */}
-                <line x1="40" y1="14" x2="40" y2="8" stroke="rgba(232,228,220,0.2)" strokeWidth="1" strokeLinecap="round" />
+                <line x1="40" y1="14" x2="40" y2="8" stroke="rgba(89,100,92,0.35)" strokeWidth="1" strokeLinecap="round" />
               </svg>
             </div>
 
@@ -288,12 +288,12 @@ export default function Login() {
             <div style={styles.brandDivider} />
 
             <div style={styles.brandTagline}>
-              Manage your perfumes, track stock, and handle orders — all in one place.
+              Manage your perfumes, track stock, and handle orders - all in one place.
             </div>
           </div>
         </div>
 
-        {/* Right Panel — Login Form */}
+        {/* Right Panel - Login Form */}
         <div style={styles.rightPanel} className="login-right">
           <div style={styles.formCard} className="login-card">
             <div style={styles.formTitle}>Welcome Back</div>

@@ -48,7 +48,7 @@ const paymentIcon = (method) => {
 };
 
 export default function Sales() {
-  const { sales, customers, resellers, products, deleteSale, adjustStock, loading, loadSales } = useData();
+  const { sales, customers, resellers, products, deleteSale, applyStockDeltaOnce, loading, loadSales } = useData();
   const [tab, setTab]           = useState('all');
   const [range, setRange]       = useState('30');
   const [search, setSearch]     = useState('');
@@ -153,16 +153,20 @@ export default function Sales() {
 
   const handleDelete = async () => {
     try {
-      await deleteSale(confirmDel.id);
       const productMap = Object.fromEntries(products.map(p => [p.id, p]));
+      const quantities = new Map();
       for (const item of (confirmDel.Items||[])) {
         const pid = String(item.PerfumeId ?? item.ProductId ?? '');
         const qty = Number(item.Quantity)||0;
         if (!pid || qty <= 0) continue;
         const prod = productMap[pid];
-        if (prod) await adjustStock(pid, +qty);
+        if (prod) quantities.set(prod.id, (quantities.get(prod.id) || 0) + qty);
       }
-      showToast('Sale deleted — stock restored', 'success');
+      for (const [productId, qty] of quantities) {
+        await applyStockDeltaOnce(productId, qty, `sale_${confirmDel.id}_void`, 'Sale Void');
+      }
+      await deleteSale(confirmDel.id);
+      showToast('Sale deleted - stock restored', 'success');
     } catch (e) {
       console.error(e);
       showToast('Failed to delete sale', 'error');
@@ -383,7 +387,7 @@ export default function Sales() {
                       ?{(sale.Subtotal||0).toLocaleString('en-PH')}
                     </td>
                     <td style={{ color:'var(--danger)' }}>
-                      {sale.Discount > 0 ? `-?${sale.Discount.toLocaleString('en-PH')}` : '—'}
+                      {sale.Discount > 0 ? `-?${sale.Discount.toLocaleString('en-PH')}` : '-'}
                     </td>
                     <td style={{ fontWeight:800, color:'var(--accent)' }}>
                       ?{(sale.Total||0).toLocaleString('en-PH')}
@@ -465,7 +469,7 @@ export default function Sales() {
                             {item.PerfumeName||item.ProductName||`Product #${pid}`}
                           </div>
                           <div style={{ fontSize:11, color:'var(--text-muted)', marginTop:2 }}>
-                            ?{(item.UnitPrice||0).toLocaleString('en-PH')} × {item.Quantity}
+                            ?{(item.UnitPrice||0).toLocaleString('en-PH')} Ã— {item.Quantity}
                           </div>
                         </div>
                         <div style={{ fontSize:14, fontWeight:800, color:'var(--text-primary)' }}>

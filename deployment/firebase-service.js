@@ -26,23 +26,34 @@ export async function createOrder(orderData) {
         const ordersRef = collection(db, 'orders');
         const year = new Date().getFullYear();
         const counterRef = doc(db, 'counters', 'order-' + year);
-        const orderNumber = await runTransaction(db, async (tx) => {
+        const docRef = doc(ordersRef);
+        let attemptedSequence = 0;
+        for (let attempt = 0; ; attempt++) {
+          try {
+            await runTransaction(db, async (tx) => {
             const snap = await tx.get(counterRef);
             const current = snap.exists() ? Number(snap.data().seq || 0) : 0;
             const next = current + 1;
-            await tx.set(counterRef, { seq: next });
-            return 'SCNT-ORDER-' + year + '-' + String(next).padStart(4, '0');
+            attemptedSequence = next;
+            tx.set(counterRef, { seq: next, orderId: docRef.id });
+            tx.set(docRef, {
+                ...orderData,
+                OrderNumber: 'SCNT-ORDER-' + year + '-' + String(next).padStart(4, '0'),
+                counterId: 'order-' + year,
+                orderSequence: next,
+                status: 'pending',
+                createdAt: serverTimestamp(),
+                updatedAt: serverTimestamp()
+            });
         });
-
-        const order = {
-            ...orderData,
-            OrderNumber: orderNumber,
-            status: 'pending',
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp()
-        };
-        
-        const docRef = await addDoc(ordersRef, order);
+            break;
+          } catch (error) {
+            // Rules can reject a stale sequence before a transaction conflict is retried.
+            if (error.code !== 'permission-denied' || attempt >= 3) throw error;
+            const latest = await getDoc(counterRef);
+            if (!latest.exists() || latest.data().seq < attemptedSequence) throw error;
+          }
+        }
         console.log('✅ Order created:', docRef.id);
         return docRef.id;
     } catch (error) {

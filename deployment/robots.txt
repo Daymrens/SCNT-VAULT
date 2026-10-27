@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Staff-only apps, not for search engines
+Disallow: /admin/
+Disallow: /inventory/
+
+Sitemap: https://scnt-vault.web.app/sitemap.xml

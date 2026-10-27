@@ -46,7 +46,7 @@ function AppInner() {
 
 function App() {
   return (
-    <Router>
+    <Router basename={import.meta.env.BASE_URL.replace(/\/$/, '')}>
       <ToastProvider>
         <AuthProvider>
           <SettingsProvider>

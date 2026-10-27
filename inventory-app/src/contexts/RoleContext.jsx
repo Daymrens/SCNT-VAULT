@@ -4,6 +4,7 @@ import { db } from '../firebase/firebase';
 import { useAuth } from './AuthContext';
 
 const OWNER_UID = '6aOu6pgtNuOWfxbKGMP4UMUCcb';
+const MANAGER_UID = 'qS5tyNyVFehRVleY7Y4HHScqKPu1';
 
 const ROLE_PERMISSIONS = {
   owner: {
@@ -60,16 +61,18 @@ export function RoleProvider({ children }) {
     }
 
     const isOwner = currentUser.uid === OWNER_UID;
+    const isManager = currentUser.uid === MANAGER_UID;
 
     const loadRole = async () => {
       try {
         const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
         if (userDoc.exists()) {
           const data = userDoc.data();
-          setRole(data.role || 'employee');
-        } else if (isOwner) {
-          await setDoc(doc(db, 'users', currentUser.uid), { role: 'owner' }, { merge: true });
-          setRole('owner');
+          setRole(isOwner ? 'owner' : isManager ? 'manager' : data.role || 'employee');
+        } else if (isOwner || isManager) {
+          const assignedRole = isOwner ? 'owner' : 'manager';
+          await setDoc(doc(db, 'users', currentUser.uid), { role: assignedRole }, { merge: true });
+          setRole(assignedRole);
         } else {
           await setDoc(doc(db, 'users', currentUser.uid), { role: 'employee' }, { merge: true });
           setRole('employee');
@@ -86,7 +89,8 @@ export function RoleProvider({ children }) {
   }, [currentUser]);
 
   const effectiveRole = currentUser?.uid === OWNER_UID ? 'owner' : role;
-  const permissions = ROLE_PERMISSIONS[effectiveRole] || ROLE_PERMISSIONS.employee;
+  const resolvedRole = currentUser?.uid === MANAGER_UID ? 'manager' : effectiveRole;
+  const permissions = ROLE_PERMISSIONS[resolvedRole] || ROLE_PERMISSIONS.employee;
 
   const canAccessPage = (path) => {
     if (currentUser?.uid === OWNER_UID) return true;
@@ -94,7 +98,7 @@ export function RoleProvider({ children }) {
   };
 
   const value = {
-    role: effectiveRole,
+    role: resolvedRole,
     permissions,
     loading,
     canAccessPage,

@@ -9,6 +9,12 @@ export function isQuotaError(err) {
   return msg.includes('quota') || msg.includes('exceeded') || msg.includes('limit') || msg.includes('429');
 }
 
+export function isOfflineError(err) {
+  if (!err) return false;
+  return ['unavailable', 'deadline-exceeded', 'network-request-failed'].includes(err.code)
+    || /network|offline|failed to fetch/i.test(err.message || '');
+}
+
 function rand4() { return Math.random().toString(36).slice(2, 6).toUpperCase(); }
 
 export function getLocalNumber(prefix) {
@@ -54,13 +60,17 @@ function decodeValue(v) {
   return v;
 }
 
-export function enqueuePendingWrite(type, data) {
+export function enqueuePendingWrite(type, data, ownerUid = null) {
   try {
     const raw = localStorage.getItem(PENDING_KEY);
     const arr = raw ? JSON.parse(raw) : [];
-    arr.push({ type, data: encodeValue(data), ts: Date.now() });
+    arr.push({ id: `${Date.now()}-${rand4()}`, type, data: encodeValue(data), ownerUid, ts: Date.now() });
     localStorage.setItem(PENDING_KEY, JSON.stringify(arr));
-  } catch (e) { console.warn('enqueuePendingWrite failed', e); }
+    return true;
+  } catch (e) {
+    console.error('Could not persist the pending write locally:', e);
+    return false;
+  }
 }
 
 export function readPendingWrites() {
@@ -71,9 +81,9 @@ export function readPendingWrites() {
   catch { return []; }
 }
 
-export function removePendingWrite(ts) {
+export function removePendingWrite(idOrTimestamp) {
   try {
-    const arr = readPendingWrites().filter((w) => w.ts !== ts);
+    const arr = readPendingWrites().filter((w) => w.id !== idOrTimestamp && w.ts !== idOrTimestamp);
     localStorage.setItem(PENDING_KEY, JSON.stringify(arr));
   } catch {}
 }

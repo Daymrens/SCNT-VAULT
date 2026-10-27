@@ -35,7 +35,7 @@ function SkeletonBlock({ width, height, style = {} }) {
 function SkeletonCard() {
   return (
     <div style={{
-      background: '#fff', border: '1px solid #e6e8ec', borderRadius: 10,
+      background: '#fff', border: '1px solid #e4e5dc', borderRadius: 10,
       padding: 18, display: 'flex', flexDirection: 'column', gap: 12,
     }}>
       <SkeletonBlock width="40%" height={12} />
@@ -47,7 +47,7 @@ function SkeletonCard() {
 function SkeletonTable({ rows = 5 }) {
   return (
     <div style={{
-      background: '#fff', border: '1px solid #e6e8ec', borderRadius: 10,
+      background: '#fff', border: '1px solid #e4e5dc', borderRadius: 10,
       padding: 18, overflow: 'hidden',
     }}>
       <SkeletonBlock width="120px" height={18} style={{ marginBottom: 16 }} />
@@ -69,7 +69,7 @@ function SkeletonTable({ rows = 5 }) {
 
 function SkeletonChart() {
   return (
-    <div style={{ background: '#fff', border: '1px solid #e6e8ec', borderRadius: 10, padding: 18 }}>
+    <div style={{ background: '#fff', border: '1px solid #e4e5dc', borderRadius: 10, padding: 18 }}>
       <SkeletonBlock width="140px" height={18} style={{ marginBottom: 20 }} />
       <SkeletonBlock width="100%" height={200} />
     </div>
@@ -151,7 +151,7 @@ function LineChart({ labels, values }) {
     rows.push(
       <g key={g}>
         <line x1={P.l} y1={yy} x2={W - P.r} y2={yy}
-          stroke={g === 0 ? '#e6e8ec' : '#eff1f4'} strokeWidth="1" />
+          stroke={g === 0 ? '#e4e5dc' : '#eff1f4'} strokeWidth="1" />
         <text x={P.l - 8} y={yy + 3.5} textAnchor="end" fontSize="10" fill="#9aa3af">{val}</text>
       </g>
     );
@@ -173,8 +173,8 @@ function LineChart({ labels, values }) {
     <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ width: '100%', height: 240, display: 'block' }}>
       <defs>
         <linearGradient id="dashArea" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#0d9488" stopOpacity="0.16" />
-          <stop offset="1" stopColor="#0d9488" stopOpacity="0" />
+          <stop offset="0" stopColor="#b86646" stopOpacity="0.16" />
+          <stop offset="1" stopColor="#b86646" stopOpacity="0" />
         </linearGradient>
       </defs>
 
@@ -182,7 +182,7 @@ function LineChart({ labels, values }) {
       {xLabels}
 
       <path d={area} fill="url(#dashArea)" />
-      <path d={line} fill="none" stroke="#0d9488" strokeWidth="2"
+      <path d={line} fill="none" stroke="#b86646" strokeWidth="2"
         strokeLinejoin="round" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
 
       {hover != null && (
@@ -192,7 +192,7 @@ function LineChart({ labels, values }) {
       {pts.map((p, i) => (
         <circle key={i} cx={p[0]} cy={p[1]}
           r={hover === i ? 4.5 : (i === values.indexOf(max) ? 3.5 : 0)}
-          fill={hover === i || i === values.indexOf(max) ? '#0d9488' : 'transparent'}
+          fill={hover === i || i === values.indexOf(max) ? '#b86646' : 'transparent'}
           stroke="#fff" strokeWidth="2" vectorEffect="non-scaling-stroke" />
       ))}
 
@@ -282,7 +282,15 @@ export default function Dashboard() {
         messages: messagesSnap.size,
       });
 
-      const dayCounts = {};
+      // Keep a continuous 30-day series so quiet days remain visible in the chart.
+      const now = new Date();
+      const dayCounts = new Map();
+      for (let offset = 29; offset >= 0; offset--) {
+        const day = new Date(now);
+        day.setHours(0, 0, 0, 0);
+        day.setDate(day.getDate() - offset);
+        dayCounts.set(day.toISOString().slice(0, 10), 0);
+      }
       const statusCounts = {};
       const recent = [];
 
@@ -291,8 +299,10 @@ export default function Dashboard() {
 
         const ts = d.createdAt?.toDate?.() || d.createdAt;
         if (ts instanceof Date) {
-          const dateStr = ts.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-          dayCounts[dateStr] = (dayCounts[dateStr] || 0) + 1;
+          const date = new Date(ts);
+          date.setHours(0, 0, 0, 0);
+          const key = date.toISOString().slice(0, 10);
+          if (dayCounts.has(key)) dayCounts.set(key, dayCounts.get(key) + 1);
         }
 
         const status = d.status || 'pending';
@@ -308,16 +318,10 @@ export default function Dashboard() {
       });
       setRecentOrders(recent.slice(0, 10));
 
-      const now = new Date();
-      const sortedDays = Object.entries(dayCounts)
-        .sort((a, b) => {
-          const da = new Date(a[0] + ', ' + now.getFullYear());
-          const db2 = new Date(b[0] + ', ' + now.getFullYear());
-          return da - db2;
-        });
+      const sortedDays = [...dayCounts.entries()];
       setOrdersByDay({
-        labels: sortedDays.map(d => d[0]),
-        data: sortedDays.map(d => d[1]),
+        labels: sortedDays.map(([key]) => new Date(`${key}T12:00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })),
+        data: sortedDays.map(([, count]) => count),
       });
 
       setOrdersByStatus(statusCounts);
@@ -343,13 +347,13 @@ export default function Dashboard() {
 
   useEffect(() => { loadDashboard(); }, []);
 
-  const pageTitle = { color: '#14181f', fontWeight: 800, fontSize: 22, marginBottom: 20, letterSpacing: '-.4px' };
+  const pageTitle = { color: '#14181f', fontWeight: 800, fontSize: 25, letterSpacing: '-.65px', lineHeight: 1.2 };
 
   if (loading) {
     return (
       <>
         <style>{`@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }`}</style>
-        <h1 style={pageTitle}>Dashboard</h1>
+        <div style={{ marginBottom: 20 }}><h1 style={pageTitle}>Dashboard overview</h1><p style={{ color: '#8b95a3', fontSize: 13, marginTop: 6 }}>A live snapshot of your store’s activity.</p></div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 14, marginBottom: 20 }}>
           {Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)}
         </div>
@@ -365,20 +369,20 @@ export default function Dashboard() {
   if (error) {
     return (
       <>
-        <h1 style={pageTitle}>Dashboard</h1>
+        <div style={{ marginBottom: 20 }}><h1 style={pageTitle}>Dashboard overview</h1><p style={{ color: '#8b95a3', fontSize: 13, marginTop: 6 }}>A live snapshot of your store’s activity.</p></div>
         <ErrorState message={error} onRetry={loadDashboard} />
       </>
     );
   }
 
   const statCards = [
-    { label: 'Total Products', value: stats.products, icon: <FaBoxes />, color: '#0f766e', bg: '#e8f6f4' },
-    { label: 'Website Orders', value: stats.orders, icon: <FaShoppingCart />, color: '#2563eb', bg: '#eef4ff' },
-    { label: 'Pending Orders', value: stats.pending, icon: <FaClock />, color: '#b45309', bg: '#fff7e6' },
-    { label: 'New Messages', value: stats.messages, icon: <FaEnvelope />, color: '#7c3aed', bg: '#f5eeff' },
+    { label: 'Total products', value: stats.products, note: 'In your catalog', icon: <FaBoxes />, color: '#975238', bg: '#f7ece7' },
+    { label: 'Website orders', value: stats.orders, note: 'All time', icon: <FaShoppingCart />, color: '#2563eb', bg: '#eef4ff' },
+    { label: 'Pending orders', value: stats.pending, note: 'Awaiting action', icon: <FaClock />, color: '#b45309', bg: '#fff7e6' },
+    { label: 'New messages', value: stats.messages, note: 'Unread contacts', icon: <FaEnvelope />, color: '#7c3aed', bg: '#f5eeff' },
   ];
 
-  const panel = { background: '#fff', border: '1px solid #e6e8ec', borderRadius: 10, boxShadow: '0 1px 2px rgba(16,24,40,.04)' };
+  const panel = { background: '#fff', border: '1px solid #e4e5dc', borderRadius: 10, boxShadow: '0 1px 2px rgba(16,24,40,.04)' };
   const panelHead = { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 14, flexWrap: 'wrap' };
   const panelTitle = { color: '#14181f', fontSize: 13.5, fontWeight: 700 };
   const th = {
@@ -394,7 +398,15 @@ export default function Dashboard() {
         .dash-link:hover { text-decoration: underline; }
       `}</style>
 
-      <h1 style={pageTitle}>Dashboard</h1>
+      <div style={{ display: 'flex', alignItems: 'end', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', marginBottom: 20 }}>
+        <div>
+          <h1 style={pageTitle}>Dashboard overview</h1>
+          <p style={{ color: '#8b95a3', fontSize: 13, marginTop: 6 }}>A live snapshot of your store’s activity.</p>
+        </div>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, color: '#6b7280', background: '#fff', border: '1px solid #e4e5dc', borderRadius: 8, padding: '8px 11px', fontSize: 12 }}>
+          <FaClock style={{ color: '#975238' }} /> Last 30 days
+        </span>
+      </div>
 
       {/* Stats Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 14, marginBottom: 20 }}>
@@ -411,8 +423,9 @@ export default function Dashboard() {
               {card.icon}
             </div>
             <div>
-              <p style={{ color: '#6b7280', fontSize: 12, fontWeight: 500, marginBottom: 3 }}>{card.label}</p>
+              <p style={{ color: '#6b7280', fontSize: 12, fontWeight: 500, marginBottom: 5 }}>{card.label}</p>
               <p style={{ color: '#14181f', fontSize: 23, fontWeight: 700, letterSpacing: '-.5px', lineHeight: 1 }}>{card.value}</p>
+              <p style={{ color: '#9aa3af', fontSize: 10.5, marginTop: 6 }}>{card.note}</p>
             </div>
           </div>
         ))}
@@ -422,7 +435,7 @@ export default function Dashboard() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 14, marginBottom: 20 }}>
         <div style={{ ...panel, padding: 18 }}>
           <div style={panelHead}>
-            <h3 style={panelTitle}>Orders — last 30 days</h3>
+            <h3 style={panelTitle}>Orders over time</h3>
             <span style={{ fontSize: 11.5, color: '#9aa3af' }}>
               Total {ordersByDay.data.reduce((a, b) => a + b, 0)}
             </span>
@@ -443,7 +456,7 @@ export default function Dashboard() {
         <div style={panelHead}>
           <h3 style={panelTitle}>Recent orders</h3>
           <Link to="/orders" className="dash-link" style={{
-            color: '#0f766e', fontSize: 12.5, fontWeight: 600, textDecoration: 'none',
+            color: '#975238', fontSize: 12.5, fontWeight: 600, textDecoration: 'none',
             display: 'flex', alignItems: 'center', gap: 4,
           }}>
             View all <FaArrowRight style={{ fontSize: 10 }} />
@@ -455,7 +468,7 @@ export default function Dashboard() {
         ) : (
           <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 700 }}>
             <thead>
-              <tr style={{ borderBottom: '1px solid #e6e8ec' }}>
+              <tr style={{ borderBottom: '1px solid #e4e5dc' }}>
                 {['Order No', 'Date', 'Customer', 'Items', 'Total', 'Status', 'Actions'].map(h => (
                   <th key={h} style={th}>{h}</th>
                 ))}
@@ -497,7 +510,7 @@ export default function Dashboard() {
                       <Link to={`/orders?id=${order.id}`} className="dash-btn" style={{
                         display: 'inline-flex', alignItems: 'center', gap: 5,
                         padding: '5px 10px', borderRadius: 6, fontSize: 11.5, fontWeight: 600,
-                        background: '#e8f6f4', color: '#0f766e',
+                        background: '#f7ece7', color: '#975238',
                         textDecoration: 'none', transition: 'background 0.15s',
                       }}>
                         <FaEye /> View
@@ -519,7 +532,7 @@ export default function Dashboard() {
               <FaExclamationTriangle /> Low stock alerts
             </h3>
             <Link to="/products" className="dash-link" style={{
-              color: '#0f766e', fontSize: 12.5, fontWeight: 600, textDecoration: 'none',
+              color: '#975238', fontSize: 12.5, fontWeight: 600, textDecoration: 'none',
               display: 'flex', alignItems: 'center', gap: 4,
             }}>
               Manage products <FaArrowRight style={{ fontSize: 10 }} />
@@ -528,7 +541,7 @@ export default function Dashboard() {
 
           <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 500 }}>
             <thead>
-              <tr style={{ borderBottom: '1px solid #e6e8ec' }}>
+              <tr style={{ borderBottom: '1px solid #e4e5dc' }}>
                 {['Product Name', 'SKU', 'Stock', 'Category'].map(h => (
                   <th key={h} style={th}>{h}</th>
                 ))}
